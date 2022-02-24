@@ -12,12 +12,7 @@ export default function ScrollToTop() {
 
 	const toggleVisible = () => {
 		const scrolled = document.documentElement.scrollTop
-
-		if (scrolled > 100) {
-			setVisible(true)
-		} else if (scrolled <= 100) {
-			setVisible(false)
-		}
+		setVisible(scrolled > 100)
 	}
 
 	const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -25,7 +20,7 @@ export default function ScrollToTop() {
 	const className = cn({
 		'-right-15': !visible,
 		'right-10': visible,
-	}, "fixed bottom-10 right-10 rounded-full bg-gray-300 hover:bg-gray-400 active:bg-gray-500 p-4 transition-all")
+	}, "fixed 2xl:bottom-10 bottom-20 rounded-full bg-gray-300 hover:bg-gray-400 active:bg-gray-500 p-4 transition-all")
 
 
 	return (

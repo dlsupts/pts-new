@@ -25,10 +25,10 @@ const Layout: FC = ({ children }) => {
 				<meta name="twitter:card" content="summary_large_image" />
 			</Head>
 			<Header />
-			<main style={{ minHeight: 'calc(100vh - 5em)'}}>
+			<main style={{ minHeight: '200vh'}}>
 				{children}
 			</main>
-			<footer className="text-gray-400 h-30 px-8">
+			<footer className="text-gray-400 h-20 md:h-30 px-8">
 				<div className="flex justify-between items-center min-h-full max-w-7xl mx-auto">
 					<p className="md:text-lg text-sm font-medium">
 						<i className="fa-regular fa-copyright mr-1"></i>
