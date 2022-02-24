@@ -1,3 +1,9 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": ["eslint:recommended", "next"],
+  "rules": {
+    "indent": ["error", "tab", {
+      "SwitchCase": 1
+    }],
+    "semi": ["error", "never"]
+  }
 }
