@@ -1,9 +1,13 @@
 {
-  "extends": ["eslint:recommended", "next"],
-  "rules": {
-    "indent": ["error", "tab", {
-      "SwitchCase": 1
-    }],
-    "semi": ["error", "never"]
-  }
+	"extends": [
+		"eslint:recommended",
+		"next",
+		"plugin:@typescript-eslint/recommended"
+	],
+	"parser": "@typescript-eslint/parser",
+	"plugins": [ "@typescript-eslint" ],
+	"rules": {
+		"indent": [ "error", "tab", { "SwitchCase": 1 } ],
+		"semi": [ "error", "never" ]
+	}
 }
