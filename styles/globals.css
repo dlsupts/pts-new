@@ -14,3 +14,7 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.footer-icon {
+	@apply mx-4 cursor-pointer hover:text-gray-500 active:text-gray-600
+}
