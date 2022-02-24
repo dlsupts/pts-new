@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import { FC } from 'react'
+import Header from './header'
+import ScrollToTop from './scroll-to-top'
 
 export const siteTitle = 'Peer Tutors Society'
 
@@ -22,13 +24,17 @@ const Layout: FC = ({ children }) => {
 				<meta name="og:title" content={siteTitle} />
 				<meta name="twitter:card" content="summary_large_image" />
 			</Head>
-			<main>
+			<Header />
+			<main style={{ minHeight: 'calc(100vh - 5em)'}}>
 				{children}
 			</main>
 			<footer className="text-gray-400 h-30 px-8">
-				<div className="flex justify-between items-center min-h-full">
-					<p className="text-lg font-medium">
-						&copy; Peer Tutors Society {(new Date()).getFullYear()}. All rights reserved.
+				<div className="flex justify-between items-center min-h-full max-w-7xl mx-auto">
+					<p className="md:text-lg text-sm font-medium">
+						<i className="fa-regular fa-copyright mr-1"></i>
+						Peer Tutors Society {(new Date()).getFullYear()}.&nbsp; 
+						<br className="md:hidden" />
+						All rights reserved.
 					</p>
 					<div>
 						<a className="footer-icon" title="PTS Facebook Page" href="https://www.facebook.com/pts.dlsu/">
@@ -43,6 +49,8 @@ const Layout: FC = ({ children }) => {
 					</div>
 				</div>
 			</footer>
+
+			<ScrollToTop />
 		</>
 	)
 }
