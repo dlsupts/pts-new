@@ -73,8 +73,8 @@ const Header: FC = () => {
 				</div>
 			</div>
 
-			<div className="sm:hidden" id="mobile-menu">
-				<div className="px-2 pt-2 pb-3 space-y-1">
+			<div className="sm:hidden relative bg-white" id="mobile-menu">
+				<div className="px-2 pt-2 pb-3 space-y-1 ">
 					{navItems.map(nav => <MobNavItem key={nav.text} text={nav.text} path={nav.path} />)}
 				</div>
 			</div>

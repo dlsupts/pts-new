@@ -18,7 +18,7 @@ export default function ScrollToTop() {
 	const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
 	const className = cn({
-		'-right-15': !visible,
+		'-right-16': !visible,
 		'right-10': visible,
 	}, "fixed 2xl:bottom-10 bottom-20 rounded-full bg-gray-300 hover:bg-gray-400 active:bg-gray-500 p-4 transition-all")
 
