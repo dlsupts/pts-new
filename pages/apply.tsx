@@ -11,7 +11,7 @@ const RequestPage: FC<RequestProps> = ({ faqs }) => {
 	const [help, setHelp] = useState(faqs[0].answer)
 
 	return (
-		<div className="main-height flex flex-col justify-center px-4">
+		<div className="main-height flex flex-col justify-center px-4 mt-10 md:mt-0">
 			<div className="grid place-items-center lg:grid-cols-2 grid-cols-auto mx-auto h-full container min-h-[10rem] container">
 				<div className="flex flex-col items-center w-full pb-10 lg:pb-0 lg:pr-8">
 					<div className="mb-6">

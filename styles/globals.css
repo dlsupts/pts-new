@@ -10,7 +10,7 @@ html { font-family: 'Inter', sans-serif; }
 }
 
 .main-height {
-	min-height: calc(100vh - theme('spacing.40'));
+	min-height: calc(100vh - theme('spacing.36'));
 }
 
 .footer-icon {
