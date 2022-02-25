@@ -1,4 +1,4 @@
-import { Schema, models, model, Model } from 'mongoose'
+import { Schema, models, model, Model, Document } from 'mongoose'
 
 export interface IOfficer {
 	account: Schema.Types.ObjectId | string;
@@ -24,4 +24,4 @@ const committeeSchema = new Schema<ICommittee>({
 	}]
 })
 
-export default models.Committee as Model<ICommittee> || model<ICommittee>('Committee', committeeSchema, 'committees')
+export default models.Committee as Model<ICommittee & Document> || model<ICommittee>('Committee', committeeSchema, 'committees')

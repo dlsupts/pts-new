@@ -1,4 +1,4 @@
-import { Schema, models, model, Model } from 'mongoose'
+import { Schema, models, model, Model, Document } from 'mongoose'
 
 export interface IFAQ {
 	_id: Schema.Types.ObjectId | string
@@ -19,4 +19,4 @@ const faqSchema = new Schema<IFAQs>({
 	}]
 })
 
-export default models.FAQ as Model<IFAQs> || model<IFAQs>('FAQ', faqSchema, 'faqs')
+export default models.FAQ as Model<IFAQs & Document> || model<IFAQs>('FAQ', faqSchema, 'faqs')
