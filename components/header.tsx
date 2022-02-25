@@ -47,7 +47,7 @@ const NavItem: FC<NavItemProp> = ({ text, path }) => {
 const Header: FC = () => {
 	return (
 		<header className="h-20 border-b border-gray-200">
-			<div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-full flex justify-between">
+			<div className="container mx-auto px-2 sm:px-6 lg:px-8 h-full flex justify-between">
 				<div className="relative flex items-center justify-between h-full">
 					<div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
 						<button type="button" className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
@@ -69,7 +69,7 @@ const Header: FC = () => {
 					</div>
 				</div>
 				<div className="flex items-center">
-					<button className="ml-8 whitespace-nowrap px-4 py-2 border border-transparent rounded-md shadow-sm font-medium text-white bg-blue-700 hover:bg-blue-800 active:bg-blue-900">Sign In</button>
+					<button className="btn blue ml-8 whitespace-nowrap px-4 py-2 border border-transparent rounded-md shadow-sm font-medium">Sign In</button>
 				</div>
 			</div>
 

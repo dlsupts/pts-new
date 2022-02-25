@@ -25,11 +25,11 @@ const Layout: FC = ({ children }) => {
 				<meta name="twitter:card" content="summary_large_image" />
 			</Head>
 			<Header />
-			<main className="min-h-[200vh]">
+			<main className="main-height">
 				{children}
 			</main>
 			<footer className="text-gray-400 h-20 md:h-30 px-8">
-				<div className="flex justify-between items-center min-h-full max-w-7xl mx-auto">
+				<div className="flex justify-between items-center min-h-full mx-auto container">
 					<p className="md:text-lg text-sm font-medium">
 						<i className="fa-regular fa-copyright mr-1"></i>
 						Peer Tutors Society {(new Date()).getFullYear()}.&nbsp;
