@@ -3,14 +3,26 @@ import { FC } from 'react'
 import CommiteeDiv from '../components/commitee'
 import dbConnect from '../lib/db'
 import Committee, { ICommittee } from '../models/committee'
+import Library, { ILib } from '../models/library'
+import Image from 'next/image'
 
 interface AboutPageProps {
 	committees: ICommittee[]
+	sessionPhotos: ILib
+	groupPhotos: ILib
 }
 
-const AboutPage: FC<AboutPageProps> = ({ committees }) => {
+const AboutPage: FC<AboutPageProps> = ({ committees, sessionPhotos, groupPhotos }) => {
+	const sess = sessionPhotos.content.length == 0 ?
+		'https://via.placeholder.com/480x360' :
+		`https://drive.google.com/uc?export=view&id=${sessionPhotos.content[0].split(':')[1].trim()}`
+
+	const group = groupPhotos.content.length == 0 ?
+		'https://via.placeholder.com/480x360' :
+		`https://drive.google.com/uc?export=view&id=${groupPhotos.content[0].split(':')[1].trim()}`
+
 	return (
-		<div className="container mx-auto px-4 md:px-0">
+		<div className="container mx-auto px-4 lg:px-20">
 			<div className="my-14">
 				<p className="font-light text-5xl text-center">About Us</p>
 				<hr className="mt-2 mb-6" />
@@ -44,7 +56,42 @@ const AboutPage: FC<AboutPageProps> = ({ committees }) => {
 				</div>
 			</div>
 
-			<div>
+			<div className="mt-16">
+				<p className="font-light text-4xl text-center mb-2">Activities</p>
+				<hr />
+				<div className="grid lg:grid-cols-2 lg:gap-x-6 gap-y-4 place-items-center mt-12">
+					<div>
+						<Image src={sess} alt="Tutor Sessions" width={480} height={360} />
+					</div>
+					<div>
+						<p className="text-xl font-medium mb-4">Tutoring Sessions</p>
+						<p className="w-max-prose">
+							Peer Tutors Society (PTS) has been providing tutorial services each term and
+							publicizing them through its Facebook page and Twitter account where students
+							who are in need of academic assistance can request for a peer tutor. Tutor requests
+							can either be for whole-term tutoring or for one-session tutoring, and can either be
+							One-on-One sessions or Group sessions to accomodate the needs of all students.
+						</p>
+					</div>
+					<div>
+						<p className="text-xl font-medium mb-4">Midterms and Finals Group Study</p>
+						<p className="w-max-prose">
+							Peer Tutors Society (PTS) conducts its termly Midterms and Finals Group Study sessions together
+							with La Salle Computer Society (LSCS) during the week before Midterms and Finals Week. These group
+							studies will not only focus on reviewing the lectures and problem sets needed by the students to ace
+							their exams, but also share useful tips on how to better understand different concepts and theories to
+							better prepare these students for their upcoming Midterms and Finals Exams.
+						</p>
+					</div>
+					<div>
+						<Image src={group} alt="Group Study" width={480} height={360} />
+					</div>
+				</div>
+			</div>
+
+			<div className="mt-16">
+				<p className="font-light text-4xl text-center mb-2">Officers</p>
+				<hr />
 				{committees.map(c => <CommiteeDiv key={c.name} name={c.name} officers={c.officers} />)}
 			</div>
 		</div>
@@ -53,20 +100,30 @@ const AboutPage: FC<AboutPageProps> = ({ committees }) => {
 
 export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
-	const comms = await Committee.find({}, '-_id -__v').lean().exec()
 
-	const committees = comms.map(c => {
-		const officers = c.officers.map(o => ({ ...o, account: o.account.toString() }))
+	const committees = await Committee.find({}, '-_id -__v')
+		.populate({ path: 'officers', populate: { path: 'account', select: 'firstname lastname' } }).lean().exec()
 
-		return {
-			...c,
-			officers,
+	// parse names
+	committees.forEach(c => c.officers.forEach(o => {
+		if (typeof o.account != 'string') {
+			if ('firstname' in o.account) {
+				o.name = o.account.firstname + ' ' + o.account.lastname
+				o.account = o.account._id.toString()
+			} else {
+				o.account = o.account.toString()
+			}
 		}
-	})
+	}))
+
+	const sessionPhotos = await Library.findOne({ title: 'Tutoring Sessions Photos' }, '-_id -__v').lean().exec()
+	const groupPhotos = await Library.findOne({ title: 'Group Studies Photos' }, '-_id -__v').lean().exec()
 
 	return {
 		props: {
 			committees,
+			sessionPhotos,
+			groupPhotos,
 		},
 		revalidate: Number(process.env.NEXT_PUBLIC_REVALIDATION_INTERVAL)
 	}

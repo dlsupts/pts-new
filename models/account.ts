@@ -1,6 +1,7 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
 
 export interface IAccount {
+	_id: Schema.Types.ObjectId
 	firstname: string
 	middlename: string
 	lastname: string
