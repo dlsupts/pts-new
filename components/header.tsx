@@ -82,7 +82,7 @@ const Header: FC = () => {
 									</div>
 								</div>
 								<div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-									<button type="button" className="blue btn font-medium px-4 py-2 rounded-md" >Sign Up </button>
+									<button type="button" className="blue btn font-medium px-4 py-2 rounded-md">Tutor Login</button>
 								</div>
 							</div>
 						</div>

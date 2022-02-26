@@ -3,10 +3,14 @@
 @tailwind components;
 @tailwind utilities;
 
-html { font-family: 'Inter', sans-serif; }
+html { font-family: 'Inter', sans-serif; scroll-behavior: smooth }
 
 @supports (font-variation-settings: normal) {
   html { font-family: 'Inter var', sans-serif; }
+}
+
+.main-height-full {
+	min-height: calc(100vh - theme('spacing.16'));
 }
 
 .main-height {

@@ -1,5 +1,4 @@
-import { GetStaticProps } from 'next'
-import { FC } from 'react'
+import { GetStaticProps, NextPage } from 'next'
 import CommiteeDiv from '../components/commitee'
 import dbConnect from '../lib/db'
 import Committee, { ICommittee } from '../models/committee'
@@ -12,7 +11,7 @@ interface AboutPageProps {
 	groupPhotos: ILib
 }
 
-const AboutPage: FC<AboutPageProps> = ({ committees, sessionPhotos, groupPhotos }) => {
+const AboutPage: NextPage<AboutPageProps> = ({ committees, sessionPhotos, groupPhotos }) => {
 	const sess = sessionPhotos.content.length == 0 ?
 		'https://via.placeholder.com/480x360' :
 		`https://drive.google.com/uc?export=view&id=${sessionPhotos.content[0].split(':')[1].trim()}`

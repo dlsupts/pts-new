@@ -1,5 +1,5 @@
-import { GetStaticProps } from 'next'
-import { FC, useState } from 'react'
+import { GetStaticProps, NextPage } from 'next'
+import { useState } from 'react'
 import dbConnect from '../lib/db'
 import FAQ, { IFAQ } from '../models/faq'
 
@@ -7,7 +7,7 @@ interface RequestProps {
 	faqs: IFAQ[]
 }
 
-const RequestPage: FC<RequestProps> = ({ faqs }) => {
+const RequestPage: NextPage<RequestProps> = ({ faqs }) => {
 	const [help, setHelp] = useState(faqs[0].answer)
 
 	return (
