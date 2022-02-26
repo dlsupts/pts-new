@@ -21,6 +21,7 @@ const Layout: FC = ({ children }) => {
 						siteTitle
 					)}.png?theme=light&md=0&fontSize=75px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-black-logo.svg`}
 				/>
+				<meta name="theme-color" content="#0370be" />
 				<meta name="og:title" content={siteTitle} />
 				<meta name="twitter:card" content="summary_large_image" />
 			</Head>
@@ -28,7 +29,7 @@ const Layout: FC = ({ children }) => {
 			<main className="main-height">
 				{children}
 			</main>
-			<footer className="text-gray-400 h-20 md:h-30 px-8">
+			<footer className="text-gray-500 h-20 md:h-30 px-8">
 				<div className="flex justify-between items-center min-h-full mx-auto container">
 					<p className="md:text-lg text-sm font-medium">
 						<i className="fa-regular fa-copyright mr-1"></i>

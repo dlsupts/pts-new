@@ -74,6 +74,9 @@ const AboutPage: FC<AboutPageProps> = ({ committees, sessionPhotos, groupPhotos 
 						</p>
 					</div>
 					<div>
+						<Image src={group} alt="Group Study" width={480} height={360} />
+					</div>
+					<div>
 						<p className="text-xl font-medium mb-4">Midterms and Finals Group Study</p>
 						<p className="w-max-prose">
 							Peer Tutors Society (PTS) conducts its termly Midterms and Finals Group Study sessions together
@@ -82,9 +85,6 @@ const AboutPage: FC<AboutPageProps> = ({ committees, sessionPhotos, groupPhotos 
 							their exams, but also share useful tips on how to better understand different concepts and theories to
 							better prepare these students for their upcoming Midterms and Finals Exams.
 						</p>
-					</div>
-					<div>
-						<Image src={group} alt="Group Study" width={480} height={360} />
 					</div>
 				</div>
 			</div>

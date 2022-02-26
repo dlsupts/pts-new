@@ -24,7 +24,7 @@ export default function ScrollToTop() {
 
 
 	return (
-		<button className={className} onClick={scrollToTop}>
+		<button className={className} onClick={scrollToTop} title="Scroll To Top">
 			<div className="w-5 h-5 flex items-center justify-center">
 				<i className="fa-solid fa-arrow-up" />
 			</div>
