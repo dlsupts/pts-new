@@ -101,16 +101,16 @@ export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
 
 	const committees = await Committee.find({}, '-_id -__v')
-		.populate({ path: 'officers', populate: { path: 'account', select: 'firstname lastname' } }).lean().exec()
+		.populate({ path: 'officers', populate: { path: 'user', select: 'firstname lastname' } }).lean().exec()
 
 	// parse names
 	committees.forEach(c => c.officers.forEach(o => {
-		if (typeof o.account != 'string') {
-			if ('firstname' in o.account) {
-				o.name = o.account.firstname + ' ' + o.account.lastname
-				o.account = o.account._id.toString()
+		if (typeof o.user != 'string') {
+			if ('firstname' in o.user) {
+				o.name = o.user.firstname + ' ' + o.user.lastname
+				o.user = o.user._id.toString()
 			} else {
-				o.account = o.account.toString()
+				o.user = o.user.toString()
 			}
 		}
 	}))

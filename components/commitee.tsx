@@ -27,8 +27,8 @@ const CommiteeDiv: FC<ICommittee> = ({ name, officers }) => {
 			<div className="grid md:grid-flow-col gap-y-4 place-items-center mt-4">
 				{officers.map(o => (
 					<OfficerTile
-						key={o.account.toString()}
-						account={o.account}
+						key={o.user.toString()}
+						user={o.user}
 						name={o.name}
 						position={o.position}
 						image={o.image} />

@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth'
 import GoogleProvider from "next-auth/providers/google"
+import User from '../../../models/user'
 
 export default NextAuth({
 	providers: [
@@ -10,10 +11,14 @@ export default NextAuth({
 	],
 	callbacks: {
 		async signIn({ account, profile }) {
-			if (account.provider === 'google') {
-				return profile.hd == 'dlsu.edu.ph'
+			if (account.provider === 'google' && profile.hd == 'dlsu.edu.ph') {
+				const temp = await User.findOne({ email: profile.email }).lean().exec()
+				return temp != null
 			}
 			return false
 		}
-	}
+	},
+	pages: {
+		error: '/'
+	},
 })

@@ -1,8 +1,20 @@
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { requests, applications } from '../posts/home'
+import { toast } from 'react-toastify'
+import { toastErrorConfig } from '../lib/toast-defaults'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 
 const Home: NextPage = () => {
+	const { query } = useRouter()
+
+	useEffect(() => {
+		if (query.error === 'AccessDenied') {
+			toast.error('Account unauthorized! Make sure to use your DLSU email.', toastErrorConfig)
+		}
+	}, [query])
+
 	return (
 		<>
 			<div className="main-height-full grid place-items-center py-10 mx-auto px-4 sm:py-12 sm:px-6 md:py-16 lg:py-20 lg:px-8 xl:py-28 bg-blue-900 bg-blend-multiply

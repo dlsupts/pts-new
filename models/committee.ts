@@ -1,9 +1,9 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
-import { IAccount } from './account'
-import './account' // force import in case of query population
+import { IUser } from './user'
+import './user' // force import in case of query population
 
 export interface IOfficer {
-	account: Schema.Types.ObjectId | IAccount | string;
+	user: Schema.Types.ObjectId | IUser | string;
 	name?: string;
 	position: string;
 	image: string;
@@ -17,9 +17,9 @@ export interface ICommittee {
 const committeeSchema = new Schema<ICommittee>({
 	name: { type: String, required: true },
 	officers: [{
-		account: {
+		user: {
 			type: Schema.Types.ObjectId,
-			ref: 'Account',
+			ref: 'User',
 			required: true,
 		},
 		position: { type: String, required: true },
