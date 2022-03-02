@@ -18,7 +18,7 @@ html { font-family: 'Inter', sans-serif; scroll-behavior: smooth }
 }
 
 .footer-icon {
-	@apply mx-1 md:mx-4 cursor-pointer hover:text-gray-500 active:text-gray-600;
+	@apply mx-1 md:mx-4 cursor-pointer hover:text-gray-600 active:text-gray-700;
 }
 
 .btn.blue {
