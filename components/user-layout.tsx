@@ -11,16 +11,21 @@ const navItems = [
 
 const UserLayout: FC = ({ children }) => {
 	const router = useRouter()
+	const time = (new Date).getTime()
 	const { status } = useSession({
 		required: true,
 		onUnauthenticated: () => {
-			router.replace('/')
+			setTimeout(() => router.replace('/?error=You are not logged in.'), time + 500 - (new Date).getTime())
 		}
 	})
 
 	if (status == 'loading') {
 		return (
-			<p>Loading...</p>
+			<div className="flex justify-center items-center absolute h-screen w-screen z-10 top-0 left-0 bg-white">
+				<div className="spinner-border animate-spin inline-block w-20 h-20 border-8 rounded-full text-blue-700" role="status">
+					<span className="visually-hidden">Loading...</span>
+				</div>
+			</div>
 		)
 	}
 
