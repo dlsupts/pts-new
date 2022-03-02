@@ -1,16 +1,18 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
 
-export interface IUser {
-	_id: Schema.Types.ObjectId
-	firstname: string
-	middlename: string
-	lastname: string
+export interface IUserInfo {
+	firstName: string
+	middleName: string
+	lastName: string
 	idNumber: string
 	email: string
 	course: string
 	contact: string
 	url: string
 	terms: number
+}
+
+export interface ITutorInfo {
 	membership: boolean
 	tutoringService: ('WHOLE TERM' | 'ONE SESSION')[]
 	tutorialType: string[]
@@ -18,14 +20,18 @@ export interface IUser {
 	maxTuteeCount: number
 	topics: string[][],
 	schedule: Schema.Types.ObjectId
+}
+
+export interface IUser extends IUserInfo, ITutorInfo {
+	_id: Schema.Types.ObjectId
 	userType: 'ADMIN' | 'TUTOR'
 	reset: boolean
 }
 
 const userSchema = new Schema({
-	firstname: { type: String, default: '' },
-	middlename: { type: String, default: '' },
-	lastname: { type: String, default: '' },
+	firstName: { type: String, default: '' },
+	middleName: { type: String, default: '' },
+	lastName: { type: String, default: '' },
 	idNumber: { type: String, default: '' },
 	email: { type: String, required: true },
 	course: { type: String, default: '' },

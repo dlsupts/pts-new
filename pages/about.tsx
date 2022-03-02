@@ -106,8 +106,8 @@ export const getStaticProps: GetStaticProps = async () => {
 	// parse names
 	committees.forEach(c => c.officers.forEach(o => {
 		if (typeof o.user != 'string') {
-			if ('firstname' in o.user) {
-				o.name = o.user.firstname + ' ' + o.user.lastname
+			if ('firstName' in o.user) {
+				o.name = o.user.firstName + ' ' + o.user.lastName
 				o.user = o.user._id.toString()
 			} else {
 				o.user = o.user.toString()
