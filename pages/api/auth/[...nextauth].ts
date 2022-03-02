@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth'
 import GoogleProvider from "next-auth/providers/google"
 import User from '../../../models/user'
+import dbConnect from '../../../lib/db'
 
 export default NextAuth({
 	providers: [
@@ -12,10 +13,24 @@ export default NextAuth({
 	callbacks: {
 		async signIn({ account, profile }) {
 			if (account.provider === 'google' && profile.hd == 'dlsu.edu.ph') {
-				const temp = await User.findOne({ email: profile.email }).lean().exec()
-				return temp != null
+				let temp
+
+				try {
+					await dbConnect()
+					temp = await User.findOne({ email: profile.email }).lean().exec()
+				} catch (err) {
+					console.log(err)
+					throw new Error("A server side-error has occured!")
+				}
+
+				if (temp == null) {
+					throw new Error("User unauthorized! Please contact the system administrator.")
+				}
+
+				return true
 			}
-			return false
+			
+			throw new Error('Invalid login! Make sure to use your DLSU email.')
 		}
 	},
 	pages: {

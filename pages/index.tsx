@@ -10,9 +10,7 @@ const Home: NextPage = () => {
 	const { query } = useRouter()
 
 	useEffect(() => {
-		if (query.error === 'AccessDenied') {
-			toast.error('Account unauthorized! Make sure to use your DLSU email.', toastErrorConfig)
-		}
+		toast.error(query.error, toastErrorConfig)
 	}, [query])
 
 	return (
