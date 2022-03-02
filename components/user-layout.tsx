@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { FC } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import LoadingSpinner from './loading-spinner'
 
 const navItems = [
 	{ text: 'Personal Information', href: '/me' },
@@ -20,13 +21,7 @@ const UserLayout: FC = ({ children }) => {
 	})
 
 	if (status == 'loading') {
-		return (
-			<div className="flex justify-center items-center absolute h-screen w-screen z-10 top-0 left-0 bg-white">
-				<div className="spinner-border animate-spin inline-block w-20 h-20 border-8 rounded-full text-blue-700" role="status">
-					<span className="visually-hidden">Loading...</span>
-				</div>
-			</div>
-		)
+		return <LoadingSpinner className="absolute h-screen w-screen top-0 left-0 bg-white" />
 	}
 
 	return (
