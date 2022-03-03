@@ -101,7 +101,7 @@ export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
 
 	const committees = await Committee.find({}, '-_id -__v')
-		.populate({ path: 'officers', populate: { path: 'user', select: 'firstname lastname' } }).lean().exec()
+		.populate({ path: 'officers', populate: { path: 'user', select: 'firstName lastName' } }).lean().exec()
 
 	// parse names
 	committees.forEach(c => c.officers.forEach(o => {
