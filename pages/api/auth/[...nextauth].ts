@@ -12,7 +12,7 @@ export default NextAuth({
 	],
 	callbacks: {
 		async signIn({ account, profile }) {
-			if (account.provider === 'google' && profile.hd == 'dlsu.edu.ph') {
+			if (account.provider === 'google' && (profile.hd == 'dlsu.edu.ph' || profile.email == 'dlsu.pts.web.service@gmail.com')) {
 				let temp
 
 				try {
