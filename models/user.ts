@@ -1,4 +1,5 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
+import { role } from '../types/role'
 
 export interface IUserInfo {
 	firstName: string
@@ -24,7 +25,7 @@ export interface ITutorInfo {
 
 export interface IUser extends IUserInfo, ITutorInfo {
 	_id: Schema.Types.ObjectId
-	userType: 'ADMIN' | 'TUTOR'
+	userType: role
 	reset: boolean
 }
 

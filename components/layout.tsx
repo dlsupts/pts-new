@@ -1,11 +1,17 @@
+import { useSession } from 'next-auth/react'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { FC } from 'react'
+import AdminHeader from './admin-header'
 import Header from './header'
 import ScrollToTop from './scroll-to-top'
 
 export const siteTitle = 'Peer Tutors Society'
 
 const Layout: FC = ({ children }) => {
+	const { data: session } = useSession()
+	const { pathname } = useRouter()
+
 	return (
 		<>
 			<Head>
@@ -25,7 +31,7 @@ const Layout: FC = ({ children }) => {
 				<meta name="og:title" content={siteTitle} />
 				<meta name="twitter:card" content="summary_large_image" />
 			</Head>
-			<Header />
+			{session?.user.type === 'ADMIN' && pathname.startsWith('/admin') ? <AdminHeader /> : <Header />}
 			<main className="main-height">
 				{children}
 			</main>
