@@ -7,6 +7,7 @@ import { Disclosure, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import cn from 'classnames'
 import { useSession, signIn, signOut } from 'next-auth/react'
+import { matchPath } from '../lib/utils'
 
 interface NavItemProp {
 	text: string
@@ -26,10 +27,11 @@ const navItems: NavItemProp[] = [
 
 const MobNavItem: FC<MobNavItemProp> = ({ text, path, onClick }) => {
 	const { pathname } = useRouter()
+	const isMatch = matchPath(pathname, path)
 
 	const className = cn({
-		'border-blue-500 text-gray-900 bg-blue-50 text-blue-600': pathname == path,
-		'border-transparent text-gray-500 hover:text-gray-900': pathname != path
+		'border-blue-500 text-gray-900 bg-blue-50 text-blue-600': isMatch,
+		'border-transparent text-gray-500 hover:text-gray-900': !isMatch,
 	}, 'border-l-4 block px-3 py-2 text-base font-medium cursor-pointer')
 
 	return (
@@ -41,10 +43,11 @@ const MobNavItem: FC<MobNavItemProp> = ({ text, path, onClick }) => {
 
 const NavItem: FC<NavItemProp> = ({ text, path }) => {
 	const { pathname } = useRouter()
+	const isMatch = matchPath(pathname, path)
 
 	const className = cn({
-		'border-blue-500 text-gray-900 ': pathname == path,
-		'border-transparent text-gray-500 hover:text-gray-900': pathname != path
+		'border-blue-500 text-gray-900 ': isMatch,
+		'border-transparent text-gray-500 hover:text-gray-900': !isMatch,
 	}, 'h-full border-b-2 inline-flex justify-center items-center cursor-pointer')
 
 	return (

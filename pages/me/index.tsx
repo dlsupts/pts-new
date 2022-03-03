@@ -1,14 +1,16 @@
-import { NextPage } from 'next'
+import { GetStaticProps, NextPage } from 'next'
 import { FormEventHandler } from 'react'
 import { toast } from 'react-toastify'
 import LoadingSpinner from '../../components/loading-spinner'
 import UserLayout from '../../components/user-layout'
 import app from '../../lib/axios-config'
+import dbConnect from '../../lib/db'
 import { toastErrorConfig, toastSuccessConfig } from '../../lib/toast-defaults'
 import useUser from '../../lib/useUser'
+import Library, { ILib } from '../../models/library'
 import { IUserInfo, IUser } from '../../models/user'
 
-const TutorPage: NextPage = () => {
+const TutorPage: NextPage<{ courses: ILib }> = ({ courses }) => {
 	const { user, isLoading, isError, mutate } = useUser()
 
 	const handleSubmit: FormEventHandler = async e => {
@@ -25,9 +27,7 @@ const TutorPage: NextPage = () => {
 
 	if (isLoading) {
 		return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
-	}
-
-	if (isError) {
+	} else if (isError) {
 		return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
 	}
 
@@ -66,6 +66,16 @@ const TutorPage: NextPage = () => {
 							</div>
 
 							<div className="col-span-6 sm:col-span-2">
+								<label htmlFor="course" className="block text-sm font-medium text-gray-700">Degree Program</label>
+								<select name="course" id="course" autoComplete="course" defaultValue={user?.course}
+									className="form-select mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+									{courses.content.map(c => {
+										return <option key={c}>{c}</option>
+									})}
+								</select>
+							</div>
+
+							<div className="col-span-6 sm:col-span-2">
 								<label htmlFor="terms" className="block text-sm font-medium text-gray-700">Remaining Terms</label>
 								<input type="number" name="terms" id="terms" defaultValue={user?.terms}
 									className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -95,6 +105,24 @@ const TutorPage: NextPage = () => {
 			</form>
 		</UserLayout>
 	)
+}
+
+export const getStaticProps: GetStaticProps = async () => {
+	await dbConnect()
+
+	const courses = await Library.findOne({ title: 'Courses' }, '-_id -__v').lean().exec()
+
+	if (courses?.content) {
+		for (let i = 0; i < courses.content.length; i++) {
+			courses.content[i] = courses.content[i].split(':')[0]
+		}
+	}
+
+	return {
+		props: {
+			courses
+		}
+	}
 }
 
 export default TutorPage
