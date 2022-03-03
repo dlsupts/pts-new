@@ -61,7 +61,7 @@ const Header: FC = () => {
 
 	function handleAuthClick() {
 		if (session) {
-			signOut()
+			signOut({ callbackUrl: '/' })
 		} else {
 			signIn('google', { callbackUrl: '/me' })
 		}
