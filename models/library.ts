@@ -1,12 +1,12 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
 
 export interface ILib {
-	title: string
+	_id: string
 	content: string[]
 }
 
 const libSchema = new Schema<ILib>({
-	title: { type: String, required: true },
+	_id: { type: String, required: true },
 	content: { type: [String], required: true, default: [] },
 })
 

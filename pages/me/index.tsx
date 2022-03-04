@@ -110,7 +110,7 @@ const TutorPage: NextPage<{ courses: ILib }> = ({ courses }) => {
 export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
 
-	const courses = await Library.findOne({ title: 'Courses' }, '-_id -__v').lean().exec()
+	const courses = await Library.findById('Courses', '-__v').lean().exec()
 
 	if (courses?.content) {
 		for (let i = 0; i < courses.content.length; i++) {

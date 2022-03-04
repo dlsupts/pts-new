@@ -115,8 +115,8 @@ export const getStaticProps: GetStaticProps = async () => {
 		}
 	}))
 
-	const sessionPhotos = await Library.findOne({ title: 'Tutoring Sessions Photos' }, '-_id -__v').lean().exec()
-	const groupPhotos = await Library.findOne({ title: 'Group Studies Photos' }, '-_id -__v').lean().exec()
+	const sessionPhotos = await Library.findById('Tutoring Sessions Photos', '-__v').lean().exec()
+	const groupPhotos = await Library.findById('Group Studies Photos', '-__v').lean().exec()
 
 	return {
 		props: {
