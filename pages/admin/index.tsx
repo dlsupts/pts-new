@@ -14,7 +14,7 @@ const AdminPage: NextPage = () => {
 		}
 	})
 
-	if (status === 'authenticated' && data.user.type !== 'ADMIN') {
+	if (status === 'authenticated' && data?.user?.type !== 'ADMIN') {
 		router.replace('/?error=Unauthorized user!')
 	} else if (status === 'loading') {
 		return <LoadingSpinner className="absolute h-screen w-screen top-0 left-0 bg-white" />

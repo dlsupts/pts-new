@@ -1,5 +1,5 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
-import { role } from '../types/role'
+import { role } from '../types'
 
 export interface IUserInfo {
 	firstName: string

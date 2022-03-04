@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import { Disclosure, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import cn from 'classnames'
-import { useSession, signOut } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
 import { matchPath } from '../lib/utils'
 
 interface NavItemProp {
