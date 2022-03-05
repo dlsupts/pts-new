@@ -1,5 +1,5 @@
 import { GetStaticProps, NextPage } from 'next'
-import { FormEventHandler } from 'react'
+import { FormEventHandler, useRef } from 'react'
 import { toast } from 'react-toastify'
 import LoadingSpinner from '../../components/loading-spinner'
 import UserLayout from '../../components/user-layout'
@@ -9,6 +9,7 @@ import { toastErrorConfig, toastSuccessConfig } from '../../lib/toast-defaults'
 import useUser from '../../lib/useUser'
 import Library, { ILib } from '../../models/library'
 import { ITutorInfo, IUser } from '../../models/user'
+import Multiselect from 'multiselect-react-dropdown'
 
 interface TutorDetailsProps {
 	types: ILib
@@ -16,8 +17,25 @@ interface TutorDetailsProps {
 	subjects: ILib
 }
 
+function blockEnterKeyPress(e: KeyboardEvent) {
+	if (e.key == 'Enter') e.preventDefault()
+}
+
 const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }) => {
 	const { user, isLoading, isError, mutate } = useUser()
+	const serviceSelection= useRef<Multiselect>(null)
+	const typeSelection = useRef<Multiselect>(null)
+
+	// no other options can accompany 'None'
+	function handleServiceSelect(selectedList: string[], selectedItem: string) {
+		if (selectedItem == 'None') {
+			selectedList.length = 0
+			selectedList.push('None')
+		} else {
+			const idx = selectedList.findIndex(i => i == 'None')
+			if (idx != -1) selectedList.splice(idx, 1)
+		}
+	}
 
 	const handleSubmit: FormEventHandler = async e => {
 		e.preventDefault()
@@ -51,8 +69,33 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 							</div>
 							<div className="col-span-6 sm:col-span-4">
 								<label htmlFor="tutoring-service" className="block text-sm font-medium text-gray-700">Tutoring Services</label>
-								<input type="text" name="tutoringService" id="tutoring-service"
-									className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+								<Multiselect
+									ref={serviceSelection}
+									isObject={false}
+									selectedValues={user?.tutoringService}
+									options={services.content.map(t => t.split(': ')[1])}
+									closeOnSelect={false}
+									id="tutoring-service"
+									avoidHighlightFirstOption={true}
+									placeholder="Add"
+									closeIcon="cancel"
+									onKeyPressFn={blockEnterKeyPress}
+									onSelect={handleServiceSelect}
+								/>
+							</div>
+							<div className="col-span-full">
+								<label htmlFor="tutorial-types" className="block text-sm font-medium text-gray-700">Tutorial Types</label>
+								<Multiselect
+									isObject={false}
+									selectedValues={user?.tutorialType}
+									options={types.content.map(t => t.split(': ')[1])}
+									closeOnSelect={false}
+									id="tutorial-types"
+									avoidHighlightFirstOption={true}
+									placeholder="Add"
+									closeIcon="cancel"
+									onKeyPressFn={blockEnterKeyPress}
+									ref={typeSelection}
 								/>
 							</div>
 						</div>

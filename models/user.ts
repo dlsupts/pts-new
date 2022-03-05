@@ -1,5 +1,5 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
-import { role } from '../types'
+import { role, service } from '../types'
 
 export interface IUserInfo {
 	firstName: string
@@ -15,7 +15,7 @@ export interface IUserInfo {
 
 export interface ITutorInfo {
 	membership: boolean
-	tutoringService: ('WHOLE TERM' | 'ONE SESSION')[]
+	tutoringService: service
 	tutorialType: string[]
 	tuteeCount: number
 	maxTuteeCount: number

@@ -22,13 +22,30 @@ html { font-family: 'Inter', sans-serif; scroll-behavior: smooth }
 }
 
 .btn {
-	@apply cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2
+	@apply cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2;
 }
 
 .btn.blue {
-	@apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white focus:ring-blue-500
+	@apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white focus:ring-blue-500;
 }
 
 .btn.gray {
-	@apply bg-gray-400 hover:bg-gray-500 active:bg-gray-600 text-white focus:ring-gray-300
+	@apply bg-gray-400 hover:bg-gray-500 active:bg-gray-600 text-white focus:ring-gray-300;
+}
+
+/* Multi-select styles */
+.search-wrapper.searchWrapper {
+	@apply rounded-md py-0 mt-1;
+}
+
+.search-wrapper .chip {
+	@apply my-0.5 py-1 rounded text-sm bg-blue-500;
+}
+
+.search-wrapper .searchBox {
+	@apply focus:ring-0 mt-0 text-sm pl-1 w-20;
+}
+
+.optionListContainer .optionContainer * {
+	@apply text-sm py-1 hover:bg-blue-500 hover:text-white;
 }
