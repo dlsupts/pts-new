@@ -10,6 +10,7 @@ import useUser from '../../lib/useUser'
 import Library, { ILib } from '../../models/library'
 import { ITutorInfo, IUser } from '../../models/user'
 import Multiselect from 'multiselect-react-dropdown'
+import { days, times } from '../../lib/times'
 
 interface TutorDetailsProps {
 	types: ILib
@@ -23,7 +24,7 @@ function blockEnterKeyPress(e: KeyboardEvent) {
 
 const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }) => {
 	const { user, isLoading, isError, mutate } = useUser()
-	const serviceSelection= useRef<Multiselect>(null)
+	const serviceSelection = useRef<Multiselect>(null)
 	const typeSelection = useRef<Multiselect>(null)
 
 	// no other options can accompany 'None'
@@ -61,14 +62,18 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 				<div className="shadow overflow-hidden sm:rounded-md">
 					<div className="px-4 py-5 bg-white sm:p-6">
 						<div className="grid grid-cols-6 gap-6">
+							<div className="col-span-full ">
+								<p className="text-lg font-bold">Details</p>
+								<p className="text-gray-500 text-sm">Fill in your preferences regarding your sessions</p>
+							</div>
 							<div className="col-span-6 sm:col-span-2">
 								<label htmlFor="max-tutee" className="block text-sm font-medium text-gray-700">Max Tutee Count</label>
-								<input type="number" name="maxTuteeCount" id="max-tutee" defaultValue={user?.maxTuteeCount}
+								<input type="number" min={0} name="maxTuteeCount" id="max-tutee" defaultValue={user?.maxTuteeCount}
 									className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
 								/>
 							</div>
 							<div className="col-span-6 sm:col-span-4">
-								<label htmlFor="tutoring-service" className="block text-sm font-medium text-gray-700">Tutoring Services</label>
+								<label htmlFor="tutoring-service_input" className="block text-sm font-medium text-gray-700">Tutoring Services</label>
 								<Multiselect
 									ref={serviceSelection}
 									isObject={false}
@@ -84,7 +89,7 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 								/>
 							</div>
 							<div className="col-span-full">
-								<label htmlFor="tutorial-types" className="block text-sm font-medium text-gray-700">Tutorial Types</label>
+								<label htmlFor="tutorial-types_input" className="block text-sm font-medium text-gray-700">Tutorial Types</label>
 								<Multiselect
 									isObject={false}
 									selectedValues={user?.tutorialType}
@@ -98,6 +103,28 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 									ref={typeSelection}
 								/>
 							</div>
+							<div className="col-span-full mt-8">
+								<p className="text-lg font-bold">Availability</p>
+								<p className="text-gray-500 text-sm">Select the timeslots where you are available</p>
+							</div>
+							{days.map(day => (
+								<div className="col-span-6" key={day.key}>
+									<label htmlFor={day.key + '_input'} className="block text-sm font-medium text-gray-700">{day.text}</label>
+									<Multiselect
+										isObject={false}
+										selectedValues={['07:30 AM - 09:00 AM']}
+										options={times}
+										closeOnSelect={false}
+										id={day.key}
+										avoidHighlightFirstOption={true}
+										placeholder="Add"
+										closeIcon="cancel"
+										onKeyPressFn={blockEnterKeyPress}
+										ref={typeSelection}
+									/>
+								</div>
+							))
+							}
 						</div>
 					</div>
 					<div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
