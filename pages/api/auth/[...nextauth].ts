@@ -39,8 +39,9 @@ export default NextAuth({
 			if (account && profile) {
 				try {
 					await dbConnect()
-					const temp = await User.findOne({ email: profile.email }, 'userType').lean().exec()
+					const temp = await User.findOne({ email: profile.email }, '-_id userType schedule').lean().exec()
 					token.type = temp?.userType
+					token.schedule = temp?.schedule
 				} catch (err) {
 					console.log(err)
 					throw new Error("A server side-error has occured!")
@@ -51,6 +52,7 @@ export default NextAuth({
 		},
 		async session({ token, session }) {
 			session.user.type = token.type
+			session.user.schedule = token.schedule
 			return session
 		}
 	},

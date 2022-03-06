@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
-import dbConnect from '../../lib/db'
-import User, { IUser } from '../../models/user'
+import dbConnect from '../../../lib/db'
+import User, { IUser } from '../../../models/user'
 
 const meHandler = async (req: NextApiRequest, res: NextApiResponse<IUser>) => {
 	const session = await getSession({ req })
