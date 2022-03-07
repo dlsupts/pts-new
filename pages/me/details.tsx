@@ -10,7 +10,9 @@ import useUser from '../../lib/useUser'
 import Library, { ILib } from '../../models/library'
 import { ITutorInfo, IUser } from '../../models/user'
 import Multiselect from 'multiselect-react-dropdown'
-import { days, times } from '../../lib/times'
+import { days, times, timeComparator, timeslot } from '../../lib/times'
+import useSWR from 'swr'
+import { ISchedule } from '../../models/schedule'
 
 interface TutorDetailsProps {
 	types: ILib
@@ -22,21 +24,36 @@ function blockEnterKeyPress(e: KeyboardEvent) {
 	if (e.key == 'Enter') e.preventDefault()
 }
 
+function useSchedule() {
+	const { data, error } = useSWR('/api/me/schedule', url => app.get<ISchedule>(url))
+	return {
+		schedule: data?.data,
+		isLoading: !data && !error,
+		isError: !!error
+	}
+}
+
+function handleScheduleSelect(selectedList: timeslot[]) {
+	selectedList.sort(timeComparator)
+	console.log(selectedList)
+}
+
+// no other options can accompany 'None'
+function handleServiceSelect(selectedList: string[], selectedItem: string) {
+	if (selectedItem == 'None') {
+		selectedList.length = 0
+		selectedList.push('None')
+	} else {
+		const idx = selectedList.findIndex(i => i == 'None')
+		if (idx != -1) selectedList.splice(idx, 1)
+	}
+}
+
 const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }) => {
 	const { user, isLoading, isError, mutate } = useUser()
 	const serviceSelection = useRef<Multiselect>(null)
 	const typeSelection = useRef<Multiselect>(null)
-
-	// no other options can accompany 'None'
-	function handleServiceSelect(selectedList: string[], selectedItem: string) {
-		if (selectedItem == 'None') {
-			selectedList.length = 0
-			selectedList.push('None')
-		} else {
-			const idx = selectedList.findIndex(i => i == 'None')
-			if (idx != -1) selectedList.splice(idx, 1)
-		}
-	}
+	const { schedule, isLoading: isScheduleLoading } = useSchedule()
 
 	const handleSubmit: FormEventHandler = async e => {
 		e.preventDefault()
@@ -104,6 +121,13 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 								/>
 							</div>
 							<div className="col-span-full mt-8">
+								<p className="text-lg font-bold">Subject List</p>
+								<p className="text-gray-500 text-sm">Select the subjects that you want to teach</p>
+							</div>
+							<div className="col-span-full mt-8">
+
+							</div>
+							<div className="col-span-full mt-8">
 								<p className="text-lg font-bold">Availability</p>
 								<p className="text-gray-500 text-sm">Select the timeslots where you are available</p>
 							</div>
@@ -112,13 +136,14 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 									<label htmlFor={day.key + '_input'} className="block text-sm font-medium text-gray-700">{day.text}</label>
 									<Multiselect
 										isObject={false}
-										selectedValues={['07:30 AM - 09:00 AM']}
+										selectedValues={schedule?.[day.key]}
 										options={times}
 										closeOnSelect={false}
 										id={day.key}
 										avoidHighlightFirstOption={true}
 										placeholder="Add"
 										closeIcon="cancel"
+										onSelect={handleScheduleSelect}
 										onKeyPressFn={blockEnterKeyPress}
 										ref={typeSelection}
 									/>
