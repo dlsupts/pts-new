@@ -27,8 +27,4 @@ const ordering =
 	times.map((s: timeslot, i) => ({ [s]: i }))
 		.reduce((prev, curr) => Object.assign(prev, curr), {}) as order_mapping
 
-export function timeComparator(a: timeslot, b: timeslot) {
-	console.log('a', a, ordering[a])
-	console.log('b', b, ordering[b])
-	return ordering[a] - ordering[b]
-}
+export const timeComparator = (a: timeslot, b: timeslot) => ordering[a] - ordering[b]
