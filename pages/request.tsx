@@ -27,7 +27,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs }) => {
 					</div>
 					<p className="font-bold text-2xl text-center mb-2">Frequently Asked Questions</p>
 					<select onChange={e => setHelp(e.target.value)}
-						className="w-full max-w-prose border px-3 py-1.5 bg-clip-padding rounded transition ease-in-out cursor-pointer">
+						className="w-full max-w-prose border px-3 py-1.5 bg-clip-padding rounded transition ease-in-out cursor-pointer text-sm sm:text-base">
 						{faqs.map(f => <option key={f._id as string} value={f.answer} className="py-2">{f.question}</option>)}
 					</select>
 					<p className="max-w-prose mt-6 font-black italic text-center">{help}</p>

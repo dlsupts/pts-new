@@ -28,17 +28,19 @@ function blockEnterKeyPress(e: KeyboardEvent) {
 }
 
 function useSchedule() {
-	const { data, error } = useSWRImmutable('/api/me/schedule', url => app.get<ISchedule>(url))
+	const { data, error, mutate } = useSWRImmutable('/api/me/schedule', url => app.get<ISchedule>(url))
 	return {
-		schedule: data?.data,
-		isLoading: !data && !error,
-		isError: !!error
+		sched: data?.data,
+		isSchedLoading: !data && !error,
+		isSchedError: !!error,
+		schedMutate: mutate
 	}
 }
 
 // sort schedule timeslots every time an option is selected
-function handleScheduleSelect(selectedList: timeslot[]) {
+function handleScheduleSelect(selectedList: timeslot[], key: typeof days[number]['key'], schedule?: ISchedule) {
 	selectedList.sort(timeComparator)
+	if (schedule) schedule[key] = selectedList // update schedule
 }
 
 // no other options can accompany 'None'.
@@ -57,10 +59,9 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 	const { user, isLoading, isError, mutate } = useUser()
 	const serviceSelection = useRef<Multiselect>(null)
 	const typeSelection = useRef<Multiselect>(null)
-	const { schedule, isLoading: isScheduleLoading, isError: isScheduleError } = useSchedule()
-	const [isOpen, setIsOpen] = useState(false)
+	const { sched, isSchedLoading, isSchedError, schedMutate } = useSchedule()
+	const [isOpen, setIsOpen] = useState(false)	// for add subject modal
 	const [selectedSubjects, setSelectedSubjects] = useState<string[][]>()
-
 	const newSubject = useRef<HTMLSelectElement>(null)
 	const newTopics = useRef<HTMLTextAreaElement>(null)
 
@@ -90,18 +91,22 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 	const handleSubmit: FormEventHandler = async e => {
 		e.preventDefault()
 		const values = Object.fromEntries(new FormData(e.target as HTMLFormElement)) as unknown as ITutorInfo
+		if (selectedSubjects) values.topics = selectedSubjects
+		if (serviceSelection.current) values.tutoringService = serviceSelection.current.getSelectedItems()
+		if (typeSelection.current) values.tutorialType = typeSelection.current.getSelectedItems()
 
 		try {
-			await mutate(app.patch<IUser>('/api/me', values))
+			const tasks = [mutate(app.patch<IUser>('/api/me', values)), schedMutate(app.post<ISchedule>('/api/me/schedule', sched))]
+			await Promise.all(tasks)
 			toast.success('Profile Updated!', toastSuccessConfig)
 		} catch {
 			toast.error('A server error has occured. Please try again.', toastErrorConfig)
 		}
 	}
 
-	if (isLoading || isScheduleLoading) {
+	if (isLoading || isSchedLoading) {
 		return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
-	} else if (isError || isScheduleError) {
+	} else if (isError || isSchedError) {
 		return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
 	}
 
@@ -132,9 +137,9 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 			</Modal>
 			<UserLayout>
 				<form onSubmit={handleSubmit}>
-					<div className="shadow overflow-hidden sm:rounded-md">
+					<div className="shadow sm:rounded-md overflow-visible">
 						<div className="px-4 py-5 bg-white sm:p-6">
-							<div className="grid grid-cols-6 gap-6">
+							<div className="grid grid-cols-6 gap-6 ">
 								<div className="col-span-full ">
 									<p className="text-lg font-bold">Details</p>
 									<p className="text-gray-500 text-sm">Fill in your preferences regarding your sessions</p>
@@ -181,13 +186,21 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 										<p className="text-lg font-bold">Subject List</p>
 										<p className="text-gray-500 text-sm">Select the subjects that you want to teach</p>
 									</div>
-									<button className="blue btn px-3 py-2 rounded-md" onClick={handleAddClick}>Add</button>
+									<button title="Add subject" className="btn gray px-3 py-2 rounded-full" onClick={handleAddClick}>
+										<i className="fa-solid fa-plus fa-lg text-white"></i>
+									</button>
 								</div>
 								<div className="col-span-full">
 									{selectedSubjects?.map(t => (
-										<div className="py-2 border-b" key={t[0]}>
-											<p className="font-medium">{t[0]}</p>
-											<p className="text-gray-500 text-sm">Specific topics: {t[1] || 'None'}</p>
+										<div className="py-2 border-b flex justify-between items-stretch" key={t[0]}>
+											<div>
+												<p className="font-medium">{t[0]}</p>
+												<p className="text-gray-500 text-sm">Specific topics: {t[1] || 'None'}</p>
+											</div>
+											<div className="btn mr-8 grid place-items-center text-gray-500 hover:text-gray-600 w-8"
+												onClick={() => setSelectedSubjects(selectedSubjects.filter(s => s[0] !== t[0]))}>
+												<i className="fa-solid fa-trash fa-lg"></i>
+											</div>
 										</div>
 									))}
 								</div>
@@ -200,23 +213,22 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 										<label htmlFor={day.key + '_input'} className="block text-sm font-medium text-gray-700">{day.text}</label>
 										<Multiselect
 											isObject={false}
-											selectedValues={schedule?.[day.key]}
+											selectedValues={sched?.[day.key]}
 											options={times}
 											closeOnSelect={false}
 											id={day.key}
 											avoidHighlightFirstOption={true}
 											placeholder="Add"
 											closeIcon="cancel"
-											onSelect={handleScheduleSelect}
+											onSelect={s => handleScheduleSelect(s, day.key, sched)}
 											onKeyPressFn={blockEnterKeyPress}
-											ref={typeSelection}
 										/>
 									</div>
 								))
 								}
 							</div>
 						</div>
-						<div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+						<div className="px-4 py-3 bg-gray-50 text-right sm:px-6 mt-12">
 							<input type="reset" className="btn gray py-2 px-4 rounded-md mr-4" />
 							<input type="submit" value="Save" className="btn blue py-2 px-4 rounded-md" />
 						</div>
