@@ -33,6 +33,10 @@ html { font-family: 'Inter', sans-serif; scroll-behavior: smooth }
 	@apply bg-gray-400 hover:bg-gray-500 active:bg-gray-600 text-white focus:ring-gray-300;
 }
 
+.btn.white {
+	@apply border-gray-300 border bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-300
+}
+
 /* Multi-select styles */
 .search-wrapper.searchWrapper {
 	@apply rounded-md py-0 mt-1;
