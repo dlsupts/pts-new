@@ -7,10 +7,10 @@ import app from '../../lib/axios-config'
 import dbConnect from '../../lib/db'
 import { toastErrorConfig, toastSuccessConfig } from '../../lib/toast-defaults'
 import useUser from '../../lib/useUser'
-import Library, { ILib } from '../../models/library'
+import Library from '../../models/library'
 import { IUserInfo, IUser } from '../../models/user'
 
-const TutorPage: NextPage<{ courses: ILib }> = ({ courses }) => {
+const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 	const { user, isLoading, isError, mutate } = useUser()
 
 	const handleSubmit: FormEventHandler = async e => {
@@ -69,9 +69,7 @@ const TutorPage: NextPage<{ courses: ILib }> = ({ courses }) => {
 								<label htmlFor="course" className="block text-sm font-medium text-gray-700">Degree Program</label>
 								<select name="course" id="course" autoComplete="course" defaultValue={user?.course}
 									className="form-select mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-									{courses.content.map(c => {
-										return <option key={c}>{c}</option>
-									})}
+									{courses.map(c => <option key={c}>{c}</option>)}
 								</select>
 							</div>
 
@@ -109,14 +107,7 @@ const TutorPage: NextPage<{ courses: ILib }> = ({ courses }) => {
 
 export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
-
-	const courses = await Library.findById('Courses', '-__v').lean().exec()
-
-	if (courses?.content) {
-		for (let i = 0; i < courses.content.length; i++) {
-			courses.content[i] = courses.content[i].split(':')[0]
-		}
-	}
+	const courses = await Library.getDegreeCodes()
 
 	return {
 		props: {

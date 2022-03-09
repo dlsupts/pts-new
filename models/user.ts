@@ -29,7 +29,7 @@ export interface IUser extends IUserInfo, ITutorInfo {
 	reset: boolean
 }
 
-const userSchema = new Schema({
+const userSchema = new Schema<IUser>({
 	firstName: { type: String, default: '' },
 	middleName: { type: String, default: '' },
 	lastName: { type: String, default: '' },
