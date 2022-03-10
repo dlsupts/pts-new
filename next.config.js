@@ -1,11 +1,13 @@
 /** @type {import('next').NextConfig} */
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const withAnalyzer = require('@next/bundle-analyzer')({ enabled: process.env.ANALYZE === 'true' })
+
 const nextConfig = {
 	reactStrictMode: true,
 	images: {
 		domains: ['drive.google.com'],
 	},
 	compress: true,
-	// swcMinify: true,
 }
 
-module.exports = nextConfig
+module.exports = withAnalyzer(nextConfig)
