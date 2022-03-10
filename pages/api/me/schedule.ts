@@ -5,7 +5,7 @@ import Schedule, { ISchedule } from '../../../models/schedule'
 
 const scheduleHandler = async (req: NextApiRequest, res: NextApiResponse<ISchedule>) => {
 	const session = await getSession({ req })
-	
+
 	// no session found
 	if (session?.user?.schedule == null) {
 		res.status(401)
@@ -31,6 +31,10 @@ const scheduleHandler = async (req: NextApiRequest, res: NextApiResponse<ISchedu
 				res.send(sched)
 				break
 			}
+
+			default:
+				res.setHeader('Allow', ['GET', 'POST'])
+				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 
 	} catch (err) {

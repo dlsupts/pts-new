@@ -31,9 +31,11 @@ const meHandler = async (req: NextApiRequest, res: NextApiResponse<IUser>) => {
 				res.send(user)
 				break
 			}
+
+			default:
+				res.setHeader('Allow', ['GET', 'PATH'])
+				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
-
-
 	} catch (err) {
 		console.log(err)
 		res.status(500)
