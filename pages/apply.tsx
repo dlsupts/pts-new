@@ -31,7 +31,7 @@ const schema = yup.object({
 
 const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	const [help, setHelp] = useState(faqs[0].answer)
-	const [showForm, setShowForm] = useState(true)
+	const [showForm, setShowForm] = useState(false)
 	const { register, handleSubmit, formState: { errors }, reset } = useForm<IUserInfo>({
 		reValidateMode: 'onBlur', 
 		resolver: yupResolver(schema) 
@@ -52,7 +52,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 		<div className="main-height flex flex-col justify-center px-4 mt-10 md:mt-0">
 			<div className="grid place-items-center lg:grid-cols-2 grid-cols-auto mx-auto h-full container min-h-[10rem] container">
 				{showForm ?
-					<form className="grid grid-cols-4 gap-4 w-full px-10 py-8 mb-6 sm:mb-0 border shadow-sm rounded-md" onSubmit={handleSubmit(onSubmit)}>
+					<form className="grid grid-cols-4 gap-4 w-full px-10 py-8 my-0 sm:my-8 border shadow-sm rounded-md" onSubmit={handleSubmit(onSubmit)}>
 						<h1 className="font-bold text-2xl col-span-full">Application Form</h1>
 						<div className="col-span-full sm:col-span-2">
 							<label htmlFor="id-number" className="block text-sm font-medium text-gray-700">ID number<span className='text-red-500'>*</span></label>
