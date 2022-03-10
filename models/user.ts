@@ -5,7 +5,7 @@ export interface IUserInfo {
 	firstName: string
 	middleName: string
 	lastName: string
-	idNumber: string
+	idNumber: number
 	email: string
 	course: string
 	contact: string
@@ -33,7 +33,7 @@ const userSchema = new Schema<IUser>({
 	firstName: { type: String, default: '' },
 	middleName: { type: String, default: '' },
 	lastName: { type: String, default: '' },
-	idNumber: { type: String, default: '' },
+	idNumber: { type: Number, required: true },
 	email: { type: String, required: true },
 	course: { type: String, default: '' },
 	contact: { type: String, default: '' },
