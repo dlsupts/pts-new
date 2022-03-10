@@ -4,10 +4,9 @@ import dbConnect from '../lib/db'
 import FAQ, { IFAQ } from '../models/faq'
 import Library from '../models/library'
 import cn from 'classnames'
-import { IUserInfo } from '../models/user'
+import { IUserInfo, userInfoSchema } from '../models/user'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
 import app from '../lib/axios-config'
 import { toast } from 'react-toastify'
 import { toastSuccessConfig, toastErrorConfig } from '../lib/toast-defaults'
@@ -17,24 +16,12 @@ interface RequestProps {
 	courses: string[]
 }
 
-const schema = yup.object({
-	idNumber: yup.number().required().min(11500000, 'Invalid ID number.').integer(),
-	email: yup.string().trim().email().matches(/.*(@dlsu.edu.ph)$/, 'Should end with "@dlsu.edu.ph".').required('Email is required.'),
-	firstName: yup.string().trim().required('First name is required.'),
-	middleName: yup.string().trim(),
-	lastName: yup.string().trim().required('Last name is required.'),
-	course: yup.string().required('Course is required.'),
-	terms: yup.number().positive('Input should be positive.').required('Remaining terms in required.').integer(),
-	contact: yup.string().trim().matches(/\d*/, 'Only numerical input is allowed.').required('Contact number is required.'),
-	url: yup.string().trim().url('Invalid URL.').required('Facebook URL is required.'),
-}).required()
-
 const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	const [help, setHelp] = useState(faqs[0].answer)
 	const [showForm, setShowForm] = useState(false)
 	const { register, handleSubmit, formState: { errors }, reset } = useForm<IUserInfo>({
 		reValidateMode: 'onBlur', 
-		resolver: yupResolver(schema) 
+		resolver: yupResolver(userInfoSchema) 
 	})
 
 	const onSubmit = async (values: IUserInfo) => {
@@ -66,6 +53,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 							<input type="email" {...register('email')} id="email" autoComplete="email" required pattern='.*(@dlsu.edu.ph)$'
 								className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
 							/>
+							<p className="form-err-msg text-sm">{errors.email?.message}</p>
 						</div>
 						<div className="col-span-full">
 							<label htmlFor="first-name" className="block text-sm font-medium text-gray-700">First name<span className='text-red-500'>*</span></label>
@@ -101,7 +89,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 							<input type="number" {...register('terms')} id="terms" min={0} required
 								className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
 							/>
-							<p className="form-err-msg text-sm">{(errors.terms?.type === 'typeError' && 'ID number is required.') || errors.terms?.message}</p>
+							<p className="form-err-msg text-sm">{(errors.terms?.type === 'typeError' && 'Remaining terms is required.') || errors.terms?.message}</p>
 						</div>
 						<div className="col-span-full sm:col-span-2">
 							<label htmlFor="contact" className="block text-sm font-medium text-gray-700">Contact Number<span className='text-red-500'>*</span></label>

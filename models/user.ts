@@ -1,17 +1,21 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
 import { role, service } from '../types'
+import * as yup from 'yup'
 
-export interface IUserInfo {
-	firstName: string
-	middleName: string
-	lastName: string
-	idNumber: number
-	email: string
-	course: string
-	contact: string
-	url: string
-	terms: number
-}
+export const userInfoSchema = yup.object({
+	idNumber: yup.number().required().min(11500000, 'Invalid ID number.').integer(),
+	email: yup.string().trim().email().matches(/.*(@dlsu.edu.ph)$/, 'Should end with "@dlsu.edu.ph".').required('Email is required.'),
+	firstName: yup.string().trim().required('First name is required.'),
+	middleName: yup.string().trim(),
+	lastName: yup.string().trim().required('Last name is required.'),
+	course: yup.string().required('Course is required.'),
+	terms: yup.number().positive('Input should be positive.').required('Remaining terms in required.').integer(),
+	contact: yup.string().trim().matches(/\d*/, 'Only numerical input is allowed.').required('Contact number is required.'),
+	url: yup.string().trim().url('Invalid URL.').required('Facebook URL is required.'),
+}).required()
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IUserInfo extends yup.InferType<typeof userInfoSchema> {}
 
 export interface ITutorInfo {
 	membership: boolean
@@ -31,7 +35,7 @@ export interface IUser extends IUserInfo, ITutorInfo {
 
 const userSchema = new Schema<IUser>({
 	firstName: { type: String, default: '' },
-	middleName: { type: String, default: '' },
+	middleName: { type: String },
 	lastName: { type: String, default: '' },
 	idNumber: { type: Number, required: true },
 	email: { type: String, required: true },
@@ -53,4 +57,4 @@ const userSchema = new Schema<IUser>({
 	reset: Boolean,
 })
 
-export default models.User as Model<IUser & Document> || model<IUser>('User', userSchema, 'users')
+export default models?.User as Model<IUser & Document> || model<IUser>('User', userSchema, 'users')
