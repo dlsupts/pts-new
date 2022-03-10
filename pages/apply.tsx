@@ -4,76 +4,118 @@ import dbConnect from '../lib/db'
 import FAQ, { IFAQ } from '../models/faq'
 import Library from '../models/library'
 import cn from 'classnames'
+import { IUserInfo } from '../models/user'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
+import app from '../lib/axios-config'
+import { toast } from 'react-toastify'
+import { toastSuccessConfig, toastErrorConfig } from '../lib/toast-defaults'
 
 interface RequestProps {
 	faqs: IFAQ[]
 	courses: string[]
 }
 
+const schema = yup.object({
+	idNumber: yup.number().required().min(11500000, 'Invalid ID number.').integer(),
+	email: yup.string().trim().email().matches(/.*(@dlsu.edu.ph)$/, 'Should end with "@dlsu.edu.ph".').required('Email is required.'),
+	firstName: yup.string().trim().required('First name is required.'),
+	middleName: yup.string().trim(),
+	lastName: yup.string().trim().required('Last name is required.'),
+	course: yup.string().required('Course is required.'),
+	terms: yup.number().positive('Input should be positive.').required('Remaining terms in required.').integer(),
+	contact: yup.string().trim().matches(/\d*/, 'Only numerical input is allowed.').required('Contact number is required.'),
+	url: yup.string().trim().url('Invalid URL.').required('Facebook URL is required.'),
+}).required()
+
 const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	const [help, setHelp] = useState(faqs[0].answer)
-	const [showForm, setShowForm] = useState(false)
+	const [showForm, setShowForm] = useState(true)
+	const { register, handleSubmit, formState: { errors }, reset } = useForm<IUserInfo>({
+		reValidateMode: 'onBlur', 
+		resolver: yupResolver(schema) 
+	})
+
+	const onSubmit = async (values: IUserInfo) => {
+		const { status } = await app.post('/api/applications', values)
+		if (status === 200) {
+			toast.success('Application was sent! Please wait for us to contact you.', toastSuccessConfig)
+			setShowForm(false)
+			reset()
+		} else {
+			toast.error('A server-side error has occured. Please try again.', toastErrorConfig)
+		}
+	}
 
 	return (
 		<div className="main-height flex flex-col justify-center px-4 mt-10 md:mt-0">
 			<div className="grid place-items-center lg:grid-cols-2 grid-cols-auto mx-auto h-full container min-h-[10rem] container">
 				{showForm ?
-					<form className="grid grid-cols-4 gap-4 w-full px-10 py-8 mb-6 sm:mb-0 border shadow-sm rounded-md">
+					<form className="grid grid-cols-4 gap-4 w-full px-10 py-8 mb-6 sm:mb-0 border shadow-sm rounded-md" onSubmit={handleSubmit(onSubmit)}>
 						<h1 className="font-bold text-2xl col-span-full">Application Form</h1>
 						<div className="col-span-full sm:col-span-2">
-							<label htmlFor="id-number" className="block text-sm font-medium text-gray-700">ID number</label>
-							<input type="number" name="idNumber" id="id-number" autoComplete="id-number"
+							<label htmlFor="id-number" className="block text-sm font-medium text-gray-700">ID number<span className='text-red-500'>*</span></label>
+							<input type="number" {...register('idNumber')} id="id-number" autoComplete="id-number" required
 								className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
 							/>
+							<p className="form-err-msg text-sm">{(errors.idNumber?.type === 'typeError' && 'ID number is required.') || errors.idNumber?.message}</p>
 						</div>
 						<div className="col-span-full sm:col-span-2">
-							<label htmlFor="email" className="block text-sm font-medium text-gray-700">DLSU Email</label>
-							<input type="email" name="email" id="email" autoComplete="email" pattern=".*(@dlsu.edu.ph)$" required
+							<label htmlFor="email" className="block text-sm font-medium text-gray-700">DLSU Email<span className='text-red-500'>*</span></label>
+							<input type="email" {...register('email')} id="email" autoComplete="email" required pattern='.*(@dlsu.edu.ph)$'
 								className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
 							/>
 						</div>
 						<div className="col-span-full">
-							<label htmlFor="first-name" className="block text-sm font-medium text-gray-700">First name</label>
-							<input type="text" name="firstName" id="first-name"
+							<label htmlFor="first-name" className="block text-sm font-medium text-gray-700">First name<span className='text-red-500'>*</span></label>
+							<input type="text" {...register('firstName')} id="first-name" required
 								className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
 							/>
+							<p className="form-err-msg text-sm">{errors.firstName?.message}</p>
 						</div>
 						<div className="col-span-full">
 							<label htmlFor="middle-name" className="block text-sm font-medium text-gray-700">Middle name</label>
-							<input type="text" name="middleName" id="middle-name" autoComplete="middle-name"
+							<input type="text" {...register('middleName')} id="middle-name" autoComplete="middle-name"
 								className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
 							/>
+							<p className="form-err-msg text-sm">{errors.middleName?.message}</p>
 						</div>
 						<div className="col-span-full">
-							<label htmlFor="last-name" className="block text-sm font-medium text-gray-700">Last name</label>
-							<input type="text" name="lastName" id="last-name" autoComplete="family-name"
+							<label htmlFor="last-name" className="block text-sm font-medium text-gray-700">Last name<span className='text-red-500'>*</span></label>
+							<input type="text" {...register('lastName')} id="last-name" autoComplete="family-name" required
 								className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
 							/>
+							<p className="form-err-msg text-sm">{errors.lastName?.message}</p>
 						</div>
 						<div className="col-span-full sm:col-span-2">
-							<label htmlFor="course" className="block text-sm font-medium text-gray-700">Degree Program</label>
-							<select name="course" id="course" autoComplete="course"
+							<label htmlFor="course" className="block text-sm font-medium text-gray-700">Degree Program<span className='text-red-500'>*</span></label>
+							<select {...register('course')} id="course" autoComplete="course" required
 								className="form-select mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
 								{courses.map(c => <option key={c}>{c}</option>)}
 							</select>
+							<p className="form-err-msg text-sm">{errors.course?.message}</p>
 						</div>
 						<div className="col-span-full sm:col-span-2">
-							<label htmlFor="terms" className="block text-sm font-medium text-gray-700">Remaining Terms</label>
-							<input type="number" name="terms" id="terms" min={0}
+							<label htmlFor="terms" className="block text-sm font-medium text-gray-700">Remaining Terms<span className='text-red-500'>*</span></label>
+							<input type="number" {...register('terms')} id="terms" min={0} required
 								className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
 							/>
+							<p className="form-err-msg text-sm">{(errors.terms?.type === 'typeError' && 'ID number is required.') || errors.terms?.message}</p>
 						</div>
 						<div className="col-span-full sm:col-span-2">
-							<label htmlFor="contact" className="block text-sm font-medium text-gray-700">Contact Number</label>
-							<input type="tel" name="contact" id="contact" autoComplete="contact-number"
+							<label htmlFor="contact" className="block text-sm font-medium text-gray-700">Contact Number<span className='text-red-500'>*</span></label>
+							<input type="tel" {...register('contact')}id="contact" autoComplete="contact-number" required
 								className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
 							/>
+							<p className="form-err-msg text-sm">{errors.contact?.message}</p>
 						</div>
 						<div className="col-span-full sm:col-span-2">
-							<label htmlFor="url" className="block text-sm font-medium text-gray-700">Facebook Profile URL</label>
-							<input type="url" name="url" id="url" autoComplete="contact-number"
+							<label htmlFor="url" className="block text-sm font-medium text-gray-700">Facebook Profile URL<span className='text-red-500'>*</span></label>
+							<input type="url" {...register('url')} id="url" autoComplete="contact-number" required
 								className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
 							/>
+							<p className="form-err-msg text-sm">{errors.url?.message}</p>
 						</div>
 
 						<div className="col-span-full flex justify-end">
