@@ -5,7 +5,7 @@ const nextConfig = {
 		domains: ['drive.google.com'],
 	},
 	compress: true,
-	swcMinify: true,
+	// swcMinify: true,
 }
 
 module.exports = nextConfig
