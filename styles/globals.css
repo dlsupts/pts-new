@@ -53,3 +53,7 @@ html { font-family: 'Inter', sans-serif; scroll-behavior: smooth }
 .optionListContainer .optionContainer * {
 	@apply text-sm py-1 hover:bg-blue-500 hover:text-white;
 }
+
+.form-err-msg {
+	@apply text-red-500
+}
