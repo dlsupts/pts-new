@@ -13,9 +13,8 @@ import Multiselect from 'multiselect-react-dropdown'
 import { days, times, timeComparator, timeslot } from '../../lib/times'
 import useSWRImmutable from 'swr/immutable'
 import { ISchedule } from '../../models/schedule'
-import Modal from '../../components/modal'
-import { Dialog } from '@headlessui/react'
-import { filterSubjects, binInsert } from '../../lib/utils'
+import AddSubjectModal from '../../components/subject-list/modal'
+import SubjectList from '../../components/subject-list/list'
 
 interface TutorDetailsProps {
 	types: string[]
@@ -61,32 +60,14 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 	const typeSelection = useRef<Multiselect>(null)
 	const { sched, isSchedLoading, isSchedError, schedMutate } = useSchedule()
 	const [isOpen, setIsOpen] = useState(false)	// for add subject modal
-	const [selectedSubjects, setSelectedSubjects] = useState<string[][]>()
-	const newSubject = useRef<HTMLSelectElement>(null)
-	const newTopics = useRef<HTMLTextAreaElement>(null)
+	const [selectedSubjects, setSelectedSubjects] = useState<string[][]>([])
 
 	const handleAddClick: MouseEventHandler = e => {
 		e.preventDefault()
 		setIsOpen(true)
 	}
 
-	const closeModal = () => setIsOpen(false)
-
 	useEffect(() => { if (user) { setSelectedSubjects(user.topics) } }, [user])
-
-	const addSubject = () => {
-		const subject = newSubject?.current?.value || ''
-		const topic = newTopics?.current?.value || ''
-
-		// verify if value is in list of subjects
-		if (subjects.find(s => s == subject)) {
-			const toSave = [subject.split(': ')[0], topic]
-			binInsert(selectedSubjects, toSave)
-			setSelectedSubjects(selectedSubjects)
-		}
-
-		closeModal()
-	}
 
 	const handleSubmit: FormEventHandler = async e => {
 		e.preventDefault()
@@ -112,29 +93,13 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 
 	return (
 		<>
-			<Modal isOpen={isOpen} close={closeModal}>
-				<div className="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-					<div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-						<div className="sm:flex sm:items-start">
-							<div className="mt-3 text-center sm:mt-0 sm:text-left">
-								<Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">Add Subject</Dialog.Title>
-								<div className="mt-4">
-									<label htmlFor="new-subject">New Subject</label>
-									<select ref={newSubject} id="new-subject">
-										{filterSubjects(subjects, selectedSubjects).map(o => <option key={o} value={o}>{o}</option>)}
-									</select>
-									<label htmlFor="specific-topics" className="mb-1 mt-4">Specific Topics</label>
-									<textarea ref={newTopics} id="specific-topics" rows={3} className="shadow-sm w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"></textarea>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div className="bg-gray-50 px-4 py-3 sm:px-6 flex flex-row-reverse">
-						<input value="Add" type="submit" onClick={addSubject} className="blue btn px-4 py-2 shadow-sm sm:w-auto sm:text-sm rounded-md font-medium" />
-						<button type="button" onClick={closeModal} className="white btn px-4 py-2 rounded-md shadow-sm font-medium sm:mt-0 sm:w-auto sm:text-sm mx-3" > Cancel </button>
-					</div>
-				</div>
-			</Modal>
+			<AddSubjectModal
+				isOpen={isOpen}
+				setIsOpen={setIsOpen}
+				options={subjects}
+				selected={selectedSubjects}
+				setSelected={setSelectedSubjects}
+			/>
 			<UserLayout>
 				<form onSubmit={handleSubmit}>
 					<div className="shadow sm:rounded-md overflow-visible">
@@ -154,7 +119,7 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 										ref={serviceSelection}
 										isObject={false}
 										selectedValues={user?.tutoringService}
-										options={services.map(t => t.split(': ')[1])}
+										options={services}
 										closeOnSelect={false}
 										id="tutoring-service"
 										avoidHighlightFirstOption={true}
@@ -169,7 +134,7 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 									<Multiselect
 										isObject={false}
 										selectedValues={user?.tutorialType}
-										options={types.map(t => t.split(': ')[1])}
+										options={types}
 										closeOnSelect={false}
 										id="tutorial-types"
 										avoidHighlightFirstOption={true}
@@ -189,18 +154,7 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 									</button>
 								</div>
 								<div className="col-span-full">
-									{selectedSubjects?.map(t => (
-										<div className="py-2 border-b flex justify-between items-stretch" key={t[0]}>
-											<div>
-												<p className="font-medium">{t[0]}</p>
-												<p className="text-gray-500 text-sm">Specific topics: {t[1] || 'None'}</p>
-											</div>
-											<div className="btn mr-8 grid place-items-center text-gray-500 hover:text-gray-600 w-8"
-												onClick={() => setSelectedSubjects(selectedSubjects.filter(s => s[0] !== t[0]))}>
-												<i className="fa-solid fa-trash fa-lg"></i>
-											</div>
-										</div>
-									))}
+									<SubjectList subjects={selectedSubjects} setSubjects={setSelectedSubjects} />
 								</div>
 								<div className="col-span-full mt-12">
 									<p className="text-lg font-bold">Availability</p>
