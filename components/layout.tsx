@@ -35,7 +35,7 @@ const Layout: FC = ({ children }) => {
 			<main className="main-height">
 				{children}
 			</main>
-			<footer className="text-gray-500 h-20 md:h-30 px-8">
+			<footer className="text-gray-500 h-20 md:h-30 px-4 md:px-8">
 				<div className="flex justify-between items-center min-h-full mx-auto container">
 					<p className="md:text-lg text-sm font-medium">
 						<i className="fa-regular fa-copyright mr-1"></i>

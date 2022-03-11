@@ -8,7 +8,7 @@ interface SubjectListProps {
 const SubjectList: FC<SubjectListProps> = ({ subjects, setSubjects }) => {
 	if (!subjects.length) {
 		return (
-			<p className="text-center text-gray-500">No Subjects Added</p>
+			<p className="text-center text-gray-500 py-2">No Subjects Added</p>
 		)
 	}
 	
