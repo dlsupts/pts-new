@@ -14,11 +14,11 @@ interface AboutPageProps {
 const AboutPage: NextPage<AboutPageProps> = ({ committees, sessionPhotos, groupPhotos }) => {
 	const sess = sessionPhotos.content.length == 0 ?
 		'https://via.placeholder.com/480x360' :
-		`https://drive.google.com/uc?export=view&id=${sessionPhotos.content[0].split(':')[1].trim()}`
+		`https://drive.google.com/uc?export=view&id=${sessionPhotos.content[0].trim()}`
 
 	const group = groupPhotos.content.length == 0 ?
 		'https://via.placeholder.com/480x360' :
-		`https://drive.google.com/uc?export=view&id=${groupPhotos.content[0].split(':')[1].trim()}`
+		`https://drive.google.com/uc?export=view&id=${groupPhotos.content[0].trim()}`
 
 	return (
 		<div className="container mx-auto px-4 lg:px-20">
@@ -102,9 +102,13 @@ export const getStaticProps: GetStaticProps = async () => {
 
 	const committees = await Committee.find({}, '-_id -__v')
 		.populate({ path: 'officers', populate: { path: 'user', select: 'firstName lastName' } }).lean().exec()
+	const order = await Library.findById('Committees').lean('-_id content').exec()
+
+	// arrange committees based on order in library
+	const arranged = order?.content?.map(o => committees.find(c => c.name == o))
 
 	// parse names
-	committees.forEach(c => c.officers.forEach(o => {
+	arranged?.forEach(c => c?.officers.forEach(o => {
 		if (typeof o.user != 'string') {
 			if ('firstName' in o.user) {
 				o.name = o.user.firstName + ' ' + o.user.lastName
@@ -120,7 +124,7 @@ export const getStaticProps: GetStaticProps = async () => {
 
 	return {
 		props: {
-			committees,
+			committees: arranged,
 			sessionPhotos,
 			groupPhotos,
 		},
