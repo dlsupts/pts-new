@@ -4,21 +4,21 @@ export interface ITutee {
 	campus: string
 	firstName: string
 	lastName: string
-	idNumber: string
+	idNumber: number
 	email: string
 	college: string
 	course: string
 	contact: string
 	url: string
 	friends: string[]
-	schedule: Schema.Types.ObjectId
+	schedule: Schema.Types.ObjectId | string[][]
 }
 
 const tuteeSchema = new Schema<ITutee>({
 	campus: { type: String, required: true },
 	firstName: { type: String, required: true },
 	lastName: { type: String, required: true },
-	idNumber: { type: String, required: true },
+	idNumber: { type: Number, required: true },
 	email: { type: String, required: true },
 	college: { type: String, required: true },
 	course: { type: String, required: true },
