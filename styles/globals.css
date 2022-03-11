@@ -21,6 +21,7 @@ html { font-family: 'Inter', sans-serif; scroll-behavior: smooth }
 	@apply mx-1 md:mx-4 cursor-pointer hover:text-gray-600 active:text-gray-700;
 }
 
+/* buttons */
 .btn {
 	@apply cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2;
 }
@@ -56,4 +57,22 @@ html { font-family: 'Inter', sans-serif; scroll-behavior: smooth }
 
 .form-err-msg {
 	@apply text-red-500
+}
+
+/* forms */
+select {
+	@apply form-select mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md
+}
+
+[type="text"], 
+[type="url"],
+[type="tel"],
+[type="number"],
+[type="password"],
+[type="email"] {
+	@apply mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md
+}
+
+label {
+	@apply block text-sm font-medium text-gray-700
 }

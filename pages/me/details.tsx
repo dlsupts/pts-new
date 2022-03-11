@@ -119,11 +119,11 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 							<div className="mt-3 text-center sm:mt-0 sm:text-left">
 								<Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">Add Subject</Dialog.Title>
 								<div className="mt-4">
-									<label htmlFor="new-subject" className="mb-1 block text-sm font-medium text-gray-700">New Subject</label>
-									<select ref={newSubject} id="new-subject" className="w-full form-select rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300">
+									<label htmlFor="new-subject">New Subject</label>
+									<select ref={newSubject} id="new-subject">
 										{filterSubjects(subjects, selectedSubjects).map(o => <option key={o} value={o}>{o}</option>)}
 									</select>
-									<label htmlFor="specific-topics" className="mb-1 mt-4 block text-sm font-medium text-gray-700">Specific Topics</label>
+									<label htmlFor="specific-topics" className="mb-1 mt-4">Specific Topics</label>
 									<textarea ref={newTopics} id="specific-topics" rows={3} className="shadow-sm w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"></textarea>
 								</div>
 							</div>
@@ -145,13 +145,11 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 									<p className="text-gray-500 text-sm">Fill in your preferences regarding your sessions</p>
 								</div>
 								<div className="col-span-6 sm:col-span-2">
-									<label htmlFor="max-tutee" className="block text-sm font-medium text-gray-700">Max Tutee Count</label>
-									<input type="number" min={0} name="maxTuteeCount" id="max-tutee" defaultValue={user?.maxTuteeCount}
-										className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-									/>
+									<label htmlFor="max-tutee">Max Tutee Count</label>
+									<input type="number" min={0} name="maxTuteeCount" id="max-tutee" defaultValue={user?.maxTuteeCount} />
 								</div>
 								<div className="col-span-6 sm:col-span-4">
-									<label htmlFor="tutoring-service_input" className="block text-sm font-medium text-gray-700">Tutoring Services</label>
+									<label htmlFor="tutoring-service_input">Tutoring Services</label>
 									<Multiselect
 										ref={serviceSelection}
 										isObject={false}
@@ -167,7 +165,7 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 									/>
 								</div>
 								<div className="col-span-full">
-									<label htmlFor="tutorial-types_input" className="block text-sm font-medium text-gray-700">Tutorial Types</label>
+									<label htmlFor="tutorial-types_input">Tutorial Types</label>
 									<Multiselect
 										isObject={false}
 										selectedValues={user?.tutorialType}
@@ -210,7 +208,7 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 								</div>
 								{days.map(day => (
 									<div className="col-span-6" key={day.key}>
-										<label htmlFor={day.key + '_input'} className="block text-sm font-medium text-gray-700">{day.text}</label>
+										<label htmlFor={day.key + '_input'}>{day.text}</label>
 										<Multiselect
 											isObject={false}
 											selectedValues={sched?.[day.key]}
