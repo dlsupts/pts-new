@@ -1,4 +1,5 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
+import { ISchedule } from './schedule'
 
 export interface ITutee {
 	campus: string
@@ -11,7 +12,7 @@ export interface ITutee {
 	contact: string
 	url: string
 	friends: string[]
-	schedule: Schema.Types.ObjectId | string[][]
+	schedule: Schema.Types.ObjectId | ISchedule
 }
 
 const tuteeSchema = new Schema<ITutee>({

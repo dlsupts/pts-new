@@ -1,32 +1,28 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
+import { session_status } from '../types'
+import { IRequest } from './request'
+import { IUser } from './user'
 
 export interface ISession {
-	title: string
-	content: string[]
+	request: Schema.Types.ObjectId | IRequest
+	subject: string
+	topics: string
+	tutor: Schema.Types.ObjectId | IUser
+	status: session_status
 }
 
-const sessionSchema = new Schema({
-	timestamp: String,
-	academicYear: String,
-	term: Number,
-	duration: String,
-	tutorialType: String,
-	subjects: [String],
-	topics: String,
-	status: String, // Matched, Pending, No Match
-	preferred: {
+const sessionSchema = new Schema<ISession>({
+	request: {
 		type: Schema.Types.ObjectId,
-		ref: 'Account'
+		ref: 'Request'
 	},
+	subject: { type: String, required: true },
+	topics: { type: String, required: true },
 	tutor: {
 		type: Schema.Types.ObjectId,
-		ref: 'Account'
+		ref: 'User'
 	},
-	tutee: {
-		type: Schema.Types.ObjectId,
-		ref: 'Tutee'
-	},
-	seen: Boolean
+	status: { type: String, required: true },
 })
 
-export default models.TutorialSession as Model<ISession & Document> || model<ISession>('TutorialSession', sessionSchema, 'tutorial_sessions')
+export default models.Session as Model<ISession & Document> || model<ISession>('Session', sessionSchema, 'sessions')
