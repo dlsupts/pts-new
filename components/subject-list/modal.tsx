@@ -8,7 +8,7 @@ interface AddSubjectModalProps {
 	setIsOpen: Dispatch<SetStateAction<boolean>>
 	options: string[]
 	selected: string[][]
-	setSelected: Dispatch<SetStateAction<string[][]>>
+	setSelected: Dispatch<SetStateAction<string[][]>> | ((sub: string[][]) => void)
 }
 
 const AddSubjectModal: FC<AddSubjectModalProps> = ({ isOpen, setIsOpen, options, selected, setSelected }) => {

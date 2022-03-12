@@ -2,7 +2,7 @@ import { Dispatch, FC, SetStateAction } from 'react'
 
 interface SubjectListProps {
 	subjects: string[][]
-	setSubjects: Dispatch<SetStateAction<string[][]>>
+	setSubjects: Dispatch<SetStateAction<string[][]>> | ((sub: string[][]) => void)
 }
 
 const SubjectList: FC<SubjectListProps> = ({ subjects, setSubjects }) => {
