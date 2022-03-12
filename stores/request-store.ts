@@ -1,9 +1,18 @@
 import create from 'zustand'
+import { IRequest } from '../models/request'
 import { ITutee } from '../models/tutee'
+
+type RequestFormData = Pick<IRequest, 'duration' | 'tutorialType'> & {
+	preferred: string
+}
 
 type RequestStore = {
 	tutee: ITutee
+	request: RequestFormData
+	selectedSubjects: string[][]
 	setTutee: (tutee: Partial<ITutee>) => void
+	setRequest: (req: RequestFormData) => void
+	setSelectedSubjects: (subs: string[][]) => void
 }
 
 const useRequestStore = create<RequestStore>(set => ({
@@ -18,9 +27,17 @@ const useRequestStore = create<RequestStore>(set => ({
 		contact: '',
 		url: '',
 		friends: [],
-		schedule: [],
+		schedule: { M: [], T: [], W: [], H: [], F: [], S: []},
 	},
-	setTutee: (tutee) => set(state => ({ tutee: { ...state.tutee, ...tutee } }))
+	request: {
+		duration: 'One Session',
+		tutorialType: '',
+		preferred: '',
+	},
+	selectedSubjects: [],
+	setTutee: (tutee) => set(state => ({ tutee: { ...state.tutee, ...tutee } })),
+	setRequest: (request) => set({ request }),
+	setSelectedSubjects: (selectedSubjects) => set({ selectedSubjects })
 }))
 
 export default useRequestStore

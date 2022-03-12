@@ -6,6 +6,7 @@ import LoadingSpinner from '../loading-spinner'
 import SubjectList from '../subject-list/list'
 import AddSubjectModal from '../subject-list/modal'
 import useStore from '../../stores/request-store'
+import { IUser } from '../../models/user'
 
 type ServiceProps = {
 	types: string[]
@@ -13,17 +14,7 @@ type ServiceProps = {
 	services: string[]
 }
 
-type PreferredTutor = {
-	firstName: string
-	lastName: string
-	topics: string[][]
-}
-
-type ServiceFormData = {
-	duration: string
-	type: string
-	preferred: string
-}
+type PreferredTutor = Pick<IUser, '_id' | 'firstName' | 'lastName' | 'topics'>
 
 function useAvailableTutors() {
 	const { data, error } = useSWRImmutable('/api/tutors?filter=preference', url => app.get<PreferredTutor[]>(url))
@@ -36,23 +27,22 @@ function useAvailableTutors() {
 }
 
 const Service: FC<ServiceProps> = ({ types, subjects, services }) => {
-	const { handleSubmit } = useForm<ServiceFormData>()
+	const { request, setRequest, selectedSubjects, setSelectedSubjects } = useStore()
+	const { register, handleSubmit } = useForm<typeof request>()
 	const { tutors, isLoading } = useAvailableTutors()
 	const [isOpen, setIsOpen] = useState(false)	// for add subject modal
-	const [selectedSubjects, setSelectedSubjects] = useState<string[][]>([])
-	const { tutee, setTutee } = useStore()
 
 	const handleAddClick: MouseEventHandler = e => {
 		e.preventDefault()
 		setIsOpen(true)
 	}
 
-	const onSubmit = (data: ServiceFormData) => {
-		console.log(data)
+	const onSubmit = (values: typeof request) => {
+		setRequest(values)
 	}
 
 	if (isLoading) {
-		return <LoadingSpinner className="" />
+		return <LoadingSpinner />
 	}
 
 	return (
@@ -67,23 +57,23 @@ const Service: FC<ServiceProps> = ({ types, subjects, services }) => {
 			<form className="grid grid-cols-2 gap-4 mt-8" onSubmit={handleSubmit(onSubmit)}>
 				<div>
 					<label htmlFor="duration">Tutoring Duration<span className="text-red-500">*</span></label>
-					<select id="duration" className="form-select mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+					<select {...register('duration')} id="duration" defaultValue={request.duration}>
 						{services.map(s => <option key={s} value={s}>{s}</option>)}
 					</select>
 				</div>
 				<div>
 					<label htmlFor="type">Tutorial Type<span className="text-red-500">*</span></label>
-					<select id="type" className="">
+					<select id="type" {...register('tutorialType')} defaultValue={request.tutorialType}>
 						{types.map(t => <option key={t} value={t}>{t}</option>)}
 					</select>
 				</div>
 				<div className="col-span-full">
 					<label htmlFor="preferred">Preferred Tutor<span className="text-red-500">*</span></label>
-					<select id="preferred">
-						<option selected value="None">None</option>
+					<select id="preferred" {...register('preferred')} defaultValue={request.preferred}>
+						<option value="">None</option>
 						{tutors?.map(t => {
 							const name = t.firstName + ' ' + t.lastName
-							return <option key={name}>{name}</option>
+							return <option key={name} value={t._id.toString()}>{name}</option>
 						})}
 					</select>
 				</div>
