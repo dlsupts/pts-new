@@ -15,7 +15,7 @@ const libSchema = new Schema<ILib>({
 })
 
 libSchema.statics.getDegreeCodes = async function () {
-	const { content }: ILib = await this.findById('Courses', 'content').lean().exec()
+	const { content }: ILib = await this.findById('Degree Programs', 'content').lean().exec()
 
 	for (let i = 0; i < content.length; i++) {
 		content[i] = content[i].split(':')[0]

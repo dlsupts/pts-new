@@ -6,6 +6,7 @@ import FAQ, { IFAQ } from '../models/faq'
 import Library from '../models/library'
 import cn from 'classnames'
 import Information from '../components/request/information'
+import Schedule from '../components/request/schedule'
 
 interface RequestProps {
 	faqs: IFAQ[]
@@ -17,7 +18,7 @@ interface RequestProps {
 	campuses: string[]
 }
 
-const steps = ['Tutorial Service', 'Personal Info', 'Schedule']
+const steps = ['Tutorial Service', 'Personal Info', 'Schedule (Free Time)']
 
 const RequestPage: NextPage<RequestProps> = ({ faqs, types, services, subjects, colleges, degreePrograms, campuses }) => {
 	const [help, setHelp] = useState(faqs[0].answer)
@@ -35,7 +36,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, types, services, subjects, 
 				comp = <Information colleges={colleges} degreePrograms={degreePrograms} campuses={campuses} setStep={setStep} />
 				break
 			default:
-				comp = <div></div>
+				comp = <Schedule setStep={setStep} />
 		}
 
 		return (
@@ -91,7 +92,7 @@ export const getStaticProps: GetStaticProps = async () => {
 	const services = await Library.findById('Tutoring Services', '-_id').lean().exec()
 	const subjects = await Library.findById('Subjects', '-_id').lean().exec()
 	const colleges = await Library.findById('Colleges', '-_id').lean().exec()
-	const degreePrograms = await Library.findById('Degree Programs', '-_id').lean().exec()
+	const degreePrograms = await Library.getDegreeCodes()
 	const campuses = await Library.findById('Campuses', '-_id').lean().exec()
 
 	return {
@@ -101,7 +102,7 @@ export const getStaticProps: GetStaticProps = async () => {
 			services: services?.content?.filter(c => c !== 'None'),
 			subjects: subjects?.content,
 			colleges: colleges?.content?.map(c => c.split(':')[0]),
-			degreePrograms: degreePrograms?.content?.map(d => d.split(':')[0]),
+			degreePrograms,
 			campuses: campuses?.content,
 		},
 		revalidate: Number(process.env.NEXT_PUBLIC_REVALIDATION_INTERVAL)

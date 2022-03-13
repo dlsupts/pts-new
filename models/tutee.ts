@@ -4,8 +4,8 @@ import { userInfoSchema } from './user'
 import * as yup from 'yup'
 
 export const tuteeInfoSchema = userInfoSchema.shape({
-	campus: yup.string().required(),
-	college: yup.string().required(),
+	campus: yup.string().required('Campus is required.'),
+	college: yup.string().required('College is required.'),
 }).omit(['terms']).required()
 
 export interface ITutee extends yup.InferType<typeof tuteeInfoSchema> {

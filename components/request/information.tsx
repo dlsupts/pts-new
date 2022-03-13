@@ -25,7 +25,6 @@ const Information: FC<InformationProps> = ({ colleges, degreePrograms, campuses,
 	}
 
 	const onSubmit = (values: typeof tutee) => {
-		console.log(values)
 		setTutee(values)
 		setStep(x => ++x) // move to next page
 	}
