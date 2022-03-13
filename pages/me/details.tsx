@@ -10,11 +10,11 @@ import useUser from '../../lib/useUser'
 import Library from '../../models/library'
 import { ITutorInfo, IUser } from '../../models/user'
 import Multiselect from 'multiselect-react-dropdown'
-import { days, times, timeComparator, timeslot } from '../../lib/times'
 import useSWRImmutable from 'swr/immutable'
 import { ISchedule } from '../../models/schedule'
 import AddSubjectModal from '../../components/subject-list/modal'
 import SubjectList from '../../components/subject-list/list'
+import SchedulePicker from '../../components/schedule-picker'
 
 interface TutorDetailsProps {
 	types: string[]
@@ -34,12 +34,6 @@ function useSchedule() {
 		isSchedError: !!error,
 		schedMutate: mutate
 	}
-}
-
-// sort schedule timeslots every time an option is selected
-function handleScheduleSelect(selectedList: timeslot[], key: typeof days[number]['key'], schedule?: ISchedule) {
-	selectedList.sort(timeComparator)
-	if (schedule) schedule[key] = selectedList // update schedule
 }
 
 // no other options can accompany 'None'.
@@ -89,6 +83,8 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 		return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
 	} else if (isError || isSchedError) {
 		return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
+	} else if (!sched) {
+		return <></>
 	}
 
 	return (
@@ -160,24 +156,7 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 									<p className="text-lg font-bold">Availability</p>
 									<p className="text-gray-500 text-sm">Select the timeslots where you are available</p>
 								</div>
-								{days.map(day => (
-									<div className="col-span-6" key={day.key}>
-										<label htmlFor={day.key + '_input'}>{day.text}</label>
-										<Multiselect
-											isObject={false}
-											selectedValues={sched?.[day.key]}
-											options={times}
-											closeOnSelect={false}
-											id={day.key}
-											avoidHighlightFirstOption={true}
-											placeholder="Add"
-											closeIcon="cancel"
-											onSelect={s => handleScheduleSelect(s, day.key, sched)}
-											onKeyPressFn={blockEnterKeyPress}
-										/>
-									</div>
-								))
-								}
+								<SchedulePicker sched={sched} />
 							</div>
 						</div>
 						<div className="px-4 py-3 bg-gray-50 text-right sm:px-6 mt-12">
