@@ -5,17 +5,21 @@ import dbConnect from '../lib/db'
 import FAQ, { IFAQ } from '../models/faq'
 import Library from '../models/library'
 import cn from 'classnames'
+import Information from '../components/request/information'
 
 interface RequestProps {
 	faqs: IFAQ[]
 	types: string[]
 	services: string[]
 	subjects: string[]
+	colleges: string[]
+	degreePrograms: string[]
+	campuses: string[]
 }
 
 const steps = ['Tutorial Service', 'Personal Info', 'Schedule']
 
-const RequestPage: NextPage<RequestProps> = ({ faqs, types, services, subjects }) => {
+const RequestPage: NextPage<RequestProps> = ({ faqs, types, services, subjects, colleges, degreePrograms, campuses }) => {
 	const [help, setHelp] = useState(faqs[0].answer)
 	const [step, setStep] = useState(1)
 
@@ -25,10 +29,13 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, types, services, subjects }
 
 		switch (step) {
 			case 1:
-				comp = <Service types={types} services={services} subjects={subjects} />
+				comp = <Service types={types} services={services} subjects={subjects} setStep={setStep} />
+				break
+			case 2:
+				comp = <Information colleges={colleges} degreePrograms={degreePrograms} campuses={campuses} setStep={setStep} />
 				break
 			default:
-				comp = <div>No match</div>
+				comp = <div></div>
 		}
 
 		return (
@@ -80,16 +87,22 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, types, services, subjects }
 export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
 	const faq = await FAQ.findOne({ type: 'Tutor Request' }, '-_id faqs').lean().exec()
-	const types = await Library.findById('Tutorial Types', '-_id content').lean().exec()
-	const services = await Library.findById('Tutoring Services', '-_id content').lean().exec()
-	const subjects = await Library.findById('Subjects', '-_id content').lean().exec()
+	const types = await Library.findById('Tutorial Types', '-_id').lean().exec()
+	const services = await Library.findById('Tutoring Services', '-_id').lean().exec()
+	const subjects = await Library.findById('Subjects', '-_id').lean().exec()
+	const colleges = await Library.findById('Colleges', '-_id').lean().exec()
+	const degreePrograms = await Library.findById('Degree Programs', '-_id').lean().exec()
+	const campuses = await Library.findById('Campuses', '-_id').lean().exec()
 
 	return {
 		props: {
 			faqs: faq?.faqs?.map(f => ({ ...f, _id: f._id.toString() })),
 			types: types?.content,
 			services: services?.content?.filter(c => c !== 'None'),
-			subjects: subjects?.content
+			subjects: subjects?.content,
+			colleges: colleges?.content?.map(c => c.split(':')[0]),
+			degreePrograms: degreePrograms?.content?.map(d => d.split(':')[0]),
+			campuses: campuses?.content,
 		},
 		revalidate: Number(process.env.NEXT_PUBLIC_REVALIDATION_INTERVAL)
 	}
