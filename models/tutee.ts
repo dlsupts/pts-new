@@ -1,18 +1,15 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
 import { ISchedule } from './schedule'
+import { userInfoSchema } from './user'
+import * as yup from 'yup'
 
-export interface ITutee {
-	campus: string
-	firstName: string
-	lastName: string
-	idNumber: number
-	email: string
-	college: string
-	course: string
-	contact: string
-	url: string
-	friends: string[]
-	schedule: Schema.Types.ObjectId | ISchedule
+export const tuteeInfoSchema = userInfoSchema.shape({
+	campus: yup.string().required(),
+	college: yup.string().required(),
+}).omit(['terms']).required()
+
+export interface ITutee extends yup.InferType<typeof tuteeInfoSchema> {
+	schedule: ISchedule
 }
 
 const tuteeSchema = new Schema<ITutee>({
@@ -32,4 +29,4 @@ const tuteeSchema = new Schema<ITutee>({
 	}
 })
 
-export default models.Tutee as Model<ITutee & Document> || model<ITutee>('Tutee', tuteeSchema, 'tutees')
+export default models?.Tutee as Model<ITutee & Document> || model<ITutee>('Tutee', tuteeSchema, 'tutees')

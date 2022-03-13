@@ -2,20 +2,20 @@ import { Schema, models, model, Model, Document } from 'mongoose'
 import { role, service } from '../types'
 import * as yup from 'yup'
 
+// this is extended by tutee schema, be careful of changes
 export const userInfoSchema = yup.object({
-	idNumber: yup.number().required().min(11500000, 'Invalid ID number.').integer(),
+	idNumber: yup.number().typeError('ID number is required.').required().min(11500000, 'Invalid ID number.').integer(),
 	email: yup.string().trim().email().matches(/.*(@dlsu.edu.ph)$/, 'Should end with "@dlsu.edu.ph".').required('Email is required.'),
 	firstName: yup.string().trim().required('First name is required.'),
 	middleName: yup.string().trim(),
 	lastName: yup.string().trim().required('Last name is required.'),
 	course: yup.string().required('Course is required.'),
-	terms: yup.number().positive('Input should be positive.').required('Remaining terms in required.').integer(),
+	terms: yup.number().typeError('Remaining terms is required.').positive('Input should be positive.').required('Remaining terms in required.').integer(),
 	contact: yup.string().trim().matches(/\d*/, 'Only numerical input is allowed.').required('Contact number is required.'),
 	url: yup.string().trim().url('Invalid URL.').required('Facebook URL is required.'),
 }).required()
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IUserInfo extends yup.InferType<typeof userInfoSchema> {}
+export type IUserInfo = yup.InferType<typeof userInfoSchema>
 
 export interface ITutorInfo {
 	membership: boolean
