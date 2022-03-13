@@ -1,4 +1,4 @@
-import { FC, MouseEventHandler, useState } from 'react'
+import { Dispatch, FC, MouseEventHandler, SetStateAction, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import useSWRImmutable from 'swr/immutable'
 import app from '../../lib/axios-config'
@@ -12,6 +12,7 @@ type ServiceProps = {
 	types: string[]
 	subjects: string[]
 	services: string[]
+	setStep: Dispatch<SetStateAction<number>>
 }
 
 type PreferredTutor = Pick<IUser, '_id' | 'firstName' | 'lastName' | 'topics'>
@@ -26,9 +27,11 @@ function useAvailableTutors() {
 	}
 }
 
-const Service: FC<ServiceProps> = ({ types, subjects, services }) => {
+const Service: FC<ServiceProps> = ({ types, subjects, services, setStep }) => {
 	const { request, setRequest, selectedSubjects, setSelectedSubjects } = useStore()
-	const { register, handleSubmit } = useForm<typeof request>()
+	const { register, handleSubmit } = useForm<typeof request>({
+		defaultValues: request
+	})
 	const { tutors, isLoading } = useAvailableTutors()
 	const [isOpen, setIsOpen] = useState(false)	// for add subject modal
 
@@ -39,6 +42,7 @@ const Service: FC<ServiceProps> = ({ types, subjects, services }) => {
 
 	const onSubmit = (values: typeof request) => {
 		setRequest(values)
+		setStep(x => ++x) // move to next page
 	}
 
 	if (isLoading) {
@@ -57,19 +61,19 @@ const Service: FC<ServiceProps> = ({ types, subjects, services }) => {
 			<form className="grid grid-cols-2 gap-4 mt-8" onSubmit={handleSubmit(onSubmit)}>
 				<div>
 					<label htmlFor="duration">Tutoring Duration<span className="text-red-500">*</span></label>
-					<select {...register('duration')} id="duration" defaultValue={request.duration}>
+					<select {...register('duration')} id="duration">
 						{services.map(s => <option key={s} value={s}>{s}</option>)}
 					</select>
 				</div>
 				<div>
 					<label htmlFor="type">Tutorial Type<span className="text-red-500">*</span></label>
-					<select id="type" {...register('tutorialType')} defaultValue={request.tutorialType}>
+					<select id="type" {...register('tutorialType')}>
 						{types.map(t => <option key={t} value={t}>{t}</option>)}
 					</select>
 				</div>
 				<div className="col-span-full">
 					<label htmlFor="preferred">Preferred Tutor<span className="text-red-500">*</span></label>
-					<select id="preferred" {...register('preferred')} defaultValue={request.preferred}>
+					<select id="preferred" {...register('preferred')}>
 						<option value="">None</option>
 						{tutors?.map(t => {
 							const name = t.firstName + ' ' + t.lastName

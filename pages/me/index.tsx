@@ -64,7 +64,7 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 							<div className="col-span-6 sm:col-span-2">
 								<label htmlFor="id-number">ID number</label>
 								<input type="number" {...register('idNumber')} id="id-number" autoComplete="id-number" />
-								<p className="form-err-msg text-sm">{(errors.idNumber?.type === 'typeError' && 'ID number is required.') || errors.idNumber?.message}</p>
+								<p className="form-err-msg text-sm">{errors.idNumber?.message}</p>
 							</div>
 
 							<div className="col-span-6 sm:col-span-2">
@@ -78,7 +78,7 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 							<div className="col-span-6 sm:col-span-2">
 								<label htmlFor="terms">Remaining Terms</label>
 								<input type="number" {...register('terms')} id="terms" />
-								<p className="form-err-msg text-sm">{(errors.terms?.type === 'typeError' && 'Remaining terms is required.') || errors.terms?.message}</p>
+								<p className="form-err-msg text-sm">{errors.terms?.message}</p>
 							</div>
 
 							<div className="col-span-6 sm:col-span-3">
