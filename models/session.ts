@@ -16,8 +16,8 @@ const sessionSchema = new Schema<ISession>({
 		type: Schema.Types.ObjectId,
 		ref: 'Request'
 	},
-	subject: { type: String, required: true },
-	topics: { type: String, required: true },
+	subject: { type: String, required: true, trim: true },
+	topics: { type: String, required: true, trim: true },
 	tutor: {
 		type: Schema.Types.ObjectId,
 		ref: 'User'

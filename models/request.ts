@@ -25,7 +25,7 @@ const requestSchema = new Schema<IRequest>({
 		type: Schema.Types.ObjectId,
 		ref: 'Tutee'
 	},
-	seen: Boolean
+	seen: { type: Boolean, default: false }
 })
 
 export default models.Request as Model<IRequest & Document> || model<IRequest>('Request', requestSchema, 'requests')

@@ -22,7 +22,7 @@ const AddSubjectModal: FC<AddSubjectModalProps> = ({ isOpen, setIsOpen, options,
 
 		// verify if value is in list of subjects
 		if (options.find(s => s == subject)) {
-			const toSave = [subject.split(': ')[0], topic]
+			const toSave = [subject.split(': ')[0].trim(), topic.trim()]
 			binInsert(selected, toSave)
 			setSelected(selected)
 		}
