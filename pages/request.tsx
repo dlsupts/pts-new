@@ -7,6 +7,11 @@ import Library from '../models/library'
 import cn from 'classnames'
 import Information from '../components/request/information'
 import Schedule from '../components/request/schedule'
+import useStore from '../stores/request-store'
+import app from '../lib/axios-config'
+import { toast } from 'react-toastify'
+import { toastErrorConfig, toastSuccessConfig } from '../lib/toast-defaults'
+import LoadingSpinner from '../components/loading-spinner'
 
 interface RequestProps {
 	faqs: IFAQ[]
@@ -21,11 +26,12 @@ const steps = ['Tutorial Service', 'Personal Info', 'Schedule (Free Time)']
 
 const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, colleges, degreePrograms, campuses }) => {
 	const [help, setHelp] = useState(faqs[0].answer)
-	const [step, setStep] = useState(1)
+	const [step, setStep] = useState(0)
+	const { tutee, selectedSubjects, request, resetStore } = useStore()
 
 	// when a step is active
 	if (step) {
-		let comp: JSX.Element
+		let comp = <></>
 
 		switch (step) {
 			case 1:
@@ -34,8 +40,25 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 			case 2:
 				comp = <Information colleges={colleges} degreePrograms={degreePrograms} campuses={campuses} setStep={setStep} />
 				break
-			default:
+			case 3:
 				comp = <Schedule setStep={setStep} />
+				break
+			case 4:
+				comp = <LoadingSpinner />
+				console.log("Hello")
+				app.post('/api/tutees', { tutee, request, subjects: selectedSubjects })
+					.then(() => {
+						toast.success('You request has been sent.', toastSuccessConfig)
+						setStep(0)	// NOTE: important that this goes first before resetting store so as not to rerender and send another request
+						resetStore()
+					})
+					.catch(() => {
+						toast.error('An error has occured. Please try again.', toastErrorConfig)
+						setStep(3)
+					})
+				break
+			default:
+				setStep(0)
 		}
 
 		return (
