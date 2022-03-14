@@ -1,15 +1,18 @@
 import { Dispatch, FC, FormEventHandler, MouseEventHandler, SetStateAction } from 'react'
-import useStore from '../../stores/request-store'
+import useStore, { RequestStore } from '../../stores/request-store'
 import SchedulePicker from '../schedule-picker'
 import { days } from '../../lib/times'
 import { ISchedule } from '../../models/schedule'
+import shallow from 'zustand/shallow'
 
 type ScheduleProps = {
 	setStep: Dispatch<SetStateAction<number>>
 }
 
+const storeSelector = (state: RequestStore) => [state.tutee, state.setTutee] as const
+
 const Schedule: FC<ScheduleProps> = ({ setStep }) => {
-	const { tutee, setTutee } = useStore()
+	const [tutee, setTutee] = useStore(storeSelector, shallow)
 
 	const onPrevious: MouseEventHandler<HTMLButtonElement> = e => {
 		e.preventDefault()
@@ -18,6 +21,7 @@ const Schedule: FC<ScheduleProps> = ({ setStep }) => {
 
 	const onSubmit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault()
+		setStep(x => ++x)
 	}
 
 	function setSched(schedule: ISchedule) {
