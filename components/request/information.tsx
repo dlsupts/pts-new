@@ -13,11 +13,12 @@ type InformationProps = {
 
 const Information: FC<InformationProps> = ({ colleges, degreePrograms, campuses, setStep }) => {
 	const { tutee, setTutee } = useStore()
-	const { register, handleSubmit, formState: { errors } } = useForm<typeof tutee>({
+	const { register, handleSubmit, formState: { errors }, watch } = useForm<typeof tutee>({
 		reValidateMode: 'onBlur',
 		resolver: yupResolver(tuteeInfoSchema),
 		defaultValues: tutee
 	})
+	const college: string = watch('college')
 
 	const onPrevious: MouseEventHandler<HTMLButtonElement> = e => {
 		e.preventDefault()
@@ -48,9 +49,13 @@ const Information: FC<InformationProps> = ({ colleges, degreePrograms, campuses,
 				</div>
 				<div>
 					<label htmlFor="course">Degree Program<span className="text-red-500">*</span></label>
-					<select {...register('course')} id="course">
-						{degreePrograms.map(c => <option key={c} value={c}>{c}</option>)}
-					</select>
+					{college === 'CCS' ?
+						<select {...register('course')} id="course">
+							{degreePrograms.map(c => <option key={c} value={c}>{c}</option>)}
+						</select>
+						:
+						<input type="text" {...register('course')} id="course" />
+					}
 					<p className="form-err-msg text-sm">{errors.course?.message}</p>
 				</div>
 				<div>

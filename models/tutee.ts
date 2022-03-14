@@ -10,6 +10,7 @@ export const tuteeInfoSchema = userInfoSchema.shape({
 
 export interface ITutee extends yup.InferType<typeof tuteeInfoSchema> {
 	schedule: ISchedule
+	friends?: string[]
 }
 
 const tuteeSchema = new Schema<ITutee>({

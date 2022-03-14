@@ -10,7 +10,6 @@ import Schedule from '../components/request/schedule'
 
 interface RequestProps {
 	faqs: IFAQ[]
-	types: string[]
 	services: string[]
 	subjects: string[]
 	colleges: string[]
@@ -20,7 +19,7 @@ interface RequestProps {
 
 const steps = ['Tutorial Service', 'Personal Info', 'Schedule (Free Time)']
 
-const RequestPage: NextPage<RequestProps> = ({ faqs, types, services, subjects, colleges, degreePrograms, campuses }) => {
+const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, colleges, degreePrograms, campuses }) => {
 	const [help, setHelp] = useState(faqs[0].answer)
 	const [step, setStep] = useState(1)
 
@@ -30,7 +29,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, types, services, subjects, 
 
 		switch (step) {
 			case 1:
-				comp = <Service types={types} services={services} subjects={subjects} setStep={setStep} />
+				comp = <Service services={services} subjects={subjects} setStep={setStep} />
 				break
 			case 2:
 				comp = <Information colleges={colleges} degreePrograms={degreePrograms} campuses={campuses} setStep={setStep} />
@@ -88,7 +87,6 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, types, services, subjects, 
 export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
 	const faq = await FAQ.findOne({ type: 'Tutor Request' }, '-_id faqs').lean().exec()
-	const types = await Library.findById('Tutorial Types', '-_id').lean().exec()
 	const services = await Library.findById('Tutoring Services', '-_id').lean().exec()
 	const subjects = await Library.findById('Subjects', '-_id').lean().exec()
 	const colleges = await Library.findById('Colleges', '-_id').lean().exec()
@@ -98,7 +96,6 @@ export const getStaticProps: GetStaticProps = async () => {
 	return {
 		props: {
 			faqs: faq?.faqs?.map(f => ({ ...f, _id: f._id.toString() })),
-			types: types?.content,
 			services: services?.content?.filter(c => c !== 'None'),
 			subjects: subjects?.content,
 			colleges: colleges?.content?.map(c => c.split(':')[0]),

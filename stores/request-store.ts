@@ -17,12 +17,12 @@ type RequestStore = {
 
 const useRequestStore = create<RequestStore>(set => ({
 	tutee: {
-		campus: '',
+		campus: 'TAFT',
 		firstName: '',
 		lastName: '',
 		idNumber: 0,
 		email: '',
-		college: '',
+		college: 'CCS',
 		course: '',
 		contact: '',
 		url: '',
@@ -31,7 +31,7 @@ const useRequestStore = create<RequestStore>(set => ({
 	},
 	request: {
 		duration: 'One Session',
-		tutorialType: '',
+		tutorialType: 'One-on-one',
 		preferred: '',
 	},
 	selectedSubjects: [],
