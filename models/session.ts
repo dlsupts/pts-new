@@ -17,12 +17,12 @@ const sessionSchema = new Schema<ISession>({
 		ref: 'Request'
 	},
 	subject: { type: String, required: true, trim: true },
-	topics: { type: String, required: true, trim: true },
+	topics: { type: String, trim: true },
 	tutor: {
 		type: Schema.Types.ObjectId,
-		ref: 'User'
+		ref: 'User',
 	},
-	status: { type: String, required: true },
+	status: { type: String, required: true, default: 'Pending' },
 })
 
 export default models.Session as Model<ISession & Document> || model<ISession>('Session', sessionSchema, 'sessions')
