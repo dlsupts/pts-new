@@ -39,7 +39,8 @@ export default NextAuth({
 			if (account && profile) {
 				try {
 					await dbConnect()
-					const temp = await User.findOne({ email: profile.email }, '-_id userType schedule').lean().exec()
+					const temp = await User.findOne({ email: profile.email }, 'userType schedule').lean().exec()
+					token._id = temp?._id
 					token.type = temp?.userType
 					token.schedule = temp?.schedule
 				} catch (err) {
@@ -51,6 +52,7 @@ export default NextAuth({
 			return token
 		},
 		async session({ token, session }) {
+			session.user._id = token._id
 			session.user.type = token.type
 			session.user.schedule = token.schedule
 			return session
