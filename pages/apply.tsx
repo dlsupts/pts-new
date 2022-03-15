@@ -20,8 +20,8 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	const [help, setHelp] = useState(faqs[0].answer)
 	const [showForm, setShowForm] = useState(false)
 	const { register, handleSubmit, formState: { errors }, reset } = useForm<IUserInfo>({
-		reValidateMode: 'onBlur', 
-		resolver: yupResolver(userInfoSchema) 
+		reValidateMode: 'onBlur',
+		resolver: yupResolver(userInfoSchema)
 	})
 
 	const onSubmit = async (values: IUserInfo) => {
@@ -37,7 +37,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 
 	return (
 		<div className="main-height flex flex-col justify-center px-4 mt-10 md:mt-0">
-			<div className="grid place-items-center lg:grid-cols-2 grid-cols-auto mx-auto h-full container min-h-[10rem] container">
+			<div className="grid place-items-center lg:grid-cols-2 grid-cols-auto mx-auto min-h-[20rem] container gap-y-8">
 				{showForm ?
 					<form className="grid grid-cols-4 gap-4 w-full px-10 py-8 my-0 sm:my-8 border shadow-sm rounded-md" onSubmit={handleSubmit(onSubmit)}>
 						<h1 className="font-bold text-2xl col-span-full">Application Form</h1>
@@ -80,7 +80,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 						</div>
 						<div className="col-span-full sm:col-span-2">
 							<label htmlFor="contact">Contact Number<span className='text-red-500'>*</span></label>
-							<input type="tel" {...register('contact')}id="contact" autoComplete="contact-number" required />
+							<input type="tel" {...register('contact')} id="contact" autoComplete="contact-number" required />
 							<p className="form-err-msg text-sm">{errors.contact?.message}</p>
 						</div>
 						<div className="col-span-full sm:col-span-2">
@@ -94,7 +94,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 						</div>
 					</form>
 					:
-					<div className="flex flex-col items-center w-full pb-10 lg:pb-0 lg:pr-8">
+					<div className="flex flex-col items-center py-16">
 						<div className="mb-6">
 							<i className="fa-solid fa-chalkboard-user fa-4x"></i>
 						</div>
@@ -103,18 +103,16 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 						<button className="btn blue rounded-md px-4 py-2 font-medium" onClick={() => setShowForm(true)}>Apply Now</button>
 					</div>
 				}
-				<div>
-					<div className={cn({ 'lg:border-l': !showForm }, "flex flex-col items-center mb-20 lg:mb-auto pt-10 lg:pt-0 lg:pl-8 w-full border-gray-300 lg:border-t-0 border-t")}>
-						<div className="mb-6">
-							<i className="fa-solid fa-circle-question fa-4x"></i>
-						</div>
-						<p className="font-bold text-2xl text-center mb-2">Frequently Asked Questions</p>
-						<select onChange={e => setHelp(e.target.value)}
-							className="w-full max-w-prose border px-3 py-1.5 bg-clip-padding rounded transition ease-in-out cursor-pointer text-sm sm:text-base">
-							{faqs.map(f => <option key={f._id as string} value={f.answer} className="py-2">{f.question}</option>)}
-						</select>
-						<p className="max-w-prose mt-6 font-black italic text-center">{help}</p>
+				<div className={cn({ 'lg:border-l': !showForm }, "flex flex-col justify-center items-center py-16 w-full lg:pl-8 border-gray-300 lg:border-t-0 border-t lg:h-full")}>
+					<div className="mb-6">
+						<i className="fa-solid fa-circle-question fa-4x"></i>
 					</div>
+					<p className="font-bold text-2xl text-center mb-2">Frequently Asked Questions</p>
+					<select onChange={e => setHelp(e.target.value)}
+						className="w-full max-w-prose border px-3 py-1.5 bg-clip-padding rounded transition ease-in-out cursor-pointer text-sm sm:text-base">
+						{faqs.map(f => <option key={f._id as string} value={f.answer} className="py-2">{f.question}</option>)}
+					</select>
+					<p className="max-w-prose mt-6 font-black italic text-center min-h-[120px] lg:min-h-[75px]">{help}</p>
 				</div>
 			</div>
 		</div>
