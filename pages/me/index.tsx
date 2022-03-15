@@ -10,14 +10,17 @@ import Library from '../../models/library'
 import { IUserInfo, IUser, userInfoSchema } from '../../models/user'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect } from 'react'
 
 const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 	const { user, isLoading, isError, mutate } = useUser()
 	const { register, handleSubmit, formState: { errors }, reset } = useForm<IUserInfo>({
 		reValidateMode: 'onBlur',
 		resolver: yupResolver(userInfoSchema),
-		defaultValues: user
 	})
+
+	// set default values once user has loaded
+	useEffect(() => reset(user), [reset, user])
 
 	async function onSubmit(data: IUserInfo) {
 		try {

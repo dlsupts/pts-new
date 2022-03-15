@@ -3,7 +3,7 @@
 const withAnalyzer = require('@next/bundle-analyzer')({ enabled: process.env.ANALYZE === 'true' })
 
 const nextConfig = {
-	reactStrictMode: false,
+	reactStrictMode: true,
 	images: {
 		domains: ['drive.google.com'],
 	},
