@@ -1,0 +1,27 @@
+.data-display {
+	@apply shadow-sm rounded-md mb-4 border border-gray-200
+}
+
+.data-display>div {
+	@apply px-4
+}
+
+.header {
+	@apply col-span-2 py-4 border-b border-gray-300
+}
+
+.header h3 {
+	@apply font-semibold text-lg
+}
+
+.content {
+	@apply grid lg:grid-cols-2 gap-y-6 py-6
+}
+
+.label {
+	@apply text-gray-500 text-sm font-medium
+}
+
+.data {
+	@apply text-base font-medium
+}
