@@ -1,6 +1,7 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
 import { ITutee } from './tutee'
 import { IUser } from './user'
+import './tutee'
 
 export interface IRequest {
 	timestamp: Date

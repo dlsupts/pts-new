@@ -1,14 +1,17 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
 import { ISchedule } from './schedule'
-import { userInfoSchema } from './user'
+import { userInfoSchema, IUserInfo } from './user'
 import * as yup from 'yup'
+import './schedule'
 
 export const tuteeInfoSchema = userInfoSchema.shape({
 	campus: yup.string().required('Campus is required.'),
 	college: yup.string().required('College is required.'),
-}).omit(['terms']).required()
+}).omit(['temp']).required()
 
-export interface ITutee extends yup.InferType<typeof tuteeInfoSchema> {
+export interface ITutee extends Omit<IUserInfo, 'terms'> {
+	campus: string
+	college: string
 	schedule: ISchedule
 	friends?: string[]
 }
