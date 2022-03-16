@@ -18,4 +18,4 @@ const libSchema = new Schema<ISchedule>({
 	S: [String]
 })
 
-export default models.Schedule as Model<ISchedule & Document> || model<ISchedule>('Schedule', libSchema, 'schedules')
+export default models?.Schedule as Model<ISchedule & Document> || model<ISchedule>('Schedule', libSchema, 'schedules')
