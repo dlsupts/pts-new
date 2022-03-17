@@ -40,6 +40,16 @@ const TutorSessions: NextPage = () => {
 		return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
 	}
 
+	if (!sessions?.length) {
+		return (
+			<UserLayout>
+				<div className="h-96 flex justify-center items-center">
+					<h1 className="text-center text-2xl font-medium text-gray-400">No Sessions Yet</h1>
+				</div>
+			</UserLayout>
+		)
+	}
+
 	return (
 		<UserLayout>
 			{sessions?.map(({ request, sessions }) => (
