@@ -36,7 +36,7 @@ const NavItem: FC<NavItemProp> = ({ text, path }) => {
 const UserLayout: FC = ({ children }) => {
 	const router = useRouter()
 	const time = (new Date).getTime()
-	const { status } = useSession({
+	const { status, data } = useSession({
 		required: true,
 		onUnauthenticated: () => {
 			// stays on the page for at least 500ms to make transitions smooth
@@ -52,6 +52,7 @@ const UserLayout: FC = ({ children }) => {
 		<div className="container mx-auto grid lg:grid-cols-9 xl:grid-cols-7 pt-12 px-6 md:px-8 lg:px-10 pb-16">
 			<div className="lg:col-span-2 xl:col-span-1 md:mb-6">
 				{navItems.map(item => <NavItem key={item.path} text={item.text} path={item.path} />)}
+				{data.user.type === 'ADMIN' && <NavItem text='Admin Console' path='/admin' />}
 			</div>
 			<div className="lg:col-span-7 xl:col-span-6">
 				{children}
