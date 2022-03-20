@@ -22,7 +22,7 @@ const AdminLayout: FC = ({ children }) => {
 	}
 
 	return (
-		<div className="container mx-auto grid lg:grid-cols-9 xl:grid-cols-7 pt-12 px-6 md:px-8 lg:px-10 pb-16">
+		<div className="container mx-auto pt-12 px-6 md:px-8 lg:px-10 pb-16">
 			{children}
 		</div>
 	)
