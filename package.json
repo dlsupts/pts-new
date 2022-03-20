@@ -34,6 +34,7 @@
   "devDependencies": {
     "@types/node": "17.0.21",
     "@types/react": "17.0.39",
+    "@types/react-table": "^7.7.10",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",
     "autoprefixer": "^10.4.2",
