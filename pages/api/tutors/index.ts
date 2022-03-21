@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import dbConnect from '../../../lib/db'
 import User from '../../../models/user'
 import { getSession } from 'next-auth/react'
+import '../../../models/schedule'
 
 const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const {
@@ -31,7 +32,7 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				const session = await getSession({ req })
 				if (session?.user.type != 'ADMIN') return res.status(403)
 
-				const tutors = await User.find({ userType: 'TUTOR' }).sort('lastName').lean().exec()
+				const tutors = await User.find({ userType: 'TUTOR' }).sort('lastName').populate('schedule').lean().exec()
 				res.json(tutors)
 				break
 			}

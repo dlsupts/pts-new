@@ -1,6 +1,7 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
 import { role, service } from '../types'
 import * as yup from 'yup'
+import { ISchedule } from './schedule'
 
 // this is extended by tutee schema, be careful of changes
 export const userInfoSchema = yup.object({
@@ -24,7 +25,7 @@ export interface ITutorInfo {
 	tuteeCount: number
 	maxTuteeCount: number
 	topics: string[][],
-	schedule: Schema.Types.ObjectId
+	schedule: Schema.Types.ObjectId | ISchedule
 }
 
 export interface IUser extends IUserInfo, ITutorInfo {

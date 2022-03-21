@@ -30,6 +30,10 @@ html { font-family: 'Inter', sans-serif; scroll-behavior: smooth }
 	@apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white focus:ring-blue-500;
 }
 
+.btn.red {
+	@apply bg-red-600 hover:bg-red-700 active:bg-red-800 text-white focus:ring-red-500;
+}
+
 .btn.blue:disabled {
 	@apply opacity-50 hover:bg-blue-600 cursor-not-allowed
 }

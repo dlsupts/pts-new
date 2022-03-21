@@ -8,9 +8,10 @@ import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/outline'
 type tableprops<T extends object> = {
 	columns: readonly Column<T>[]
 	data: T[]
+	onRowClick?: (id: string) => void
 }
 
-const Table = <T extends object>({ columns, data }: tableprops<T>) => {
+const Table = <T extends object>({ columns, data, onRowClick }: tableprops<T>) => {
 	const {
 		getTableProps,
 		getTableBodyProps,
@@ -24,6 +25,9 @@ const Table = <T extends object>({ columns, data }: tableprops<T>) => {
 			columns,
 			data,
 			filterTypes,
+			defaultCanSort: true,
+			autoResetSortBy: false,
+			autoResetGlobalFilter: false,
 		},
 		useGlobalFilter,
 		useSortBy,
@@ -60,7 +64,8 @@ const Table = <T extends object>({ columns, data }: tableprops<T>) => {
 						{rows.map((row, i) => {
 							prepareRow(row)
 							return (
-								<tr {...row.getRowProps()} className={cn({ 'bg-gray-50': i % 2 }, 'text-gray-600')}>
+								<tr {...row.getRowProps()} className={cn({ 'bg-gray-50': i % 2, 'cursor-pointer hover:text-gray-900': onRowClick }, 'text-gray-600')}
+									onClick={() => onRowClick && onRowClick(row.id)}>
 									{row.cells.map(cell => {
 										return <td {...cell.getCellProps()} className="px-6 py-3 whitespace-nowrap text-sm">{cell.render('Cell')}</td>
 									})}
