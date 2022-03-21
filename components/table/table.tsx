@@ -1,28 +1,38 @@
 /* eslint-disable react/jsx-key */
-import { Column, useTable } from 'react-table'
+import { Column, useTable, useGlobalFilter } from 'react-table'
 import cn from 'classnames'
+import GlobalFilter from './global-filter'
+import filterTypes from './filter-types'
 
 type tableprops<T extends object> = {
-	columns: Column<T>[]
+	columns: readonly Column<T>[]
 	data: T[]
 }
 
-const Table = <T extends object>({columns, data }: tableprops<T>) => {
-	// Use the state and functions returned from useTable to build your UI
+const Table = <T extends object>({ columns, data }: tableprops<T>) => {
 	const {
 		getTableProps,
 		getTableBodyProps,
 		headerGroups,
 		rows,
 		prepareRow,
-	} = useTable({
-		columns,
-		data,
-	})
+		state,
+		setGlobalFilter
+	} = useTable<T>(
+		{
+			columns,
+			data,
+			filterTypes,
+		},
+		useGlobalFilter
+	)
 
-	// Render the UI for your table
 	return (
 		<div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+			<GlobalFilter
+				globalFilter={state.globalFilter}
+				setGlobalFilter={setGlobalFilter}
+			/>
 			<table {...getTableProps()} className="w-full divide-y divide-gray-200 table-fixed rounded-lg shadow-md overflow-hidden">
 				<thead className="bg-gray-100">
 					{headerGroups.map(headerGroup => (
