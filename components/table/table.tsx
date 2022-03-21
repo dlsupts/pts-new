@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-key */
-import { Column, useTable, useGlobalFilter } from 'react-table'
+import { Column, useTable, useGlobalFilter, useSortBy } from 'react-table'
 import cn from 'classnames'
 import GlobalFilter from './global-filter'
 import filterTypes from './filter-types'
+import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/outline'
 
 type tableprops<T extends object> = {
 	columns: readonly Column<T>[]
@@ -24,7 +25,8 @@ const Table = <T extends object>({ columns, data }: tableprops<T>) => {
 			data,
 			filterTypes,
 		},
-		useGlobalFilter
+		useGlobalFilter,
+		useSortBy,
 	)
 
 	return (
@@ -39,7 +41,17 @@ const Table = <T extends object>({ columns, data }: tableprops<T>) => {
 						{headerGroups.map(headerGroup => (
 							<tr className="text-gray-600" {...headerGroup.getHeaderGroupProps()}>
 								{headerGroup.headers.map(column => (
-									<th scope="col" className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" {...column.getHeaderProps()}>{column.render('Header')}</th>
+									<th scope="col" className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider select-none"
+										{...column.getHeaderProps(column.getSortByToggleProps())}>
+										{column.render('Header')}
+										<div className="ml-1 w-4 inline-grid place-items-center">
+											{column.isSorted ?
+												(column.isSortedDesc ? <ChevronUpIcon className="w-3 inline" /> : <ChevronDownIcon className="w-3 inline" />)
+												:
+												' '
+											}
+										</div>
+									</th>
 								))}
 							</tr>
 						))}

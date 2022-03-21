@@ -17,7 +17,7 @@ const AdminLayout: FC = ({ children }) => {
 
 	if (status == 'loading') {
 		return <LoadingSpinner className="absolute h-screen w-screen top-0 left-0 bg-white" />
-	} else if (data.user.type != 'ADMIN') {
+	} else if (data?.user?.type != 'ADMIN') {
 		router.replace('/?error=You are unauthorized.')
 	}
 
