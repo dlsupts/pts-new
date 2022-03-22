@@ -12,6 +12,7 @@ import { matchPath } from '../lib/utils'
 interface NavItemProp {
 	text: string
 	path: string
+	isHome?: boolean
 }
 
 interface MobNavItemProp extends NavItemProp {
@@ -19,15 +20,15 @@ interface MobNavItemProp extends NavItemProp {
 }
 
 const navItems: NavItemProp[] = [
-	{ path: '/', text: 'Home' },
+	{ path: '/', text: 'Home', isHome: true },
 	{ path: '/about', text: 'About' },
 	{ path: '/request', text: 'Request' },
 	{ path: '/apply', text: 'Apply' },
 ]
 
-const MobNavItem: FC<MobNavItemProp> = ({ text, path, onClick }) => {
+const MobNavItem: FC<MobNavItemProp> = ({ text, path, isHome, onClick }) => {
 	const { pathname } = useRouter()
-	const isMatch = matchPath(pathname, path)
+	const isMatch = matchPath(pathname, path, isHome)
 
 	const className = cn({
 		'border-blue-500 text-gray-900 bg-blue-50 text-blue-600': isMatch,
@@ -41,9 +42,9 @@ const MobNavItem: FC<MobNavItemProp> = ({ text, path, onClick }) => {
 	)
 }
 
-const NavItem: FC<NavItemProp> = ({ text, path }) => {
+const NavItem: FC<NavItemProp> = ({ text, path, isHome }) => {
 	const { pathname } = useRouter()
-	const isMatch = matchPath(pathname, path)
+	const isMatch = matchPath(pathname, path, isHome)
 
 	const className = cn({
 		'border-blue-500 text-gray-900 ': isMatch,
@@ -91,7 +92,7 @@ const Header: FC = () => {
 									</Link>
 									<div className="hidden md:block md:ml-6">
 										<div className="flex space-x-4 items-center h-full">
-											{navItems.map(nav => <NavItem key={nav.text} text={nav.text} path={nav.path} />)}
+											{navItems.map(nav => <NavItem key={nav.text} text={nav.text} path={nav.path} isHome={nav.isHome} />)}
 											{session && <NavItem text={'My Profile'} path={'/me'} />}
 										</div>
 									</div>
@@ -113,7 +114,7 @@ const Header: FC = () => {
 
 							<Disclosure.Panel className="md:hidden relative bg-white">
 								<div className="px-2 pt-2 pb-3 space-y-1">
-									{navItems.map(nav => <MobNavItem key={nav.text} text={nav.text} path={nav.path} onClick={close} />)}
+									{navItems.map(nav => <MobNavItem key={nav.text} text={nav.text} path={nav.path} isHome={nav.isHome} onClick={close} />)}
 									{session && <MobNavItem text={'My Profile'} path={'/me'} onClick={close} />}
 								</div>
 							</Disclosure.Panel>

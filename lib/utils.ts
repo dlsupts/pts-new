@@ -1,5 +1,5 @@
-export function matchPath(pathname: string, route: string) {
-	return route === '/' ? pathname === route : pathname.startsWith(route)
+export function matchPath(pathname: string, route: string, isHome?: boolean) {
+	return isHome ? pathname === route : pathname.startsWith(route)
 }
 
 /**
