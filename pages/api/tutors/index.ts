@@ -19,8 +19,8 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				if (query.filter == 'preference') {
 					const tutors = await User
 						.find({
+							email: { $ne: 'dlsu.pts.web.service@gmail.com' },
 							membership: true,
-							userType: 'TUTOR',
 							tutoringService: { $ne: ['None'] },
 							$expr: { $lt: [ '$tuteeCount', '$maxTuteeCount' ] }
 						}, 'firstName lastName topics')
@@ -32,7 +32,8 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				const session = await getSession({ req })
 				if (session?.user.type != 'ADMIN') return res.status(403)
 
-				const tutors = await User.find({ userType: 'TUTOR' }).sort('lastName').populate('schedule').lean().exec()
+				const tutors = await User.find({ email: { $ne: 'dlsu.pts.web.service@gmail.com' }, })
+					.sort('lastName').populate('schedule').lean().exec()
 				res.json(tutors)
 				break
 			}
