@@ -11,6 +11,8 @@ import cn from 'classnames'
 import styles from '../../styles/Sessions.module.css'
 import { toast } from 'react-toastify'
 import { toastErrorConfig, toastSuccessConfig } from '../../lib/toast-defaults'
+import Link from 'next/link'
+import LoadingSpinner from '../../components/loading-spinner'
 
 function useApplicants() {
 	const { data, error, mutate } = useSWR('/api/applications', url => app.get<IUserInfo[]>(url))
@@ -32,7 +34,7 @@ const columns: Column<IUserInfo>[] = [
 ]
 
 const ApplicantsPage: NextPage = () => {
-	const { applicants, mutateApplicants } = useApplicants()
+	const { applicants, mutateApplicants, isLoading } = useApplicants()
 	const [isOpen, setIsOpen] = useState(false) // for application info modal
 	const [applicant, setApplicant] = useState<IUserInfo>()
 	const [isDelOpen, setIsDelOpen] = useState<boolean>(false)
@@ -124,7 +126,11 @@ const ApplicantsPage: NextPage = () => {
 					</div>
 				</div>
 			</Modal>
-			{tableInstance}
+			{isLoading ? <LoadingSpinner /> :
+				!applicants.length ?
+					<p>No Applicants Yet. <Link href="tutors"><a className="underline text-blue-600">Go back.</a></Link></p> :
+					tableInstance
+			}
 		</AdminLayout>
 	)
 }

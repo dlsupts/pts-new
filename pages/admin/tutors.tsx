@@ -75,9 +75,7 @@ const AdminPage: NextPage = () => {
 	}, [tutors])
 	const tableInstance = Table({ columns, data, onRowClick })
 
-	if (isLoading) {
-		return <LoadingSpinner />
-	} else if (isError || !tutors) {
+	if (isError) {
 		toast.error('An error has occured. Please try again.', toastErrorConfig)
 	}
 
@@ -171,7 +169,7 @@ const AdminPage: NextPage = () => {
 					<a className="btn blue px-4 py-2 rounded-md">View Applicants</a>
 				</Link>
 			</div>
-			{tableInstance}
+			{isLoading ? <LoadingSpinner /> : tableInstance }
 		</AdminLayout>
 	)
 }
