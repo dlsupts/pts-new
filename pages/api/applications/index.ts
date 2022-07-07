@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
-import dbConnect from '../../lib/db'
-import Application from '../../models/application'
-import User from '../../models/user'
+import dbConnect from '../../../lib/db'
+import Application from '../../../models/application'
+import User from '../../../models/user'
 
 const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
