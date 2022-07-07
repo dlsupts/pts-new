@@ -16,7 +16,9 @@ export const userInfoSchema = yup.object({
 	url: yup.string().trim().url('Invalid URL.').required('Facebook URL is required.'),
 }).required()
 
-export type IUserInfo = yup.InferType<typeof userInfoSchema>
+export interface IUserInfo extends yup.InferType<typeof userInfoSchema> {
+	_id: Schema.Types.ObjectId
+}
 
 export interface ITutorInfo {
 	membership: boolean
@@ -29,7 +31,6 @@ export interface ITutorInfo {
 }
 
 export interface IUser extends IUserInfo, ITutorInfo {
-	_id: Schema.Types.ObjectId
 	userType: role
 	reset: boolean
 }

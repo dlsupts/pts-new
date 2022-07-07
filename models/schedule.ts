@@ -10,12 +10,12 @@ export interface ISchedule {
 }
 
 const libSchema = new Schema<ISchedule>({
-	M: [String],
-	T: [String],
-	W: [String],
-	H: [String],
-	F: [String],
-	S: [String]
+	M: { type: [String], default: [] },
+	T: { type: [String], default: [] },
+	W: { type: [String], default: [] },
+	H: { type: [String], default: [] },
+	F: { type: [String], default: [] },
+	S: { type: [String], default: [] },
 })
 
 export default models?.Schedule as Model<ISchedule & Document> || model<ISchedule>('Schedule', libSchema, 'schedules')
