@@ -7,7 +7,7 @@ import Table from '../../components/table/table'
 import LoadingSpinner from '../../components/loading-spinner'
 import { toast } from 'react-toastify'
 import { toastErrorConfig } from '../../lib/toast-defaults'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { Column } from 'react-table'
 import Modal from '../../components/modal'
 import styles from '../../styles/Sessions.module.css'
@@ -16,12 +16,13 @@ import cn from 'classnames'
 import { ISchedule } from '../../models/schedule'
 
 function useTutors() {
-	const { data, error } = useSWR('/api/tutors', url => app.get<(IUser & { status?: string })[]>(url))
+	const { data, error, mutate } = useSWR('/api/tutors', url => app.get<(IUser & { status?: string })[]>(url))
 
 	return {
 		tutors: data?.data,
 		isLoading: !data && !error,
-		isError: !!error
+		isError: !!error,
+		mutateTutors: mutate,
 	}
 }
 
@@ -34,14 +35,31 @@ const columns: Column<IUser & { status?: string }>[] = [
 ]
 
 const AdminPage: NextPage = () => {
-	const { tutors, isLoading, isError } = useTutors()
+	const { tutors, isLoading, isError, mutateTutors } = useTutors()
 	const [isOpen, setIsOpen] = useState(false)	// for add subject modal
+	const [isDelOpen, setIsDelOpen] = useState(false)
 	const [tutor, setTutor] = useState<IUser>()
+	const cancelButton = useRef<HTMLButtonElement>(null)
 
 	const onRowClick = useCallback((id: string) => {
 		setIsOpen(true)
 		setTutor(tutors?.[Number(id)])
 	}, [tutors])
+
+	function handleDelClose() {
+		setIsDelOpen(false)
+		setIsOpen(true)
+	}
+
+	async function handleDeleteRecord() {
+		try {
+			await app.delete(`/api/tutors/${tutor?._id}`)
+			await mutateTutors()
+			setIsDelOpen(false)
+		} catch {
+			toast.error('A server-side error has occured. Please try agian later.', toastErrorConfig)
+		}
+	}
 
 	// pre-process data
 	const data = useMemo(() => {
@@ -62,7 +80,6 @@ const AdminPage: NextPage = () => {
 		toast.error('An error has occured. Please try again.', toastErrorConfig)
 	}
 
-
 	return (
 		<AdminLayout>
 			<Modal isOpen={isOpen} close={() => setIsOpen(false)}>
@@ -70,7 +87,7 @@ const AdminPage: NextPage = () => {
 					<div className={cn(styles['data-display'], '!border-0')}>
 						<div className={cn(styles.header, 'flex justify-between')}>
 							<h3>{tutor?.firstName} {tutor?.lastName}</h3>
-							<button className="btn red px-4 py-1 rounded-md text-sm">Delete</button>
+							<button className="btn red px-4 py-1 rounded-md text-sm" onClick={() => { setIsDelOpen(true); setIsOpen(false) }}>Delete</button>
 						</div>
 						<div className={styles.content}>
 							<div>
@@ -135,7 +152,17 @@ const AdminPage: NextPage = () => {
 						</div>
 					</div>
 				</div>
-
+			</Modal>
+			<Modal isOpen={isDelOpen} close={handleDelClose} initialFocus={cancelButton}>
+				<div className="relative inline-block bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+					<div className="grid place-items-center py-10 gap-y-6">
+						<p className="text-xl">Remove <span className="font-medium">{tutor?.firstName}</span>?</p>
+						<div className="flex justify-center">
+							<button type="button" className="btn gray px-4 py-2 rounded-md mr-4" ref={cancelButton} onClick={handleDelClose}>Cancel</button>
+							<button type="button" className="btn red px-4 py-2 rounded-md" onClick={handleDeleteRecord}>Confirm</button>
+						</div>
+					</div>
+				</div>
 			</Modal>
 			{tableInstance}
 		</AdminLayout>
