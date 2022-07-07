@@ -14,6 +14,7 @@ import styles from '../../styles/Sessions.module.css'
 import { days } from '../../lib/times'
 import cn from 'classnames'
 import { ISchedule } from '../../models/schedule'
+import Link from 'next/link'
 
 function useTutors() {
 	const { data, error, mutate } = useSWR('/api/tutors', url => app.get<(IUser & { status?: string })[]>(url))
@@ -36,7 +37,7 @@ const columns: Column<IUser & { status?: string }>[] = [
 
 const AdminPage: NextPage = () => {
 	const { tutors, isLoading, isError, mutateTutors } = useTutors()
-	const [isOpen, setIsOpen] = useState(false)	// for add subject modal
+	const [isOpen, setIsOpen] = useState(false) // for tutor info modal
 	const [isDelOpen, setIsDelOpen] = useState(false)
 	const [tutor, setTutor] = useState<IUser>()
 	const cancelButton = useRef<HTMLButtonElement>(null)
@@ -164,6 +165,12 @@ const AdminPage: NextPage = () => {
 					</div>
 				</div>
 			</Modal>
+
+			<div className="flex justify-end sm:px-6 lg:px-8">
+				<Link href="applicants">
+					<a className="btn blue px-4 py-2 rounded-md">View Applicants</a>
+				</Link>
+			</div>
 			{tableInstance}
 		</AdminLayout>
 	)

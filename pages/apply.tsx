@@ -10,6 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import app from '../lib/axios-config'
 import { toast } from 'react-toastify'
 import { toastSuccessConfig, toastErrorConfig } from '../lib/toast-defaults'
+import axios from 'axios'
 
 interface RequestProps {
 	faqs: IFAQ[]
@@ -25,13 +26,15 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	})
 
 	const onSubmit = async (values: IUserInfo) => {
-		const { status } = await app.post('/api/applications', values)
-		if (status === 200) {
+		try {
+			await app.post('/api/applications', values)
 			toast.success('Application was sent! Please wait for us to contact you.', toastSuccessConfig)
 			setShowForm(false)
 			reset()
-		} else {
-			toast.error('A server-side error has occured. Please try again.', toastErrorConfig)
+		} catch (e) {
+			if (axios.isAxiosError(e)) {
+				toast.error(e?.response?.data, toastErrorConfig)
+			}
 		}
 	}
 
