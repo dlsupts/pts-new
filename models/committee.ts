@@ -4,7 +4,7 @@ import './user' // force import in case of query population
 
 export interface IOfficer {
 	user: Schema.Types.ObjectId | IUser | string;
-	name?: string;
+	name?: string; // frontend firstName + lastName
 	position: string;
 	image: string;
 }
