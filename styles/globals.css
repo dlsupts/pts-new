@@ -64,7 +64,7 @@ html { font-family: 'Inter', sans-serif; scroll-behavior: smooth }
 }
 
 .form-err-msg {
-	@apply text-red-500
+	@apply text-red-500 min-h-[20px]
 }
 
 /* forms */
