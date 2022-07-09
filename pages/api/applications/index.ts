@@ -14,7 +14,7 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				const session = await getSession({ req })
 				if (session?.user.type != 'ADMIN') return res.status(403)
 
-				const applicants = await Application.find()
+				const applicants = await Application.find().lean()
 				res.json(applicants)
 				break
 			}
@@ -22,8 +22,8 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 			case 'POST': {
 				// check if duplicate entry
 				const values = await Promise.all([
-					Application.findOne({ $or: [{ email: req.body.email }, { idNumber: req.body.idNumber }] }, '_id'),
-					User.findOne({ $or: [{ email: req.body.email }, { idNumber: req.body.idNumber }] }, '_id')
+					Application.findOne({ $or: [{ email: req.body.email }, { idNumber: req.body.idNumber }] }, '_id').lean(),
+					User.findOne({ $or: [{ email: req.body.email }, { idNumber: req.body.idNumber }] }, '_id').lean()
 				])
 				
 				if (values[0]) {

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import dbConnect from '../../../lib/db'
-import Committee from '../../../models/committee'
-import Library from '../../../models/library'
+import dbConnect from '@lib/db'
+import Committee from '@models/committee'
+import Library from '@models/library'
 import { getSession } from 'next-auth/react'
 
 const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -34,9 +34,6 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 						o.user = o.user.toString()
 					}
 				}))
-
-				console.dir(arranged?.[0]?.officers?.[0])
-				
 
 				res.json(arranged)
 				break
