@@ -21,7 +21,6 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	const [help, setHelp] = useState(faqs[0].answer)
 	const [showForm, setShowForm] = useState(false)
 	const { register, handleSubmit, formState: { errors }, reset } = useForm<IUserInfo>({
-		reValidateMode: 'onBlur',
 		resolver: yupResolver(userInfoSchema)
 	})
 
