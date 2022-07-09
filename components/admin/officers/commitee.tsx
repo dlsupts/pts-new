@@ -1,19 +1,26 @@
 import Image from 'next/image'
-import { FC } from 'react'
+import { FC, MouseEventHandler, useCallback } from 'react'
 import { ICommittee, IOfficer } from '@models/committee'
 import { PlusCircleIcon } from '@heroicons/react/solid'
+import { XIcon } from '@heroicons/react/outline'
 
 type OfficerProp = {
 	officer: IOfficer
-	onOfficerClick: () => void
+	onOfficerClick: (isDelete: boolean) => void
 }
 
 const Officer: FC<OfficerProp> = ({ officer, onOfficerClick }) => {
+	const handleDelClick: MouseEventHandler = useCallback((e) => {
+		e.stopPropagation()
+		onOfficerClick(true)
+	}, [onOfficerClick])
+
 	return (
 		<div
-			className="flex justify-between items-center border-gray-400 border px-4 p-2 rounded-lg cursor-pointer transition-shadow hover:shadow-md"
-			onClick={onOfficerClick}
+			className="relative flex justify-between items-center border-gray-400 border px-4 p-2 rounded-lg cursor-pointer transition-shadow hover:shadow-md"
+			onClick={() => onOfficerClick(false)}
 		>
+			<XIcon className="aspect-square w-4 absolute top-2 right-2 z-10 hover:bg-gray-500 hover:text-white rounded-full p-0.5 transition-colors" onClick={handleDelClick} />
 			<div>
 				<p className="font-medium">{officer?.name}</p>
 				<p>{officer.position}</p>
@@ -32,7 +39,7 @@ const Officer: FC<OfficerProp> = ({ officer, onOfficerClick }) => {
 type CommitteeProps = {
 	committee: ICommittee
 	onAddClick: () => void
-	onOfficerClick: (officerIdx: number) => void
+	onOfficerClick: (officerIdx: number) => (isDelete: boolean) => void
 }
 
 const Committee: FC<CommitteeProps> = ({ committee, onAddClick, onOfficerClick }) => {
@@ -43,7 +50,7 @@ const Committee: FC<CommitteeProps> = ({ committee, onAddClick, onOfficerClick }
 				<button onClick={onAddClick}><PlusCircleIcon className="text-gray-400 hover:text-gray-500 active:text-gray-600 transition-colors w-7 aspect-square" /></button>
 			</div>
 			<div className="grid lg:grid-cols-3 gap-x-4 gap-y-2">
-				{committee.officers.map((o, i) => <Officer key={o.user as string} officer={o} onOfficerClick={() => onOfficerClick(i)} />)}
+				{committee.officers.map((o, i) => <Officer key={o.user as string} officer={o} onOfficerClick={onOfficerClick(i)} />)}
 			</div>
 		</div>
 	)

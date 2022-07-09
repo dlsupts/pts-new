@@ -42,11 +42,12 @@ const OfficerPage: NextPage = () => {
 
 	function handleDelClose() {
 		setIsDelOpen(false)
-		setIsUpdateOpen(true)
 	}
 
-	function handleDeleteRecord() {
-		// await app.get()
+	async function handleDeleteRecord() {
+		await app.delete(`/api/committees/${committees?.[selection[0]]._id}/officers/${officer?.user}`)
+		await mutate()
+		setIsDelOpen(false)
 	}
 
 	const updateOfficer: FormEventHandler = async (e) => {
@@ -64,9 +65,14 @@ const OfficerPage: NextPage = () => {
 	}
 
 	function onOfficerClick(committeeIdx: number) {
-		return (officerIdx: number) => {
+		return (officerIdx: number) => (isDelete: boolean) => {
 			setSelection([committeeIdx, officerIdx])
-			setIsUpdateOpen(true)
+			
+			if (isDelete) {
+				setIsDelOpen(true)
+			} else {
+				setIsUpdateOpen(true)
+			}
 		}
 	}
 
@@ -104,7 +110,11 @@ const OfficerPage: NextPage = () => {
 			{isLoading ? <LoadingSpinner /> :
 				<div className="grid gap-y-6">
 					{committees?.map((c, i) =>
-						<Committee key={c.name} committee={c} onOfficerClick={onOfficerClick(i)} onAddClick={() => { setSelection([i]); setIsAddOpen(true) }} />)
+						<Committee key={c.name}
+							committee={c}
+							onOfficerClick={onOfficerClick(i)}
+							onAddClick={() => { setSelection([i]); setIsAddOpen(true) }}
+						/>)
 					}
 				</div>
 			}

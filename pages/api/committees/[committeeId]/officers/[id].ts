@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import dbConnect from '@lib/db'
-import Committe from '@models/committee'
+import Committee from '@models/committee'
 
 const officerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const session = await getSession({ req })
@@ -11,11 +11,19 @@ const officerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 		await dbConnect()
 
 		switch (req.method) {
-			case 'PATCH': {				
-				await Committe.updateOne(
+			case 'PATCH': {
+				await Committee.updateOne(
 					{ _id: req.query.committeeId },
 					{ $set: { 'officers.$[idx].image': req.body.image } },
 					{ arrayFilters: [{ 'idx.user': req.query.id }] }
+				)
+				break
+			}
+
+			case 'DELETE': {
+				await Committee.updateOne(
+					{ _id: req.query.committeeId },
+					{ $pull: { officers: { user: req.query.id } } },
 				)
 				break
 			}
