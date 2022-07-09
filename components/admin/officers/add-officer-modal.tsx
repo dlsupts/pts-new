@@ -37,7 +37,7 @@ const AddOfficerModal: FC<AddModalProps> = ({ isOpen, onClose, onSubmit, users }
 
 	return (
 		<Modal isOpen={isOpen} close={handleClose} initialFocus={cancelButton}>
-			<div className="relative inline-block bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+			<div className="relative inline-block bg-white rounded-lg w-full text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
 				<h1 className="font-semibold ml-4 text-xl my-4">Add Officer</h1>
 				<form id="add-officer" className="px-4 my-6 grid gap-y-2" onSubmit={handleSubmit(getSubmission)}>
 					<div>

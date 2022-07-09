@@ -14,7 +14,7 @@ const DeleteOfficerModal: FC<DeleteOfficerModalProps> = ({ isOpen, onClose, offi
 
 	return (
 		<Modal isOpen={isOpen} close={onClose} initialFocus={cancelButton}>
-			<div className="relative inline-block bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+			<div className="relative inline-block bg-white rounded-lg w-full text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
 				<div className="grid place-items-center py-10 gap-y-6">
 					<p className="text-xl">Remove <span className="font-medium">{officer?.name}</span>?</p>
 					<div className="flex justify-center">

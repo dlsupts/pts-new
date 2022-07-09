@@ -28,7 +28,7 @@ const UpdateOfficerModal: FC<UpdateOfficerModalProps> = ({ isOpen, onClose, onSu
 
 	return (
 		<Modal isOpen={isOpen} close={onClose} initialFocus={cancelButton}>
-			<div className="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+			<div className="relative inline-block align-bottom w-full bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
 				<h1 className="font-semibold ml-4 text-xl my-4">Update Image</h1>
 				<form id="update" className="px-4 my-6" onSubmit={handleSubmit(onSubmit)}>
 					<label htmlFor="image">Google Drive File ID</label>

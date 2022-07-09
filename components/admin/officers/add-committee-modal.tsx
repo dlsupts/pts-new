@@ -28,7 +28,7 @@ const AddCommitteeModal: FC<AddCommitteeModalProps> = ({ isOpen, onClose, onSubm
 
 	return (
 		<Modal isOpen={isOpen} close={onClose} initialFocus={cancelButton}>
-			<div className="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+			<div className="relative inline-block align-bottom bg-white w-full rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
 				<h1 className="font-semibold ml-4 text-xl my-4">Add Committee</h1>
 				<form id="update" className="px-4 my-6" onSubmit={handleSubmit(getSubmission)}>
 					<label htmlFor="image">Committee name</label>
