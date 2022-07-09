@@ -7,14 +7,14 @@ import { getSession } from 'next-auth/react'
 const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { method } = req
 
+	const session = await getSession({ req })
+	if (session?.user.type != 'ADMIN') return res.status(403)
+
 	try {
 		await dbConnect()
 
 		switch (method) {
 			case 'GET': {
-				const session = await getSession({ req })
-				if (session?.user.type != 'ADMIN') return res.status(403)
-
 				const committees = await Committee.find().populate({
 					path: 'officers.user',
 					select: 'firstName lastName'
@@ -27,8 +27,8 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 				// parse names and id
 				arranged?.forEach(c => c?.officers.forEach(o => {
-					if (typeof o.user != 'string' && 'firstName' in o.user) {						
-						o.name = o.user.firstName + ' ' + o.user.lastName						
+					if (typeof o.user != 'string' && 'firstName' in o.user) {
+						o.name = o.user.firstName + ' ' + o.user.lastName
 						o.user = o.user._id.toString()
 					} else {
 						o.user = o.user.toString()
@@ -40,6 +40,11 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 			}
 
 			case 'POST': {
+				await Committee.create({ name: req.body.name })
+				await Library.updateOne(
+					{ _id: 'Committees' },
+					{ $push: { content: req.body.name }}
+				)
 				break
 			}
 

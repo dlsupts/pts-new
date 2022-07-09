@@ -18,7 +18,6 @@ type UpdateOfficerModalProps = {
 	officer?: IOfficer
 }
 
-
 const UpdateOfficerModal: FC<UpdateOfficerModalProps> = ({ isOpen, onClose, onSubmit, officer }) => {
 	const cancelButton = useRef<HTMLButtonElement>(null)
 	const { register, handleSubmit, formState: { errors }, setValue } = useForm<UpdateOfficerSchema>({

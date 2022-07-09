@@ -40,17 +40,25 @@ type CommitteeProps = {
 	committee: ICommittee
 	onAddClick: () => void
 	onOfficerClick: (officerIdx: number) => (isDelete: boolean) => void
+	onDeleteClick: () => void
 }
 
-const Committee: FC<CommitteeProps> = ({ committee, onAddClick, onOfficerClick }) => {
+const Committee: FC<CommitteeProps> = ({ committee, onAddClick, onOfficerClick, onDeleteClick }) => {
 	return (
 		<div>
 			<div className="flex justify-between items-center mb-2">
 				<p className="text-2xl text-blue-700 font-bold">{committee.name}</p>
-				<button onClick={onAddClick}><PlusCircleIcon className="text-gray-400 hover:text-gray-500 active:text-gray-600 transition-colors w-7 aspect-square" /></button>
+				<div className="flex items-center">
+					<PlusCircleIcon onClick={onAddClick} className="cursor-pointer text-gray-400 hover:text-gray-500 active:text-gray-600 transition-colors w-7 aspect-square" />
+					<XIcon onClick={onDeleteClick} className="bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-full aspect-square w-6 p-0.5 cursor-pointer" />
+				</div>
 			</div>
 			<div className="grid lg:grid-cols-3 gap-x-4 gap-y-2">
-				{committee.officers.map((o, i) => <Officer key={o.user as string} officer={o} onOfficerClick={onOfficerClick(i)} />)}
+				{committee.officers.length ?
+					committee.officers.map((o, i) => <Officer key={o.user as string} officer={o} onOfficerClick={onOfficerClick(i)} />)
+					:
+					<p className="text-center col-span-full font-medium text-gray-500 text-xl">No officers yet</p>
+				}
 			</div>
 		</div>
 	)

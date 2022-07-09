@@ -2,8 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import dbConnect from '@lib/db'
 import Committee from '@models/committee'
+import Library from '@models/library'
 
-const officerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const session = await getSession({ req })
 	if (session?.user.type != 'ADMIN') return res.status(403)
 
@@ -11,25 +12,17 @@ const officerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 		await dbConnect()
 
 		switch (req.method) {
-			case 'PATCH': {
-				await Committee.updateOne(
-					{ _id: req.query.committeeId },
-					{ $set: { 'officers.$[idx].image': req.body.image } },
-					{ arrayFilters: [{ 'idx.user': req.query.id }] }
-				)
-				break
-			}
-
 			case 'DELETE': {
-				await Committee.updateOne(
-					{ _id: req.query.committeeId },
-					{ $pull: { officers: { user: req.query.id } } },
+				const committee = await Committee.findByIdAndDelete(req.query.committeeId)
+				await Library.updateOne(
+					{ _id: 'Committees' },
+					{ $pull: { content: committee?.name } }
 				)
 				break
 			}
 
 			default:
-				res.setHeader('Allow', ['PATCH', 'DELETE'])
+				res.setHeader('Allow', ['DELETE'])
 				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {
@@ -40,4 +33,4 @@ const officerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	}
 }
 
-export default officerHandler
+export default committeeHandler
