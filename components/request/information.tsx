@@ -21,6 +21,7 @@ const Information: FC<InformationProps> = ({ colleges, degreePrograms, campuses,
 		resolver: yupResolver(tuteeInfoSchema),
 		defaultValues: tutee
 	})
+
 	const college: string = watch('college')
 
 	const onPrevious: MouseEventHandler<HTMLButtonElement> = e => {

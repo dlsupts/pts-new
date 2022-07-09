@@ -20,7 +20,7 @@ const OfficerTile: FC<IOfficer> = ({ position, image, name }) => {
 	)
 }
 
-const CommiteeDiv: FC<ICommittee> = ({ name, officers }) => {
+const CommiteeDiv: FC<Omit<ICommittee, '_id'>> = ({ name, officers }) => {
 	return (
 		<div className="my-8 border-2 py-6 rounded-md">
 			<p className="text-center text-3xl mb-4">{name}</p>

@@ -12,17 +12,18 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect } from 'react'
 
+type FormSchema = Omit<IUserInfo, '_id'>
+
 const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 	const { user, isLoading, isError, mutate } = useUser()
-	const { register, handleSubmit, formState: { errors }, reset } = useForm<IUserInfo>({
-		reValidateMode: 'onBlur',
+	const { register, handleSubmit, formState: { errors }, reset } = useForm<Omit<FormSchema, '_id'>>({
 		resolver: yupResolver(userInfoSchema),
 	})
 
 	// set default values once user has loaded
 	useEffect(() => reset(user), [reset, user])
 
-	async function onSubmit(data: IUserInfo) {
+	async function onSubmit(data: FormSchema) {
 		try {
 			await mutate(app.patch<IUser>('/api/me', data))
 			toast.success('Profile Updated!', toastSuccessConfig)
@@ -95,7 +96,7 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 						</div>
 					</div>
 					<div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-						<input type="reset" className="btn gray py-2 px-4 rounded-md mr-4" onClick={e => { e.preventDefault(); reset()}} />
+						<input type="reset" className="btn gray py-2 px-4 rounded-md mr-4" onClick={e => { e.preventDefault(); reset() }} />
 						<input type="submit" value="Save" className="btn blue py-2 px-4 rounded-md" />
 					</div>
 				</div>

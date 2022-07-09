@@ -17,14 +17,16 @@ interface RequestProps {
 	courses: string[]
 }
 
+type FormSchema = Omit<IUserInfo, '_id'>
+
 const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	const [help, setHelp] = useState(faqs[0].answer)
 	const [showForm, setShowForm] = useState(false)
-	const { register, handleSubmit, formState: { errors }, reset } = useForm<IUserInfo>({
+	const { register, handleSubmit, formState: { errors }, reset } = useForm<FormSchema>({
 		resolver: yupResolver(userInfoSchema)
 	})
 
-	const onSubmit = async (values: IUserInfo) => {
+	const onSubmit = async (values: FormSchema) => {
 		try {
 			await app.post('/api/applications', values)
 			toast.success('Application was sent! Please wait for us to contact you.', toastSuccessConfig)

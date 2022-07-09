@@ -9,7 +9,7 @@ export const tuteeInfoSchema = userInfoSchema.shape({
 	college: yup.string().required('College is required.'),
 }).omit(['terms', 'middleName']).required()
 
-export interface ITutee extends Omit<IUserInfo, 'terms' | 'middleName'> {
+export interface ITutee extends Omit<IUserInfo, '_id' | 'terms' | 'middleName'> {
 	campus: string
 	college: string
 	schedule: ISchedule
