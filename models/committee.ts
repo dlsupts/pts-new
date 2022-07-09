@@ -10,6 +10,7 @@ export interface IOfficer {
 }
 
 export interface ICommittee {
+	_id: Schema.Types.ObjectId
 	name: string;
 	officers: IOfficer[];
 }
