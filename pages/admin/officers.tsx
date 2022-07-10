@@ -13,6 +13,7 @@ import UpdateOfficerModal, { UpdateOfficerSchema } from '@components/admin/offic
 import DeleteOfficerModal from '@components/admin/officers/delete-officer-modal'
 import DeleteCommitteeModal from '@components/admin/officers/delete-committee-modal'
 import AddCommitteeModal, { AddCommitteeSchema } from '@components/admin/officers/add-committee-modal'
+import ChangeOrderModal from '@components/admin/officers/change-order-modal'
 
 function useCommittees() {
 	const { data, error, mutate } = useSWR('/api/committees', url => app.get<ICommittee[]>(url))
@@ -40,8 +41,15 @@ const OfficerPage: NextPage = () => {
 	const [selection, setSelection] = useState([0, 0])
 	const committee = useMemo(() => committees?.[selection[0]], [committees, selection])
 	const officer = useMemo(() => committee?.officers[selection[1]], [committee, selection])
+	const order = useMemo(() => committees?.map(c => c.name), [committees])
 
 	function closeModal() {
+		setModal('')
+	}
+
+	async function updateOrder(data: string[]) {
+		await app.put('/api/libraries/Committees', { content: data })
+		await mutate()
 		setModal('')
 	}
 
@@ -94,8 +102,9 @@ const OfficerPage: NextPage = () => {
 			<AddOfficerModal isOpen={modal === 'add officer'} onClose={closeModal} users={tutors || []} onSubmit={addOfficer} />
 			<DeleteCommitteeModal isOpen={modal === 'delete committee'} onClose={closeModal} committee={committee} onDelete={deleteCommittee} />
 			<AddCommitteeModal isOpen={modal === 'add committee'} onClose={closeModal} onSubmit={addCommittee} />
+			<ChangeOrderModal isOpen={modal === 'sort'} onClose={closeModal} initOrder={order || []} onSubmit={updateOrder} />
 			<div className="flex justify-end mb-6 -mt-2">
-				<button className="btn gray px-4 py-2 rounded-lg mr-2">Sort Order</button>
+				<button onClick={() => setModal('sort')} className="btn gray px-4 py-2 rounded-lg mr-2">Sort Order</button>
 				<button onClick={() => setModal('add committee')} className="btn blue px-4 py-2 rounded-lg">Add Committee</button>
 			</div>
 			{isLoading ? <LoadingSpinner /> :

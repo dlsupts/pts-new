@@ -9,7 +9,7 @@
     "lint": "next lint --fix"
   },
   "dependencies": {
-    "@headlessui/react": "^1.5.0",
+    "@headlessui/react": "^1.6.6",
     "@heroicons/react": "^1.0.5",
     "@hookform/resolvers": "^2.8.8",
     "@next/bundle-analyzer": "^12.1.0",
@@ -22,6 +22,7 @@
     "next": "^12.1.0",
     "next-auth": "^4.2.1",
     "react": "17.0.2",
+    "react-beautiful-dnd": "^13.1.0",
     "react-dom": "17.0.2",
     "react-hook-form": "^7.27.1",
     "react-table": "^7.7.0",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@types/node": "17.0.21",
     "@types/react": "17.0.39",
+    "@types/react-beautiful-dnd": "^13.1.2",
     "@types/react-table": "^7.7.10",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",

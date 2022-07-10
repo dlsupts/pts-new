@@ -57,7 +57,7 @@ const Committee: FC<CommitteeProps> = ({ committee, onAddClick, onOfficerClick, 
 				{committee.officers.length ?
 					committee.officers.map((o, i) => <Officer key={o.user as string} officer={o} onOfficerClick={onOfficerClick(i)} />)
 					:
-					<p className="text-center col-span-full font-medium text-gray-500 text-xl">No officers yet</p>
+					<p className="grid place-items-center col-span-full font-medium h-24 text-gray-500 text-xl">No officers yet</p>
 				}
 			</div>
 		</div>
