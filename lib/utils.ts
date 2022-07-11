@@ -40,3 +40,18 @@ export function binInsert(subjects: string[][] | undefined, toInsert: string[]) 
 		subjects.splice(lo, 0, toInsert)
 	}
 }
+
+const dateOptions: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' }
+
+/**
+ * formats a given date
+ * 
+ * @param date a date object or date string to format
+ */
+export function formatDate(date: Date | string) {
+	if (typeof date == 'string') {
+		date = new Date(date)
+	}
+
+	return date.toLocaleDateString('en-US', dateOptions)
+}
