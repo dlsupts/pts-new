@@ -6,7 +6,8 @@ export interface IFAQ {
 	answer: string
 }
 
-interface IFAQs {
+export interface IFAQs {
+	_id: Schema.Types.ObjectId
 	type: string
 	faqs: IFAQ[]
 }

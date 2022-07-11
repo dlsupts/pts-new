@@ -2,8 +2,8 @@ import { Schema, models, model, Model, Document } from 'mongoose'
 
 export interface IDate {
 	_id: string
-	start: Date
-	end: Date
+	start: Date | string
+	end: Date | string
 }
 
 const dateSchema = new Schema<IDate>({
