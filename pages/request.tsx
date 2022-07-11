@@ -1,17 +1,17 @@
 import { GetStaticProps, NextPage } from 'next'
 import { useState } from 'react'
-import Service from '../components/request/service'
-import dbConnect from '../lib/db'
-import FAQ, { IFAQ } from '../models/faq'
-import Library from '../models/library'
+import Service from '@components/request/service'
+import dbConnect from '@lib/db'
+import FAQ, { IFAQ } from '@models/faq'
+import Library from '@models/library'
 import cn from 'classnames'
-import Information from '../components/request/information'
-import Schedule from '../components/request/schedule'
-import useStore from '../stores/request-store'
-import app from '../lib/axios-config'
+import Information from '@components/request/information'
+import Schedule from '@components/request/schedule'
+import useStore from '@stores/request-store'
+import app from '@lib/axios-config'
 import { toast } from 'react-toastify'
-import { toastErrorConfig, toastSuccessConfig } from '../lib/toast-defaults'
-import LoadingSpinner from '../components/loading-spinner'
+import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
+import LoadingSpinner from '@components/loading-spinner'
 
 interface RequestProps {
 	faqs: IFAQ[]
@@ -80,7 +80,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 
 	return (
 		<div className="main-height flex flex-col justify-center px-4 mt-6 lg:mt-0">
-			<div className="grid place-items-center lg:grid-cols-2 mx-auto container min-h-[20rem] container gap-y-8">
+			<div className="grid place-items-center lg:grid-cols-2 mx-auto container min-h-[20rem] gap-y-8">
 				<div className="flex flex-col items-center py-16">
 					<div className="mb-6">
 						<i className="fa-solid fa-book fa-4x"></i>

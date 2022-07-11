@@ -17,10 +17,10 @@ import { ISchedule } from '../../models/schedule'
 import Link from 'next/link'
 
 function useTutors() {
-	const { data, error, mutate } = useSWR('/api/tutors', url => app.get<(IUser & { status?: string })[]>(url))
+	const { data, error, mutate } = useSWR('/api/tutors', url => app.get<(IUser & { status?: string })[]>(url).then(res => res.data))
 
 	return {
-		tutors: data?.data,
+		tutors: data,
 		isLoading: !data && !error,
 		isError: !!error,
 		mutateTutors: mutate,
@@ -169,7 +169,7 @@ const AdminPage: NextPage = () => {
 					<a className="btn blue px-4 py-2 rounded-md">View Applicants</a>
 				</Link>
 			</div>
-			{isLoading ? <LoadingSpinner /> : tableInstance }
+			{isLoading ? <LoadingSpinner /> : tableInstance}
 		</AdminLayout>
 	)
 }

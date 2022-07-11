@@ -25,7 +25,9 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 
 	async function onSubmit(data: FormSchema) {
 		try {
-			await mutate(app.patch<IUser>('/api/me', data))
+			await mutate(app.patch<IUser>('/api/me', data).then(res => res.data), {
+				optimisticData: { ...user, ...data } as  IUser
+			})
 			toast.success('Profile Updated!', toastSuccessConfig)
 		} catch {
 			toast.error('A server error has occured. Please try again.', toastErrorConfig)

@@ -1,24 +1,24 @@
 import { NextPage } from 'next'
 import { Column } from 'react-table'
 import useSWR from 'swr'
-import AdminLayout from '../../components/admin-layout'
-import app from '../../lib/axios-config'
-import type { IUserInfo } from '../../models/user'
-import Table from '../../components/table/table'
+import AdminLayout from '@components/admin-layout'
+import app from '@lib/axios-config'
+import type { IUserInfo } from '@models/user'
+import Table from '@components/table/table'
 import { useCallback, useRef, useState } from 'react'
-import Modal from '../../components/modal'
+import Modal from '@components/modal'
 import cn from 'classnames'
-import styles from '../../styles/Sessions.module.css'
+import styles from '@styles/Sessions.module.css'
 import { toast } from 'react-toastify'
-import { toastErrorConfig, toastSuccessConfig } from '../../lib/toast-defaults'
+import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import Link from 'next/link'
-import LoadingSpinner from '../../components/loading-spinner'
+import LoadingSpinner from '@components/loading-spinner'
 
 function useApplicants() {
-	const { data, error, mutate } = useSWR('/api/applications', url => app.get<IUserInfo[]>(url))
+	const { data, error, mutate } = useSWR('/api/applications', url => app.get<IUserInfo[]>(url).then(res => res.data))
 
 	return {
-		applicants: data?.data || [],
+		applicants: data || [],
 		isLoading: !data && !error,
 		isError: !!error,
 		mutateApplicants: mutate,

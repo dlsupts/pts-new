@@ -1,18 +1,18 @@
 import { NextPage } from 'next'
-import UserLayout from '../../components/user-layout'
+import UserLayout from '@components/user-layout'
 import useSWR from 'swr'
-import app from '../../lib/axios-config'
-import { ISession } from '../../models/session'
-import { IRequest } from '../../models/request'
-import { ITutee } from '../../models/tutee'
+import app from '@lib/axios-config'
+import { ISession } from '@models/session'
+import { IRequest } from '@models/request'
+import { ITutee } from '@models/tutee'
 import { Schema } from 'mongoose'
-import LoadingSpinner from '../../components/loading-spinner'
+import LoadingSpinner from '@components/loading-spinner'
 import { Disclosure, Transition } from '@headlessui/react'
-import { ChevronUpIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon } from '@heroicons/react/solid'
 import cn from 'classnames'
-import { days } from '../../lib/times'
-import tutorialTypes from '../../lib/tutorial-types'
-import styles from '../../styles/Sessions.module.css'
+import { days } from '@lib/times'
+import tutorialTypes from '@lib/tutorial-types'
+import styles from '@styles/Sessions.module.css'
 
 interface IReqSesssion {
 	request: Pick<IRequest, 'duration' | 'tutorialType'> & {
@@ -54,11 +54,11 @@ const TutorSessions: NextPage = () => {
 		<UserLayout>
 			{sessions?.map(({ request, sessions }) => (
 				<Disclosure key={request._id.toString()}>
-					{({ open }) => (
+					{({ open }: { open: boolean }) => (
 						<>
 							<Disclosure.Button className="flex justify-between w-full px-4 py-2 mb-4 text-sm font-medium text-left text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 focus:outline-none focus-visible:ring focus-visible:ring-blue-500 focus-visible:ring-opacity-75">
 								<span className="text-base">{request.tutee.firstName} {request.tutee.lastName}</span>
-								<ChevronUpIcon className={cn({ 'transform rotate-180': open }, 'w-5 h-5 text-blue-500')} />
+								<ChevronDownIcon className={cn({ 'transform rotate-180': open }, 'w-5 h-5 text-blue-500')} />
 							</Disclosure.Button>
 							<Transition
 								enter="transition duration-100 ease-out"

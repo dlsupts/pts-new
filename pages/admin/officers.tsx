@@ -16,21 +16,21 @@ import AddCommitteeModal, { AddCommitteeSchema } from '@components/admin/officer
 import ChangeOrderModal from '@components/admin/officers/change-order-modal'
 
 function useCommittees() {
-	const { data, error, mutate } = useSWR('/api/committees', url => app.get<ICommittee[]>(url))
+	const { data, error, mutate } = useSWR('/api/committees', url => app.get<ICommittee[]>(url).then(res => res.data))
 
 	return {
-		committees: data?.data,
-		isLoading: !data?.data && !error,
+		committees: data,
+		isLoading: !data && !error,
 		isError: !!error,
 		mutate,
 	}
 }
 
 function useTutors() {
-	const { data } = useSWR('/api/tutors?query=simple', url => app.get<IUser[]>(url))
+	const { data } = useSWR('/api/tutors?query=simple', url => app.get<IUser[]>(url).then(res => res.data))
 
 	return {
-		tutors: data?.data,
+		tutors: data,
 	}
 }
 

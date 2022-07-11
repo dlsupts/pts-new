@@ -1,20 +1,20 @@
 import { GetStaticProps, NextPage } from 'next'
 import { FormEventHandler, useRef, MouseEventHandler, useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
-import LoadingSpinner from '../../components/loading-spinner'
-import UserLayout from '../../components/user-layout'
-import app from '../../lib/axios-config'
+import LoadingSpinner from '@components/loading-spinner'
+import UserLayout from '@components/user-layout'
+import app from '@lib/axios-config'
 import dbConnect from '../../lib/db'
-import { toastErrorConfig, toastSuccessConfig } from '../../lib/toast-defaults'
-import useUser from '../../lib/useUser'
-import Library from '../../models/library'
-import { ITutorInfo, IUser } from '../../models/user'
+import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
+import useUser from '@lib/useUser'
+import Library from '@models/library'
+import { ITutorInfo, IUser } from '@models/user'
 import Multiselect from 'multiselect-react-dropdown'
 import useSWRImmutable from 'swr/immutable'
-import { ISchedule } from '../../models/schedule'
-import AddSubjectModal from '../../components/subject-list/modal'
-import SubjectList from '../../components/subject-list/list'
-import SchedulePicker from '../../components/schedule-picker'
+import { ISchedule } from '@models/schedule'
+import AddSubjectModal from '@components/subject-list/modal'
+import SubjectList from '@components/subject-list/list'
+import SchedulePicker from '@components/schedule-picker'
 
 interface TutorDetailsProps {
 	types: string[]
@@ -27,9 +27,9 @@ function blockEnterKeyPress(e: KeyboardEvent) {
 }
 
 function useSchedule() {
-	const { data, error, mutate } = useSWRImmutable('/api/me/schedule', url => app.get<ISchedule>(url))
+	const { data, error, mutate } = useSWRImmutable('/api/me/schedule', url => app.get<ISchedule>(url).then(res => res.data))
 	return {
-		sched: data?.data,
+		sched: data,
 		isSchedLoading: !data && !error,
 		isSchedError: !!error,
 		schedMutate: mutate
@@ -71,7 +71,14 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 		if (typeSelection.current) values.tutorialType = typeSelection.current.getSelectedItems()
 
 		try {
-			const tasks = [mutate(app.patch<IUser>('/api/me', values)), schedMutate(app.post<ISchedule>('/api/me/schedule', sched))]
+			const tasks = [
+				mutate(app.patch<IUser>('/api/me', values).then(res => res.data), {
+					optimisticData: { ...user, ...values } as IUser
+				}),
+				schedMutate(app.post<ISchedule>('/api/me/schedule', sched).then(res => res.data), {
+					optimisticData: sched
+				})
+			]
 			await Promise.all(tasks)
 			toast.success('Profile Updated!', toastSuccessConfig)
 		} catch {
