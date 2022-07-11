@@ -1,10 +1,8 @@
-import Modal from '@components/modal'
+import Modal, { IModalProps } from '@components/modal'
 import { ICommittee } from '@models/committee'
 import { FC, useRef } from 'react'
 
-type DeleteCommitteeModalProps = {
-	isOpen: boolean
-	onClose: () => void
+type DeleteCommitteeModalProps = IModalProps & {
 	onDelete: () => void
 	committee?: ICommittee
 }

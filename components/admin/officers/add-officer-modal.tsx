@@ -1,4 +1,4 @@
-import Modal from '@components/modal'
+import Modal, { IModalProps } from '@components/modal'
 import { IUser } from '@models/user'
 import { FC, useCallback, useRef } from 'react'
 import { useForm } from 'react-hook-form'
@@ -13,9 +13,7 @@ const addSchema = yup.object({
 
 export type AddOfficerSchema = yup.InferType<typeof addSchema>
 
-type AddModalProps = {
-	isOpen: boolean
-	onClose: () => void
+type AddModalProps = IModalProps & {
 	onSubmit: (data: AddOfficerSchema) => Promise<void>
 	users: IUser[]
 }

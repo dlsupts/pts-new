@@ -1,6 +1,5 @@
 import { NextPage } from 'next'
 import { Column } from 'react-table'
-import useSWR from 'swr'
 import AdminLayout from '@components/admin-layout'
 import app from '@lib/axios-config'
 import type { IUserInfo } from '@models/user'
@@ -13,17 +12,7 @@ import { toast } from 'react-toastify'
 import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import Link from 'next/link'
 import LoadingSpinner from '@components/loading-spinner'
-
-function useApplicants() {
-	const { data, error, mutate } = useSWR('/api/applications', url => app.get<IUserInfo[]>(url).then(res => res.data))
-
-	return {
-		applicants: data || [],
-		isLoading: !data && !error,
-		isError: !!error,
-		mutateApplicants: mutate,
-	}
-}
+import { useRetrieverWithFallback } from '@lib/useRetriever'
 
 const columns: Column<IUserInfo>[] = [
 	{ Header: 'ID Number', accessor: 'idNumber' },
@@ -34,7 +23,7 @@ const columns: Column<IUserInfo>[] = [
 ]
 
 const ApplicantsPage: NextPage = () => {
-	const { applicants, mutateApplicants, isLoading } = useApplicants()
+	const { data: applicants, mutate, isLoading } = useRetrieverWithFallback<IUserInfo[]>('/api/applications', [])
 	const [isOpen, setIsOpen] = useState(false) // for application info modal
 	const [applicant, setApplicant] = useState<IUserInfo>()
 	const [isDelOpen, setIsDelOpen] = useState<boolean>(false)
@@ -48,7 +37,7 @@ const ApplicantsPage: NextPage = () => {
 	async function handleDeleteRecord() {
 		try {
 			await app.delete(`/api/applications/${applicant?._id}`)
-			await mutateApplicants()
+			await mutate()
 			setIsDelOpen(false)
 			toast.success('Applicant record was deleted.', toastSuccessConfig)
 		} catch {
@@ -59,7 +48,7 @@ const ApplicantsPage: NextPage = () => {
 	async function handleAcceptApplicant() {
 		try {
 			await app.post('/api/tutors', { _id: applicant?._id }) // also deletes tutor entry in the backend
-			await mutateApplicants()
+			await mutate()
 			setIsOpen(false)
 			toast.success('Tutor record was created.', toastSuccessConfig)
 		} catch {

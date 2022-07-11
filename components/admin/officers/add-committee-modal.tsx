@@ -1,4 +1,4 @@
-import Modal from '@components/modal'
+import Modal, { IModalProps } from '@components/modal'
 import { FC, useRef } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -10,9 +10,7 @@ const addCommitteeSchema = yup.object({
 
 export type AddCommitteeSchema = yup.InferType<typeof addCommitteeSchema>
 
-type AddCommitteeModalProps = {
-	isOpen: boolean
-	onClose: () => void
+type AddCommitteeModalProps = IModalProps & {
 	onSubmit: (data: AddCommitteeSchema) => Promise<void>
 }
 

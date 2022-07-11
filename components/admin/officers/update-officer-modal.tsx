@@ -1,4 +1,4 @@
-import Modal from '@components/modal'
+import Modal, { IModalProps } from '@components/modal'
 import { IOfficer } from '@models/committee'
 import { FC, useEffect, useRef } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -11,9 +11,7 @@ const updateOfficerSchema = yup.object({
 
 export type UpdateOfficerSchema = yup.InferType<typeof updateOfficerSchema>
 
-type UpdateOfficerModalProps = {
-	isOpen: boolean
-	onClose: () => void
+type UpdateOfficerModalProps = IModalProps & {
 	onSubmit: (data: UpdateOfficerSchema) => Promise<void>
 	officer?: IOfficer
 }

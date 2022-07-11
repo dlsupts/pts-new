@@ -1,7 +1,6 @@
 import { NextPage } from 'next'
 import { useMemo } from 'react'
 import { useState } from 'react'
-import useSWR from 'swr'
 import AdminLayout from '@components/admin-layout'
 import Committee from '@components/admin/officers/commitee'
 import LoadingSpinner from '@components/loading-spinner'
@@ -14,29 +13,11 @@ import DeleteOfficerModal from '@components/admin/officers/delete-officer-modal'
 import DeleteCommitteeModal from '@components/admin/officers/delete-committee-modal'
 import AddCommitteeModal, { AddCommitteeSchema } from '@components/admin/officers/add-committee-modal'
 import ChangeOrderModal from '@components/admin/officers/change-order-modal'
-
-function useCommittees() {
-	const { data, error, mutate } = useSWR('/api/committees', url => app.get<ICommittee[]>(url).then(res => res.data))
-
-	return {
-		committees: data,
-		isLoading: !data && !error,
-		isError: !!error,
-		mutate,
-	}
-}
-
-function useTutors() {
-	const { data } = useSWR('/api/tutors?query=simple', url => app.get<IUser[]>(url).then(res => res.data))
-
-	return {
-		tutors: data,
-	}
-}
+import useRetriever from '@lib/useRetriever'
 
 const OfficerPage: NextPage = () => {
-	const { committees, isLoading, mutate } = useCommittees()
-	const { tutors } = useTutors()
+	const { data: committees, isLoading, mutate } = useRetriever<ICommittee[]>('/api/committees')
+	const { data: tutors } = useRetriever<IUser[]>('/api/tutors?query=simple')
 	const [modal, setModal] = useState('')
 	const [selection, setSelection] = useState([0, 0])
 	const committee = useMemo(() => committees?.[selection[0]], [committees, selection])

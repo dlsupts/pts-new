@@ -1,6 +1,5 @@
 import { NextPage } from 'next'
 import AdminLayout from '../../components/admin-layout'
-import useSWR from 'swr'
 import app from '../../lib/axios-config'
 import { IUser } from '../../models/user'
 import Table from '../../components/table/table'
@@ -15,17 +14,7 @@ import { days } from '../../lib/times'
 import cn from 'classnames'
 import { ISchedule } from '../../models/schedule'
 import Link from 'next/link'
-
-function useTutors() {
-	const { data, error, mutate } = useSWR('/api/tutors', url => app.get<(IUser & { status?: string })[]>(url).then(res => res.data))
-
-	return {
-		tutors: data,
-		isLoading: !data && !error,
-		isError: !!error,
-		mutateTutors: mutate,
-	}
-}
+import useRetriever from '@lib/useRetriever'
 
 const columns: Column<IUser & { status?: string }>[] = [
 	{ Header: 'ID Number', accessor: 'idNumber' },
@@ -36,7 +25,7 @@ const columns: Column<IUser & { status?: string }>[] = [
 ]
 
 const AdminPage: NextPage = () => {
-	const { tutors, isLoading, isError, mutateTutors } = useTutors()
+	const { data: tutors, isLoading, isError, mutate: mutateTutors } = useRetriever<(IUser & { status?: string })[]>('/api/tutors')
 	const [isOpen, setIsOpen] = useState(false) // for tutor info modal
 	const [isDelOpen, setIsDelOpen] = useState(false)
 	const [tutor, setTutor] = useState<IUser>()
@@ -82,7 +71,7 @@ const AdminPage: NextPage = () => {
 	return (
 		<AdminLayout>
 			<Modal isOpen={isOpen} close={() => setIsOpen(false)}>
-				<div className="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+				<div className="relative inline-block align-bottom bg-white w-full rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
 					<div className={cn(styles['data-display'], '!border-0')}>
 						<div className={cn(styles.header, 'flex justify-between')}>
 							<h3>{tutor?.firstName} {tutor?.lastName}</h3>

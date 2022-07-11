@@ -1,11 +1,9 @@
-import Modal from '@components/modal'
+import Modal, { IModalProps } from '@components/modal'
 import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import { MenuIcon } from '@heroicons/react/outline'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
 
-type ChangeOrderModalProps = {
-	isOpen: boolean
-	onClose: () => void
+type ChangeOrderModalProps = IModalProps & {
 	onSubmit: (order: string[]) => void
 	initOrder: string[]
 }

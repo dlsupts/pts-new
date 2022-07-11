@@ -1,10 +1,8 @@
-import Modal from '@components/modal'
+import Modal, { IModalProps } from '@components/modal'
 import { IOfficer } from '@models/committee'
 import { FC, useRef } from 'react'
 
-type DeleteOfficerModalProps = {
-	isOpen: boolean
-	onClose: () => void
+type DeleteOfficerModalProps = IModalProps & {
 	onDelete: () => void
 	officer?: IOfficer
 }
