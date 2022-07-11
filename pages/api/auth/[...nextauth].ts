@@ -16,7 +16,7 @@ export default NextAuth({
 	},
 	callbacks: {
 		async signIn({ account, profile }) {
-			if (account.provider === 'google' && (profile.hd == 'dlsu.edu.ph' || profile.email == 'dlsu.pts.web.service@gmail.com')) {
+			if (account.provider === 'google' && (profile.hd == 'dlsu.edu.ph' || profile.email == process.env.ADMIN_EMAIL)) {
 				let temp
 
 				try {
@@ -33,7 +33,7 @@ export default NextAuth({
 
 				return true
 			}
-			
+
 			throw new Error('Invalid login! Make sure to use your DLSU email.')
 		},
 		async jwt({ token, account, profile }) {

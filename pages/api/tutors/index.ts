@@ -22,7 +22,7 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				if (query.filter == 'preference') {
 					const tutors = await User
 						.find({
-							email: { $ne: 'dlsu.pts.web.service@gmail.com' },
+							email: { $ne: process.env.ADMIN_EMAIL },
 							membership: true,
 							tutoringService: { $ne: ['None'] },
 							$expr: { $lt: ['$tuteeCount', '$maxTuteeCount'] }
@@ -35,13 +35,13 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				const session = await getSession({ req })
 				if (session?.user.type != 'ADMIN') return res.status(403)
 
-				if (query.filter == 'simple') {
-					const tutors = await User.find({ email: { $ne: 'dlsu.pts.web.service@gmail.com' } }, 'firstName lastName')
+				if (query.filter == 'simple') {					
+					const tutors = await User.find({ email: { $ne: process.env.ADMIN_EMAIL } }, 'firstName lastName')
 						.sort('firstName').lean().exec()
 					return res.json(tutors)
 				}
 
-				const tutors = await User.find({ email: { $ne: 'dlsu.pts.web.service@gmail.com' }, })
+				const tutors = await User.find({ email: { $ne: process.env.ADMIN_EMAIL }, })
 					.sort('lastName').populate('schedule').lean().exec()
 				res.json(tutors)
 				break

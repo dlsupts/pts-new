@@ -15,6 +15,7 @@ declare global {
 			MONGODB_URI?: string;
 			GOOGLE_CLIENT_ID: string;
 			GOOGLE_CLIENT_SECRET: string;
+			ADMIN_EMAIL: string;
 		}
 	}
 }

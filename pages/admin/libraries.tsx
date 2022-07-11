@@ -3,12 +3,15 @@ import AdminLayout from '@components/admin-layout'
 import styles from '@styles/Libraries.module.css'
 import { PlusIcon } from '@heroicons/react/outline'
 import { formatDate } from '@lib/utils'
-import useRetriever from '@lib/useRetriever'
+import useRetriever, { useRetrieverWithFallback } from '@lib/useRetriever'
 import { IDate } from '@models/date'
 import { ILib } from '@models/library'
 import { IFAQs } from '@models/faq'
 import { Switch } from '@headlessui/react'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
+import app from '@lib/axios-config'
+import { toastSuccessConfig } from '@lib/toast-defaults'
+import { toast } from 'react-toastify'
 
 type button = {
 	text: string
@@ -20,7 +23,7 @@ const LibraryPage: NextPage = () => {
 	const { data: libraries } = useRetriever<ILib[]>('/api/libraries')
 	const { data: dates } = useRetriever<IDate[]>('/api/dates')
 	const { data: faqs } = useRetriever<IFAQs[]>('/api/faqs')
-	const [isInMaintenance, setIsInMaintenance] = useState(false)
+	const { data: isInMaintenance, mutate: mutateIsInMaintenance } = useRetrieverWithFallback<boolean>('/api/maintenance', true)
 	const panelButtons: readonly button[] = useMemo(() => [
 		{
 			text: 'Export Database',
@@ -34,6 +37,15 @@ const LibraryPage: NextPage = () => {
 		},
 	] as const, [])
 
+	const handleMaintenanceToggle = useCallback(async () => {
+		try {
+			const result = await mutateIsInMaintenance(app.put('/api/maintenance', { reset: !isInMaintenance }))
+			toast.success(`Successfully ${result ? 'activated' : 'deactivated'} maintenance mode.`, toastSuccessConfig)
+		} catch {
+			toast.error('A server-side error has occured!')
+		}
+	}, [mutateIsInMaintenance, isInMaintenance])
+
 	return (
 		<AdminLayout>
 			<div className="grid gap-y-8">
@@ -41,7 +53,7 @@ const LibraryPage: NextPage = () => {
 					<h2 className={styles['section-header']}>Libraries</h2>
 					<div className={styles['library-container']}>
 						{libraries?.map(l =>
-							<div key={l._id} className="">
+							<div key={l._id}>
 								<p>{l._id}</p>
 							</div>
 						)}
@@ -86,7 +98,7 @@ const LibraryPage: NextPage = () => {
 				<section>
 					<h2 className={styles['section-header']}>Admin Panel</h2>
 					<div className={styles['library-container']}>
-						<div className="flex justify-between group relative" onClick={() => setIsInMaintenance(b => !b)}>
+						<div className="flex justify-between group relative" onClick={handleMaintenanceToggle}>
 							<p>Maintenance Mode</p>
 							{/*eslint-disable-next-line @typescript-eslint/no-empty-function*/}
 							<Switch checked={isInMaintenance} onChange={() => { }} className={`${isInMaintenance ? 'bg-blue-600' : 'bg-gray-200'} transition-colors relative inline-flex h-6 w-11 items-center rounded-full`}>
