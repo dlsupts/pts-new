@@ -1,0 +1,29 @@
+.section-header {
+	@apply text-xl font-medium mb-2 text-gray-800
+}
+
+.library-container {
+	@apply grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4
+}
+
+.library-container > div {
+	@apply border border-gray-300 rounded-md p-3 cursor-pointer hover:shadow-md transition-shadow
+}
+
+.library-container > div:last-child {
+	@apply bg-gray-200 text-gray-500 flex items-center shadow-inner hover:shadow-none
+}
+
+.button-group {
+	@apply flex text-white space-x-4 mt-4
+}
+
+.button-group > * {
+	@apply rounded-md px-4 py-2 relative
+}
+
+.button-group span, .tooltip {
+	@apply absolute w-auto p-2 min-w-max -top-10 left-1/2 -translate-x-1/2 rounded-md 
+		shadow-md text-white bg-gray-800 text-xs font-semibold transition-all
+		duration-100 scale-0 origin-bottom
+}
