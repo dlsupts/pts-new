@@ -189,7 +189,7 @@ export const getStaticProps: GetStaticProps = async () => {
 		props: {
 			types: types?.content,
 			services: services?.content,
-			subjects: subjects?.content?.concat(languages?.content?.map(l => l.split(':')[1]) ?? [])
+			subjects: subjects?.content?.concat(languages?.content ?? [])
 		},
 		revalidate: Number(process.env.NEXT_PUBLIC_REVALIDATION_INTERVAL)
 	}

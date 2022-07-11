@@ -38,11 +38,11 @@ const AddSubjectModal: FC<AddSubjectModalProps> = ({ isOpen, setIsOpen, options,
 						<div className="mt-3 text-center sm:mt-0 sm:text-left">
 							<Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">Add Subject</Dialog.Title>
 							<div className="mt-4">
-								<label htmlFor="new-subject">New Subject</label>
+								<label className="text-left" htmlFor="new-subject">New Subject</label>
 								<select ref={newSubject} id="new-subject">
 									{filterSubjects(options, selected).map(o => <option key={o} value={o}>{o}</option>)}
 								</select>
-								<label htmlFor="specific-topics" className="mb-1 mt-4">Specific Topics</label>
+								<label htmlFor="specific-topics" className="mb-1 mt-4 text-left">Specific Topics</label>
 								<textarea ref={newTopics} id="specific-topics" rows={3} className="shadow-sm w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"></textarea>
 							</div>
 						</div>

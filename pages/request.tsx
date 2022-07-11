@@ -113,12 +113,13 @@ export const getStaticProps: GetStaticProps = async () => {
 	const colleges = await Library.findById('Colleges', '-_id').lean().exec()
 	const degreePrograms = await Library.getDegreeCodes()
 	const campuses = await Library.findById('Campuses', '-_id').lean().exec()
+	const languages = await Library.findById('Programming Languages').lean().exec()
 
 	return {
 		props: {
 			faqs: faq?.faqs?.map(f => ({ ...f, _id: f._id.toString() })),
 			services: services?.content?.filter(c => c !== 'None'),
-			subjects: subjects?.content,
+			subjects: subjects?.content.concat(languages?.content ?? []),
 			colleges: colleges?.content?.map(c => c.split(':')[0]),
 			degreePrograms,
 			campuses: campuses?.content,
