@@ -24,6 +24,10 @@
 	@apply bg-gray-50 px-4 py-3 sm:px-6 flex justify-end space-x-3
 }
 
+.delete-btn {
+	@apply px-4 py-1 rounded-md text-sm
+}
+
 .btn {
 	@apply px-4 py-2 rounded-md shadow-sm font-medium sm:w-auto sm:text-sm
 }

@@ -32,7 +32,7 @@ const AddCommitteeModal: FC<AddCommitteeModalProps> = ({ isOpen, onClose, onSubm
 				<div className={styles.body}>
 					<Dialog.Title as="h3" className={styles.title}>Add Committee</Dialog.Title>
 					<form id="update" onSubmit={handleSubmit(getSubmission)}>
-						<label htmlFor="image">Committee name</label>
+						<label htmlFor="name">Committee name</label>
 						<input type="text" {...register('name')} id="name" />
 						<p className="form-err-msg text-sm">{errors.name?.message}</p>
 					</form>

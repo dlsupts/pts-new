@@ -18,7 +18,8 @@ const libraryHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 			}
 
 			case 'POST': {
-				await Library.create(req.body)
+				const library = await Library.create(req.body)
+				res.send(library)
 				break
 			}
 

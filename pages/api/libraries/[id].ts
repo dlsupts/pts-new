@@ -5,19 +5,24 @@ import Library from '@models/library'
 
 const libraryHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
+		const session = await getSession({ req })
+		if (session?.user.type != 'ADMIN') return res.status(403)	
+
 		await dbConnect()
 
 		switch (req.method) {
 			case 'PUT': {
-				// UPDATE operation only for admin
-				const session = await getSession({ req })
-				if (session?.user.type != 'ADMIN') return res.status(403)				
 				await Library.updateOne({ _id: req.query.id }, { content: req.body.content })
 				break
 			}
 
+			case 'DELETE': {
+				await Library.deleteOne({ _id: req.query.id })
+				break
+			}
+
 			default:
-				res.setHeader('Allow', ['PUT'])
+				res.setHeader('Allow', ['PUT', 'DELETE'])
 				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {

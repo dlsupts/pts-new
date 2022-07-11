@@ -8,10 +8,12 @@ import { IDate } from '@models/date'
 import { ILib } from '@models/library'
 import { IFAQs } from '@models/faq'
 import { Switch } from '@headlessui/react'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import app from '@lib/axios-config'
 import { toastSuccessConfig } from '@lib/toast-defaults'
 import { toast } from 'react-toastify'
+import LibraryModal from '@components/admin/libraries/library-modal'
+import AddLibraryModal, { AddLibrarySchema } from '@components/admin/libraries/add-library-modal'
 
 type button = {
 	text: string
@@ -20,20 +22,50 @@ type button = {
 }
 
 const LibraryPage: NextPage = () => {
-	const { data: libraries } = useRetriever<ILib[]>('/api/libraries')
+	const { data: libraries, mutate: mutateLibraries } = useRetriever<ILib[]>('/api/libraries')
 	const { data: dates } = useRetriever<IDate[]>('/api/dates')
 	const { data: faqs } = useRetriever<IFAQs[]>('/api/faqs')
 	const { data: isInMaintenance, mutate: mutateIsInMaintenance } = useRetrieverWithFallback<boolean>('/api/maintenance', true)
+	const [libIdx, setLibIdx] = useState(0)
+	const [modal, setModal] = useState('')
+
+	function closeModal() { setModal('') }
+
+	async function addLibrary(details: AddLibrarySchema) {
+		await mutateLibraries(async () => {
+			const { data } = await app.post<ILib>('/api/libraries', details)
+			return libraries?.concat(data)
+		})
+		closeModal()
+	}
+
+	async function deleteLibrary() {
+		await mutateLibraries(async () => {
+			await app.delete(`/api/libraries/${libraries?.[libIdx]._id}`)
+			libraries?.splice(libIdx, 1)
+			return libraries
+		})
+		closeModal()
+	}
+
+	async function updateLibrary(data: string[]) {
+		await mutateLibraries(async () => {
+			await app.put(`/api/libraries/${libraries?.[libIdx]._id}`, data)
+			if (libraries) libraries[libIdx].content = data
+			return libraries
+		})
+	}
+
 	const panelButtons: readonly button[] = useMemo(() => [
 		{
 			text: 'Export Database',
 			tooltip: 'Download data in JSON format',
-			onClick() { }
+			onClick() { console.log('hello') }
 		},
 		{
 			text: 'Reset Data',
 			tooltip: 'Reset data for incoming term',
-			onClick() { }
+			onClick() { console.log('hello') }
 		},
 	] as const, [])
 
@@ -48,16 +80,19 @@ const LibraryPage: NextPage = () => {
 
 	return (
 		<AdminLayout>
+			<LibraryModal isOpen={modal === 'library'} onClose={closeModal}
+				library={libraries?.[libIdx]} onDelete={deleteLibrary} onUpdate={updateLibrary} />
+			<AddLibraryModal isOpen={modal === 'add library'} onClose={closeModal} onSubmit={addLibrary} />
 			<div className="grid gap-y-8">
 				<section>
 					<h2 className={styles['section-header']}>Libraries</h2>
 					<div className={styles['library-container']}>
-						{libraries?.map(l =>
-							<div key={l._id}>
+						{libraries?.map((l, i) =>
+							<div key={l._id} onClick={() => { setLibIdx(i); setModal('library') }}>
 								<p>{l._id}</p>
 							</div>
 						)}
-						<div>
+						<div onClick={() => setModal('add library')}>
 							<PlusIcon className="w-5 mr-2" />
 							<p>Add Library</p>
 						</div>

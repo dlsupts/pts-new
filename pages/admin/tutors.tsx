@@ -1,19 +1,19 @@
 import { NextPage } from 'next'
-import AdminLayout from '../../components/admin-layout'
-import app from '../../lib/axios-config'
-import { IUser } from '../../models/user'
-import Table from '../../components/table/table'
-import LoadingSpinner from '../../components/loading-spinner'
+import AdminLayout from '@components/admin-layout'
+import app from '@lib/axios-config'
+import { IUser } from '@models/user'
+import Table from '@components/table/table'
+import LoadingSpinner from '@components/loading-spinner'
 import { toast } from 'react-toastify'
-import { toastErrorConfig } from '../../lib/toast-defaults'
+import { toastErrorConfig } from '@lib/toast-defaults'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { Column } from 'react-table'
-import Modal from '../../components/modal'
-import styles from '../../styles/Sessions.module.css'
+import Modal from '@components/modal'
+import styles from '@styles/Sessions.module.css'
 import modalStyles from '@styles/Modal.module.css'
-import { days } from '../../lib/times'
+import { days } from '@lib/times'
 import cn from 'classnames'
-import { ISchedule } from '../../models/schedule'
+import { ISchedule } from '@models/schedule'
 import Link from 'next/link'
 import useRetriever from '@lib/useRetriever'
 
@@ -76,7 +76,7 @@ const AdminPage: NextPage = () => {
 					<div className={cn(styles['data-display'], '!border-0')}>
 						<div className={cn(styles.header, 'flex justify-between')}>
 							<h3>{tutor?.firstName} {tutor?.lastName}</h3>
-							<button className="btn red px-4 py-1 rounded-md text-sm" onClick={() => { setIsDelOpen(true); setIsOpen(false) }}>Delete</button>
+							<button className={modalStyles['delete-btn'] + ' btn red'} onClick={() => { setIsDelOpen(true); setIsOpen(false) }}>Delete</button>
 						</div>
 						<div className={styles.content}>
 							<div>
