@@ -2,6 +2,7 @@ import { Schema, models, model, Model } from 'mongoose'
 
 export interface ILib {
 	_id: string
+	isKeyed: boolean
 	content: string[]
 }
 
@@ -11,6 +12,7 @@ interface LibModel extends Model<ILib> {
 
 const libSchema = new Schema<ILib>({
 	_id: { type: String, required: true },
+	isKeyed: { type: Boolean, required: true, default: false },
 	content: { type: [String], required: true, default: [] },
 })
 
