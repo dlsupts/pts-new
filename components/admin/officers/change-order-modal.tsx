@@ -2,6 +2,8 @@ import Modal, { IModalProps } from '@components/modal'
 import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import { MenuIcon } from '@heroicons/react/outline'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
+import styles from '@styles/Modal.module.css'
+import { Dialog } from '@headlessui/react'
 
 type ChangeOrderModalProps = IModalProps & {
 	onSubmit: (order: string[]) => void
@@ -24,10 +26,10 @@ const OrderItem: FC<{ name: string, idx: number }> = ({ name, idx }) => {
 
 const ChangeOrderModal: FC<ChangeOrderModalProps> = ({ isOpen, onClose, onSubmit, initOrder }) => {
 	const cancelButton = useRef<HTMLButtonElement>(null)
-	const [order, setOrder] = useState(initOrder)
+	const [order, setOrder] = useState([...initOrder])
 
 	useEffect(() => {
-		if (order.length !== initOrder.length) setOrder(initOrder)
+		if (order.length !== initOrder.length) setOrder([...initOrder])
 	}, [order, initOrder])
 
 	const onDragEnd = useCallback((result: DropResult) => {
@@ -37,26 +39,33 @@ const ChangeOrderModal: FC<ChangeOrderModalProps> = ({ isOpen, onClose, onSubmit
 		setOrder(order)
 	}, [order])
 
+	const onCancel = useCallback(() => {
+		onClose()
+		setTimeout(() => setOrder([...initOrder]), 500) // wait for modal to completely disappear before resetting
+	}, [onClose, initOrder]) 
+
 	return (
 		<DragDropContext onDragEnd={onDragEnd}>
 			<Modal isOpen={isOpen} close={onClose} initialFocus={cancelButton}>
-				<div className="contents">
+				<div className={styles.panel}>
 					<Droppable droppableId='order-committees'>
 						{(provided) => (
-							<div className="relative inline-block px-4 bg-white rounded-lg w-full text-left overflow-hidden shadow-xl transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-								ref={provided.innerRef} {...provided.droppableProps}>
-								<h1 className="font-semibold text-xl my-4">Change Ordering</h1>
+							<>
+								<div className={styles.body}
+									ref={provided.innerRef} {...provided.droppableProps}>
+									<Dialog.Title as="h3" className={styles.title}>Change Ordering</Dialog.Title>
 
-								<div className="grid gap-y-2 mb-4">
-									{order.map((o, i) => <OrderItem key={o} name={o} idx={i} />)}
-									{provided.placeholder}
+									<div className="grid gap-y-2 mb-4">
+										{order.map((o, i) => <OrderItem key={o} name={o} idx={i} />)}
+										{provided.placeholder}
+									</div>
 								</div>
 
-								<div className="flex items-center mb-4 justify-end">
-									<button className="btn gray rounded-md px-4 py-2 mr-2" onClick={onClose} ref={cancelButton}>Cancel</button>
-									<button onClick={() => onSubmit(order)} className="btn blue rounded-md px-4 py-2">Update</button>
+								<div className={styles.footer}>
+									<button className={styles.btn + ' btn gray'} onClick={onCancel} ref={cancelButton}>Cancel</button>
+									<button className={styles.btn + ' btn blue'} onClick={() => onSubmit(order)}>Update</button>
 								</div>
-							</div>
+							</>
 						)}
 					</Droppable>
 				</div>

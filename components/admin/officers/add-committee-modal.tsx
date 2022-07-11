@@ -3,6 +3,8 @@ import { FC, useRef } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
+import styles from '@styles/Modal.module.css'
+import { Dialog } from '@headlessui/react'
 
 const addCommitteeSchema = yup.object({
 	name: yup.string().required('Committee name is required!')
@@ -26,16 +28,18 @@ const AddCommitteeModal: FC<AddCommitteeModalProps> = ({ isOpen, onClose, onSubm
 
 	return (
 		<Modal isOpen={isOpen} close={onClose} initialFocus={cancelButton}>
-			<div className="relative inline-block align-bottom bg-white w-full rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-				<h1 className="font-semibold ml-4 text-xl my-4">Add Committee</h1>
-				<form id="update" className="px-4 my-6" onSubmit={handleSubmit(getSubmission)}>
-					<label htmlFor="image">Committee name</label>
-					<input type="text" {...register('name')} id="name" />
-					<p className="form-err-msg text-sm">{errors.name?.message}</p>
-				</form>
-				<div className="flex items-center px-4 mb-4 justify-end">
-					<button className="btn gray rounded-md px-4 py-2 mr-2" ref={cancelButton} onClick={onClose}>Cancel</button>
-					<button form="update" className="btn blue rounded-md px-4 py-2">Add</button>
+			<div className={styles.panel}>
+				<div className={styles.body}>
+					<Dialog.Title as="h3" className={styles.title}>Add Committee</Dialog.Title>
+					<form id="update" onSubmit={handleSubmit(getSubmission)}>
+						<label htmlFor="image">Committee name</label>
+						<input type="text" {...register('name')} id="name" />
+						<p className="form-err-msg text-sm">{errors.name?.message}</p>
+					</form>
+				</div>
+				<div className={styles.footer}>
+					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose}>Cancel</button>
+					<button form="update" className={styles.btn + ' btn blue'}>Add</button>
 				</div>
 			</div>
 		</Modal>

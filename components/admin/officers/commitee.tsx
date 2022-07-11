@@ -48,9 +48,9 @@ const Committee: FC<CommitteeProps> = ({ committee, onAddClick, onOfficerClick, 
 		<div>
 			<div className="flex justify-between items-center mb-2">
 				<p className="text-2xl text-blue-700 font-bold">{committee.name}</p>
-				<div className="flex items-center">
-					<PlusCircleIcon onClick={onAddClick} className="cursor-pointer text-gray-400 hover:text-gray-500 active:text-gray-600 transition-colors w-7 aspect-square" />
-					<XIcon onClick={onDeleteClick} className="bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-full aspect-square w-6 p-0.5 cursor-pointer" />
+				<div className="flex items-center space-x-1">
+					<PlusCircleIcon onClick={onAddClick} className="text-blue-600 hover:text-blue-700 active:text-blue-800 cursor-pointer transition-colors w-7 aspect-square" />
+					<XIcon onClick={onDeleteClick} className="text-white bg-gray-400 hover:bg-gray-500 active:bg-gray-600 rounded-full aspect-square w-6 p-0.5 cursor-pointer" />
 				</div>
 			</div>
 			<div className="grid lg:grid-cols-3 gap-x-4 gap-y-2">

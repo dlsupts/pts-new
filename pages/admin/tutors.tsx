@@ -10,6 +10,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import { Column } from 'react-table'
 import Modal from '../../components/modal'
 import styles from '../../styles/Sessions.module.css'
+import modalStyles from '@styles/Modal.module.css'
 import { days } from '../../lib/times'
 import cn from 'classnames'
 import { ISchedule } from '../../models/schedule'
@@ -71,7 +72,7 @@ const AdminPage: NextPage = () => {
 	return (
 		<AdminLayout>
 			<Modal isOpen={isOpen} close={() => setIsOpen(false)}>
-				<div className="relative inline-block align-bottom bg-white w-full rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+				<div className={modalStyles.panel}>
 					<div className={cn(styles['data-display'], '!border-0')}>
 						<div className={cn(styles.header, 'flex justify-between')}>
 							<h3>{tutor?.firstName} {tutor?.lastName}</h3>
@@ -142,12 +143,12 @@ const AdminPage: NextPage = () => {
 				</div>
 			</Modal>
 			<Modal isOpen={isDelOpen} close={handleDelClose} initialFocus={cancelButton}>
-				<div className="relative inline-block bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-					<div className="grid place-items-center py-10 gap-y-6">
+				<div className={modalStyles.panel}>
+					<div className={modalStyles['confirmation-body']}>
 						<p className="text-xl">Remove <span className="font-medium">{tutor?.firstName}</span>?</p>
-						<div className="flex justify-center">
-							<button type="button" className="btn gray px-4 py-2 rounded-md mr-4" ref={cancelButton} onClick={handleDelClose}>Cancel</button>
-							<button type="button" className="btn red px-4 py-2 rounded-md" onClick={handleDeleteRecord}>Confirm</button>
+						<div className={modalStyles['btn-group']}>
+							<button type="button" className={modalStyles.btn + ' btn gray'} ref={cancelButton} onClick={handleDelClose}>Cancel</button>
+							<button type="button" className={modalStyles.btn + ' btn red'} onClick={handleDeleteRecord}>Confirm</button>
 						</div>
 					</div>
 				</div>
