@@ -4,6 +4,14 @@
 	sm:my-8 sm:align-middle sm:max-w-lg sm:w-full
 }
 
+.title-container {
+	@apply flex justify-between items-center mb-4
+}
+
+.title-container .title {
+	@apply mb-0
+}
+
 .title {
 	@apply text-lg leading-6 font-medium text-gray-900 mb-4 text-center sm:text-left
 }

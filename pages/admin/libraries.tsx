@@ -14,6 +14,7 @@ import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import { toast } from 'react-toastify'
 import LibraryModal from '@components/admin/libraries/library-modal'
 import AddLibraryModal, { AddLibrarySchema } from '@components/admin/libraries/add-library-modal'
+import DateModal, { DateModalSchema } from '@components/admin/libraries/date-modal'
 
 type button = {
 	text: string
@@ -23,10 +24,11 @@ type button = {
 
 const LibraryPage: NextPage = () => {
 	const { data: libraries, mutate: mutateLibraries } = useRetriever<ILib[]>('/api/libraries')
-	const { data: dates } = useRetriever<IDate[]>('/api/dates')
+	const { data: dates, mutate: mutateDates } = useRetriever<IDate[]>('/api/dates')
 	const { data: faqs } = useRetriever<IFAQs[]>('/api/faqs')
 	const { data: isInMaintenance, mutate: mutateIsInMaintenance } = useRetrieverWithFallback<boolean>('/api/maintenance', true)
 	const [libIdx, setLibIdx] = useState(0)
+	const [date, setDate] = useState<IDate>()
 	const [modal, setModal] = useState('')
 
 	function closeModal() { setModal('') }
@@ -61,6 +63,26 @@ const LibraryPage: NextPage = () => {
 		}
 	}
 
+	async function updateDate(details: DateModalSchema,) {
+		if (date == undefined) {
+			await mutateDates(async () => {
+				const { data } = await app.post<IDate>('/api/dates', details)
+				return dates?.concat([data])
+			})
+		} else {
+			await app.patch(`/api/dates/${date._id}`, details)
+			await mutateDates()
+		}
+		closeModal()
+		toast.success('Dates updated!', toastSuccessConfig)
+	}
+
+	async function deleteDate() {
+		await app.delete(`/api/dates/${date?._id}`)
+		await mutateDates()
+		closeModal()
+	}
+
 	const panelButtons: readonly button[] = useMemo(() => [
 		{
 			text: 'Export Database',
@@ -88,6 +110,7 @@ const LibraryPage: NextPage = () => {
 			<LibraryModal isOpen={modal === 'library'} onClose={closeModal}
 				library={libraries?.[libIdx]} onDelete={deleteLibrary} onUpdate={updateLibrary} />
 			<AddLibraryModal isOpen={modal === 'add library'} onClose={closeModal} onSubmit={addLibrary} />
+			<DateModal isOpen={modal === 'date'} date={date} onClose={closeModal} onSubmit={updateDate} onDelete={deleteDate} />
 			<div className="grid gap-y-8">
 				<section>
 					<h2 className={styles['section-header']}>Libraries</h2>
@@ -107,13 +130,13 @@ const LibraryPage: NextPage = () => {
 				<section>
 					<h2 className={styles['section-header']}>Dates</h2>
 					<div className={styles['library-container']}>
-						{dates?.map(d =>
-							<div key={d._id}>
+						{dates?.map((d, i) =>
+							<div key={d._id} onClick={() => { setDate(dates[i]); setModal('date') }}>
 								<p>{d._id}</p>
 								<p className="text-gray-500 text-sm">{formatDate(d.start)} - {formatDate(d.end)}</p>
 							</div>
 						)}
-						<div>
+						<div onClick={() => { setDate(undefined); setModal('date') }}>
 							<PlusIcon className="w-5 mr-2" />
 							<p>Add Date</p>
 						</div>
@@ -159,8 +182,8 @@ const LibraryPage: NextPage = () => {
 						)}
 					</div>
 				</section>
-			</div>
-		</AdminLayout>
+			</div >
+		</AdminLayout >
 	)
 }
 

@@ -11,24 +11,21 @@ const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 		await dbConnect()
 
 		switch (req.method) {
-			case 'GET': {
-				const dates = await Dates.find().lean()
-				res.json(dates)
-				break
-			}
-
-			case 'POST': {
-				const date = await Dates.create({
-					_id: req.body._id,
+			case 'PATCH': {
+				await Dates.updateOne({ _id: req.query.id }, {
 					start: new Date(req.body.start),
 					end: new Date(req.body.end)
 				})
-				res.send(date)
+				break
+			}
+
+			case 'DELETE': {
+				await Dates.deleteOne({ _id: req.query.id })
 				break
 			}
 
 			default:
-				res.setHeader('Allow', ['GET', 'POST'])
+				res.setHeader('Allow', ['PATCH'])
 				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {

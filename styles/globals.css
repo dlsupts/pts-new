@@ -20,7 +20,8 @@
 	[type="tel"],
 	[type="number"],
 	[type="password"],
-	[type="email"] {
+	[type="email"],
+	[type="date"] {
 		@apply mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md
 	}
 

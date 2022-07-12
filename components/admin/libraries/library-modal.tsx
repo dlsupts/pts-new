@@ -66,20 +66,15 @@ const LibraryModal: FC<LibraryModalProps> = ({ isOpen, onClose, library, onDelet
 	// update state everytime the modal is opened: handles cases where an item is added but is not saved
 	useEffect(() => { if (library) setOrder(library?.content); reset() }, [isOpen, library, reset])
 
-	function handleClose() {
-		onClose()
-		setTimeout(reset, 500)
-	}
-
 	return (
-		<Modal isOpen={isOpen} close={handleClose} initialFocus={cancelButton}>
+		<Modal isOpen={isOpen} close={onClose} initialFocus={cancelButton}>
 			<div className={styles.panel}>
 				<div className={styles.body}>
-					<div className="flex justify-between items-center mb-3">
-						<Dialog.Title as="h3" className={styles.title + ' !mb-0'}>{library?._id}</Dialog.Title>
+					<div className={styles['title-container']}>
+						<Dialog.Title as="h3" className={styles.title}>{library?._id}</Dialog.Title>
 						<button className={styles['delete-btn'] + ' btn red'} onClick={onDelete}>Delete</button>
 					</div>
-					<form id="update" onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-10 gap-x-2 gap-y-1 mb-4">
+					<form id="update" onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-10 gap-x-2 gap-y-1 mb-2">
 						<div className={cn({ 'hidden': !library?.isKeyed }, 'col-span-full')}>
 							<label htmlFor="code">Code</label>
 							<input type={library?.isKeyed ? 'text' : 'hidden'} {...register('code')} id="code" defaultValue={library?.isKeyed ? '' : "0"} />
@@ -109,7 +104,7 @@ const LibraryModal: FC<LibraryModalProps> = ({ isOpen, onClose, library, onDelet
 					</DragDropContext>
 				</div>
 				<div className={styles.footer}>
-					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={handleClose}>Close</button>
+					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose}>Close</button>
 					<button className={styles.btn + ' btn blue'} onClick={() => onUpdate(order)}>Save</button>
 				</div>
 			</div >
