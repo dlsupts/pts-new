@@ -1,5 +1,5 @@
 import { GetStaticProps, NextPage } from 'next'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import dbConnect from '../lib/db'
 import Library from '../models/library'
 import cn from 'classnames'
@@ -11,6 +11,8 @@ import { toast } from 'react-toastify'
 import { toastSuccessConfig, toastErrorConfig } from '../lib/toast-defaults'
 import axios from 'axios'
 import { parseContent } from '@lib/utils'
+import useRetriever from '@lib/useRetriever'
+import { IDate } from '@models/date'
 
 interface RequestProps {
 	faqs: string[][]
@@ -22,9 +24,22 @@ type FormSchema = Omit<IUserInfo, '_id'>
 const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	const [help, setHelp] = useState(faqs[0][1])
 	const [showForm, setShowForm] = useState(false)
+	const [applyError, setApplyError] = useState('Checking availability...')
 	const { register, handleSubmit, formState: { errors }, reset } = useForm<FormSchema>({
 		resolver: yupResolver(userInfoSchema)
 	})
+	const { data: date } = useRetriever<IDate>('/api/dates/Tutor Recruitment')
+	const { data: isMaintenance } = useRetriever<boolean>('/api/maintenance')
+
+	useEffect(() => {
+		if (date == undefined || isMaintenance == undefined) return
+		if (isMaintenance) return setApplyError('System is in maintenance mode.')
+
+		const today = new Date().getTime()
+		if (today < new Date(date.start).getTime()) return setApplyError('Application period has not yet started!')
+		if (today > new Date(date.end).getTime()) return setApplyError('Application period has passed!')
+		setApplyError('')
+	}, [isMaintenance, date])
 
 	const onSubmit = async (values: FormSchema) => {
 		try {
@@ -104,7 +119,8 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 						</div>
 						<p className="font-bold text-2xl text-center">Tutor Recruitment</p>
 						<p className="text-gray-500 text-center mb-8 max-w-prose">Share your knowledge, inspire others, and grow as a peer tutor.</p>
-						<button className="btn blue rounded-md px-4 py-2 font-medium" onClick={() => setShowForm(true)}>Apply Now</button>
+						<button className="btn blue rounded-md px-4 py-2 font-medium" onClick={() => setShowForm(true)}
+							disabled={applyError !== ''}>{applyError === '' ? 'Apply Now' : applyError}</button>
 					</div>
 				}
 				<div className={cn({ 'lg:border-l': !showForm }, "flex flex-col justify-center items-center py-16 w-full lg:pl-8 border-gray-300 lg:border-t-0 border-t lg:h-full")}>

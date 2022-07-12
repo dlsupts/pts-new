@@ -1,5 +1,5 @@
 import { GetStaticProps, NextPage } from 'next'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Service from '@components/request/service'
 import dbConnect from '@lib/db'
 import Library from '@models/library'
@@ -12,6 +12,8 @@ import { toast } from 'react-toastify'
 import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import LoadingSpinner from '@components/loading-spinner'
 import { parseContent } from '@lib/utils'
+import useRetriever from '@lib/useRetriever'
+import { IDate } from '@models/date'
 
 interface RequestProps {
 	faqs: string[][]
@@ -27,7 +29,21 @@ const steps = ['Tutorial Service', 'Personal Info', 'Schedule (Free Time)']
 const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, colleges, degreePrograms, campuses }) => {
 	const [help, setHelp] = useState(faqs[0][1])
 	const [step, setStep] = useState(0)
+	const [requestError, setRequestError] = useState('Checking availability...')
 	const { tutee, selectedSubjects, request, resetStore } = useStore()
+
+	const { data: date } = useRetriever<IDate>('/api/dates/Tutor Request')
+	const { data: isMaintenance } = useRetriever<boolean>('/api/maintenance')
+
+	useEffect(() => {
+		if (date == undefined || isMaintenance == undefined) return
+		if (isMaintenance) return setRequestError('System is in maintenance mode.')
+
+		const today = new Date().getTime()
+		if (today < new Date(date.start).getTime()) return setRequestError('Request period has not yet started!')
+		if (today > new Date(date.end).getTime()) return setRequestError('Request period has passed!')
+		setRequestError('')
+	}, [isMaintenance, date])
 
 	// when a step is active
 	if (step) {
@@ -87,7 +103,8 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 					</div>
 					<p className="font-bold text-2xl text-center">Tutor Request</p>
 					<p className="text-gray-500 text-center mb-8 max-w-prose">Fastest and easiest access to academic assistance is within your reach.</p>
-					<button className="btn blue rounded-md px-4 py-2 font-medium" onClick={() => setStep(1)}>Request Now</button>
+					<button className="btn blue rounded-md px-4 py-2 font-medium" onClick={() => setStep(1)}
+						disabled={requestError !== ''}>{requestError == '' ? 'Request Now' : requestError}</button>
 				</div>
 				<div className="flex flex-col justify-center items-center py-16 w-full lg:pl-8 border-gray-300 lg:border-l lg:border-t-0 border-t lg:h-full">
 					<div className="mb-6">
