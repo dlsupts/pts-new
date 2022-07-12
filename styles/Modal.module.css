@@ -40,6 +40,14 @@
 	@apply px-4 py-2 rounded-md shadow-sm font-medium sm:w-auto sm:text-sm
 }
 
+.keyed-container p:first-child {
+	@apply font-medium text-sm mb-1
+}
+
+.keyed-container p:last-child {
+	@apply font-normal text-sm
+}
+
 /* draggables */
 .droppable {
 	@apply grid gap-y-2 mb-4

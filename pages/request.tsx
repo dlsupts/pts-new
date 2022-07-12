@@ -2,7 +2,6 @@ import { GetStaticProps, NextPage } from 'next'
 import { useState } from 'react'
 import Service from '@components/request/service'
 import dbConnect from '@lib/db'
-import FAQ, { IFAQ } from '@models/faq'
 import Library from '@models/library'
 import cn from 'classnames'
 import Information from '@components/request/information'
@@ -12,9 +11,10 @@ import app from '@lib/axios-config'
 import { toast } from 'react-toastify'
 import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import LoadingSpinner from '@components/loading-spinner'
+import { parseContent } from '@lib/utils'
 
 interface RequestProps {
-	faqs: IFAQ[]
+	faqs: string[][]
 	services: string[]
 	subjects: string[]
 	colleges: string[]
@@ -25,7 +25,7 @@ interface RequestProps {
 const steps = ['Tutorial Service', 'Personal Info', 'Schedule (Free Time)']
 
 const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, colleges, degreePrograms, campuses }) => {
-	const [help, setHelp] = useState(faqs[0].answer)
+	const [help, setHelp] = useState(faqs[0][1])
 	const [step, setStep] = useState(0)
 	const { tutee, selectedSubjects, request, resetStore } = useStore()
 
@@ -45,7 +45,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 				break
 			case 4:
 				comp = <LoadingSpinner />
-				
+
 				// when testing this functionality, turn off React's StrictMode. It causes this request to run twice only in development for some reason.
 				app.post('/api/tutees', { tutee, request, subjects: selectedSubjects })
 					.then(() => {
@@ -96,7 +96,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 					<p className="font-bold text-2xl text-center mb-2">Frequently Asked Questions</p>
 					<select onChange={e => setHelp(e.target.value)}
 						className="w-full max-w-prose border px-3 py-1.5 bg-clip-padding rounded transition ease-in-out cursor-pointer text-sm sm:text-base">
-						{faqs.map(f => <option key={f._id.toString()} value={f.answer} className="py-2">{f.question}</option>)}
+						{faqs.map(f => <option key={f[0]} value={f[1]} className="py-2">{f[0]}</option>)}
 					</select>
 					<p className="max-w-prose mt-6 font-black italic text-center min-h-[120px] lg:min-h-[70px]">{help}</p>
 				</div>
@@ -107,7 +107,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 
 export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
-	const faq = await FAQ.findOne({ type: 'Tutor Request' }, '-_id faqs').lean().exec()
+	const faq = await Library.findById('Tutor Request FAQ', '-_id').lean().exec()
 	const services = await Library.findById('Tutoring Services', '-_id').lean().exec()
 	const subjects = await Library.findById('Subjects', '-_id').lean().exec()
 	const colleges = await Library.findById('Colleges', '-_id').lean().exec()
@@ -117,7 +117,7 @@ export const getStaticProps: GetStaticProps = async () => {
 
 	return {
 		props: {
-			faqs: faq?.faqs?.map(f => ({ ...f, _id: f._id.toString() })),
+			faqs: faq?.content.map(f => parseContent(f)),
 			services: services?.content?.filter(c => c !== 'None'),
 			subjects: subjects?.content.concat(languages?.content ?? []),
 			colleges: colleges?.content?.map(c => c.split(':')[0]),

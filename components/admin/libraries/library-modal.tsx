@@ -9,6 +9,7 @@ import { Dialog } from '@headlessui/react'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
 import { MenuIcon, PlusIcon, TrashIcon } from '@heroicons/react/outline'
 import cn from 'classnames'
+import { parseContent } from '@lib/utils'
 
 const editLibrarySchema = yup.object({
 	code: yup.string().required().trim(),
@@ -23,7 +24,15 @@ type LibraryModalProps = IModalProps & {
 	onUpdate: (item: string[]) => void
 }
 
-const OrderItem: FC<{ content: string, idx: number, removeItem: (idx: number) => void }> = ({ content, idx, removeItem }) => {
+type OrderItemProps = {
+	content: string
+	idx: number
+	removeItem: (idx: number) => void
+	isKeyed: boolean
+}
+
+const OrderItem: FC<OrderItemProps> = ({ content, idx, removeItem, isKeyed }) => {
+
 	return (
 		<Draggable draggableId={content} index={idx}>
 			{(provided) => (
@@ -31,7 +40,13 @@ const OrderItem: FC<{ content: string, idx: number, removeItem: (idx: number) =>
 					ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
 					<div className="flex">
 						<MenuIcon className={cn(styles.icon, 'mr-3')} />
-						<p>{content}</p>
+						{isKeyed ?
+							<div className={styles['keyed-container']}>
+								{parseContent(content).map((t, i) => <p key={t + i}>{t}</p>)}
+							</div>
+							:
+							<p>{content}</p>
+						}
 					</div>
 					<TrashIcon className={styles['delete-icon']} onClick={() => removeItem(idx)} />
 				</div>
@@ -96,7 +111,7 @@ const LibraryModal: FC<LibraryModalProps> = ({ isOpen, onClose, library, onDelet
 							{(provided) => (
 								<div className={styles.droppable} ref={provided.innerRef} {...provided.droppableProps}>
 									{order.map((c, i) =>
-										<OrderItem key={i + c} content={c} idx={i} removeItem={removeItem} />
+										<OrderItem key={i + c} content={c} idx={i} removeItem={removeItem} isKeyed={library?.isKeyed ?? false} />
 									)}
 								</div>
 							)}

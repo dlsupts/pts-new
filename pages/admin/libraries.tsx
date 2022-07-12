@@ -6,7 +6,6 @@ import { formatDate } from '@lib/utils'
 import useRetriever, { useRetrieverWithFallback } from '@lib/useRetriever'
 import { IDate } from '@models/date'
 import { ILib } from '@models/library'
-import { IFAQs } from '@models/faq'
 import { Switch } from '@headlessui/react'
 import { useCallback, useMemo, useState } from 'react'
 import app from '@lib/axios-config'
@@ -25,7 +24,6 @@ type button = {
 const LibraryPage: NextPage = () => {
 	const { data: libraries, mutate: mutateLibraries } = useRetriever<ILib[]>('/api/libraries')
 	const { data: dates, mutate: mutateDates } = useRetriever<IDate[]>('/api/dates')
-	const { data: faqs } = useRetriever<IFAQs[]>('/api/faqs')
 	const { data: isInMaintenance, mutate: mutateIsInMaintenance } = useRetrieverWithFallback<boolean>('/api/maintenance', true)
 	const [libIdx, setLibIdx] = useState(0)
 	const [date, setDate] = useState<IDate>()
@@ -142,22 +140,6 @@ const LibraryPage: NextPage = () => {
 						</div>
 					</div>
 				</section>
-
-				<section>
-					<h2 className={styles['section-header']}>FAQs</h2>
-					<div className={styles['library-container']}>
-						{faqs?.map(f =>
-							<div key={f.type}>
-								<p>{f.type}</p>
-							</div>
-						)}
-						<div>
-							<PlusIcon className="w-5 mr-2" />
-							<p>Add FAQ</p>
-						</div>
-					</div>
-				</section>
-
 				<section>
 					<h2 className={styles['section-header']}>Admin Panel</h2>
 					<div className={styles['library-container']}>

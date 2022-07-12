@@ -1,7 +1,6 @@
 import { GetStaticProps, NextPage } from 'next'
 import { useState } from 'react'
 import dbConnect from '../lib/db'
-import FAQ, { IFAQ } from '../models/faq'
 import Library from '../models/library'
 import cn from 'classnames'
 import { IUserInfo, userInfoSchema } from '../models/user'
@@ -11,16 +10,17 @@ import app from '../lib/axios-config'
 import { toast } from 'react-toastify'
 import { toastSuccessConfig, toastErrorConfig } from '../lib/toast-defaults'
 import axios from 'axios'
+import { parseContent } from '@lib/utils'
 
 interface RequestProps {
-	faqs: IFAQ[]
+	faqs: string[][]
 	courses: string[]
 }
 
 type FormSchema = Omit<IUserInfo, '_id'>
 
 const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
-	const [help, setHelp] = useState(faqs[0].answer)
+	const [help, setHelp] = useState(faqs[0][1])
 	const [showForm, setShowForm] = useState(false)
 	const { register, handleSubmit, formState: { errors }, reset } = useForm<FormSchema>({
 		resolver: yupResolver(userInfoSchema)
@@ -114,7 +114,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 					<p className="font-bold text-2xl text-center mb-2">Frequently Asked Questions</p>
 					<select onChange={e => setHelp(e.target.value)}
 						className="w-full max-w-prose border px-3 py-1.5 bg-clip-padding rounded transition ease-in-out cursor-pointer text-sm sm:text-base">
-						{faqs.map(f => <option key={f._id as string} value={f.answer} className="py-2">{f.question}</option>)}
+						{faqs.map(f => <option key={f[0]} value={f[1]} className="py-2">{f[0]}</option>)}
 					</select>
 					<p className="max-w-prose mt-6 font-black italic text-center min-h-[120px] lg:min-h-[75px]">{help}</p>
 				</div>
@@ -126,11 +126,11 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
 	const courses = await Library.getDegreeCodes()
-	const faq = await FAQ.findOne({ type: 'Tutor Recruitment' }, '-_id faqs').lean().exec()
+	const faq = await Library.findById('Tutor Recruitment FAQ', '-_id').lean().exec()
 
 	return {
 		props: {
-			faqs: faq?.faqs?.map(f => ({ ...f, _id: f._id.toString() })),
+			faqs: faq?.content.map(f => parseContent(f)),
 			courses
 		},
 		revalidate: Number(process.env.NEXT_PUBLIC_REVALIDATION_INTERVAL)

@@ -5,8 +5,8 @@ export function matchPath(pathname: string, route: string, isHome?: boolean) {
 /**
  * filters the selected subjects
  * 
- * @param subjects original list of subjects
- * @param selected list of selected subjects along with specific topics, therefore a 2d array
+ * @param subjects - original list of subjects
+ * @param selected - list of selected subjects along with specific topics, therefore a 2d array
  * @returns list of subjects with the selected subjects filtered out
  */
 export function filterSubjects(subjects: string[], selected?: string[][]) {
@@ -20,8 +20,8 @@ export function filterSubjects(subjects: string[], selected?: string[][]) {
 /**
  * Uses binary search to efficiently insert a subject into a sorted list of subjects
  * 
- * @param subjects list of selected subjects with specific topics
- * @param toInsert subject, with specific topic, to insert into selected subjects list
+ * @param subjects - list of selected subjects with specific topics
+ * @param toInsert - subject, with specific topic, to insert into selected subjects list
  */
 export function binInsert(subjects: string[][] | undefined, toInsert: string[]) {
 	if (subjects) {
@@ -44,9 +44,9 @@ export function binInsert(subjects: string[][] | undefined, toInsert: string[]) 
 const dateOptions: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' }
 
 /**
- * formats a given date
- * 
- * @param date a date object or date string to format
+ * Standard date formatter for the application.
+ * @param date - a date object or date string to format
+ * @returns a string equivalent of the date in the form 'MMM-DD-YYYY'
  */
 export function formatDate(date: Date | string) {
 	if (typeof date == 'string') {
@@ -54,4 +54,14 @@ export function formatDate(date: Date | string) {
 	}
 
 	return date.toLocaleDateString('en-US', dateOptions)
+}
+
+/**
+ * Used to parse keyed library objects.
+ * @param content - a string in the form "key: value"
+ * @returns an array with the first element being the key and the second being the value.
+ */
+export function parseContent(content: string) {
+	const i = content.indexOf(':')
+	return [content.slice(0, i), content.slice(i + 1)]
 }
