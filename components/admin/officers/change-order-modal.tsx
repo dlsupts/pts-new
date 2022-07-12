@@ -14,10 +14,10 @@ const OrderItem: FC<{ name: string, idx: number }> = ({ name, idx }) => {
 	return (
 		<Draggable draggableId={name} index={idx}>
 			{(provided) => (
-				<div className="flex p-3 rounded-md bg-blue-50 hover:bg-blue-100 active:bg-blue-200"
+				<div className={styles.draggable + ' flex'}
 					ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-					<MenuIcon className="w-6 mr-2 text-blue-400" />
-					<p className="font-medium text-gray-900">{name}</p>
+					<MenuIcon className={styles.icon + ' mr-2'} />
+					<p>{name}</p>
 				</div>
 			)}
 		</Draggable>
@@ -42,7 +42,7 @@ const ChangeOrderModal: FC<ChangeOrderModalProps> = ({ isOpen, onClose, onSubmit
 	const onCancel = useCallback(() => {
 		onClose()
 		setTimeout(() => setOrder([...initOrder]), 500) // wait for modal to completely disappear before resetting
-	}, [onClose, initOrder]) 
+	}, [onClose, initOrder])
 
 	return (
 		<DragDropContext onDragEnd={onDragEnd}>
@@ -51,11 +51,10 @@ const ChangeOrderModal: FC<ChangeOrderModalProps> = ({ isOpen, onClose, onSubmit
 					<Droppable droppableId='order-committees'>
 						{(provided) => (
 							<>
-								<div className={styles.body}
-									ref={provided.innerRef} {...provided.droppableProps}>
+								<div className={styles.body} ref={provided.innerRef} {...provided.droppableProps}>
 									<Dialog.Title as="h3" className={styles.title}>Change Ordering</Dialog.Title>
 
-									<div className="grid gap-y-2 mb-4">
+									<div className={styles.droppable}>
 										{order.map((o, i) => <OrderItem key={o} name={o} idx={i} />)}
 										{provided.placeholder}
 									</div>

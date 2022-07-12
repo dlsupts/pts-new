@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
+import { MongoError } from 'mongodb'
 import dbConnect from '@lib/db'
 import Library from '@models/library'
 
@@ -12,7 +13,7 @@ const libraryHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 		switch (req.method) {
 			case 'GET': {
-				const libraries = await Library.find().lean()
+				const libraries = await Library.find({ _id: { $ne: 'Committees' } }).lean()
 				res.json(libraries)
 				break
 			}
@@ -28,7 +29,9 @@ const libraryHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {
-		console.log(err)
+		if ((err as MongoError).code == 11000) {
+			res.status(403).send('You have entered a duplicate key!')
+		}
 		res.status(500).send('A server-side error has occured. Please try again later.')
 	} finally {
 		res.end()

@@ -10,7 +10,7 @@ import { IFAQs } from '@models/faq'
 import { Switch } from '@headlessui/react'
 import { useCallback, useMemo, useState } from 'react'
 import app from '@lib/axios-config'
-import { toastSuccessConfig } from '@lib/toast-defaults'
+import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import { toast } from 'react-toastify'
 import LibraryModal from '@components/admin/libraries/library-modal'
 import AddLibraryModal, { AddLibrarySchema } from '@components/admin/libraries/add-library-modal'
@@ -39,21 +39,26 @@ const LibraryPage: NextPage = () => {
 		closeModal()
 	}
 
-	async function deleteLibrary() {
-		await mutateLibraries(async () => {
+	function deleteLibrary() {
+		mutateLibraries(async () => {
 			await app.delete(`/api/libraries/${libraries?.[libIdx]._id}`)
+			closeModal()
 			libraries?.splice(libIdx, 1)
 			return libraries
 		})
-		closeModal()
 	}
 
 	async function updateLibrary(data: string[]) {
-		await mutateLibraries(async () => {
-			await app.put(`/api/libraries/${libraries?.[libIdx]._id}`, data)
-			if (libraries) libraries[libIdx].content = data
-			return libraries
-		})
+		try {
+			await mutateLibraries(async () => {
+				await app.put(`/api/libraries/${libraries?.[libIdx]._id}`, { content: data })
+				if (libraries) libraries[libIdx].content = data
+				return libraries
+			})
+			toast.success('Library updated successfully.', toastSuccessConfig)
+		} catch {
+			toast.error('A server-side error has occured.', toastErrorConfig)
+		}
 	}
 
 	const panelButtons: readonly button[] = useMemo(() => [
