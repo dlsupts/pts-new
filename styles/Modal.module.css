@@ -21,7 +21,7 @@
 }
 
 .confirmation-body {
-	@apply grid place-items-center py-10 gap-y-6
+	@apply grid place-items-center py-10 gap-y-6 px-2
 }
 
 .confirmation-body .btn-group {

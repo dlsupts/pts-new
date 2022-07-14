@@ -31,6 +31,10 @@ export default NextAuth({
 					throw new Error("User unauthorized! Please contact the system administrator.")
 				}
 
+				if (!temp.membership) {
+					throw new Error("Account has already revoked its membership.")
+				}
+
 				return true
 			}
 

@@ -1,16 +1,20 @@
 import { GetStaticProps, NextPage } from 'next'
 import { toast } from 'react-toastify'
-import LoadingSpinner from '../../components/loading-spinner'
-import UserLayout from '../../components/user-layout'
-import app from '../../lib/axios-config'
-import dbConnect from '../../lib/db'
-import { toastErrorConfig, toastSuccessConfig } from '../../lib/toast-defaults'
-import useUser from '../../lib/useUser'
-import Library from '../../models/library'
-import { IUserInfo, IUser, userInfoSchema } from '../../models/user'
+import LoadingSpinner from '@components/loading-spinner'
+import UserLayout from '@components/user-layout'
+import app from '@lib/axios-config'
+import dbConnect from '@lib/db'
+import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
+import useUser from '@lib/useUser'
+import Library from '@models/library'
+import { IUserInfo, IUser, userInfoSchema } from '@models/user'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect } from 'react'
+import Modal from '@components/modal'
+import styles from '@styles/Modal.module.css'
+import { Dialog } from '@headlessui/react'
+import { signOut } from 'next-auth/react'
 
 type FormSchema = Omit<IUserInfo, '_id'>
 
@@ -26,7 +30,7 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 	async function onSubmit(data: FormSchema) {
 		try {
 			await mutate(app.patch<IUser>('/api/me', data).then(res => res.data), {
-				optimisticData: { ...user, ...data } as  IUser
+				optimisticData: { ...user, ...data } as IUser
 			})
 			toast.success('Profile Updated!', toastSuccessConfig)
 		} catch {
@@ -34,11 +38,31 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 		}
 	}
 
-	if (isLoading) {
-		return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
-	} else if (isError) {
-		return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
+	async function updateMembership(membership: boolean) {
+		await mutate(app.patch('/api/me', { membership, reset: false }))
+		if (!membership) signOut()
 	}
+
+	if (isLoading) return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
+
+	if (isError) return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
+
+	if (user?.reset) return (
+		<UserLayout>
+			{/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
+			<Modal isOpen={true} close={() => { }}>
+				<div className={styles.panel}>
+					<div className={styles['confirmation-body']}>
+						<Dialog.Title className="text-xl text-center">Do you wish to retain your membership at Peer Tutors Society?</Dialog.Title>
+						<div className={styles['btn-group']}>
+							<button type="button" className={styles.btn + ' btn gray'} onClick={() => updateMembership(false)}>No</button>
+							<button type="button" className={styles.btn + ' btn blue'} onClick={() => updateMembership(true)}>Yes</button>
+						</div>
+					</div>
+				</div>
+			</Modal>
+		</UserLayout >
+	)
 
 	return (
 		<UserLayout>
