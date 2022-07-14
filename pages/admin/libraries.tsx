@@ -84,8 +84,18 @@ const LibraryPage: NextPage = () => {
 	const panelButtons: readonly button[] = useMemo(() => [
 		{
 			text: 'Export Database',
-			tooltip: 'Download data in JSON format',
-			onClick() { console.log('hello') }
+			tooltip: 'Download data in JSON and CSV format',
+			async onClick() {
+				const { data } = await app.get<string>('/api/export')
+				
+				const filePath = 'data:application/zip;base64,' + data
+				const a = document.createElement('a')
+				a.href = filePath
+				a.download = 'export.zip'
+				document.body.appendChild(a)
+				a.click()
+				document.body.removeChild(a)
+			}
 		},
 		{
 			text: 'Reset Data',
@@ -157,7 +167,7 @@ const LibraryPage: NextPage = () => {
 					</div>
 					<div className={styles['button-group']}>
 						{panelButtons.map(b =>
-							<div key={b.text} role="button" className="btn blue group">
+							<div key={b.text} role="button" className="btn blue group" onClick={b.onClick}>
 								<p>{b.text}</p>
 								<span className="group-hover:scale-100">{b.tooltip}</span>
 							</div>

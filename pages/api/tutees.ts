@@ -16,11 +16,7 @@ const tuteeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 		switch (method) {
 			case "POST": {
 				const timestamp = new Date()
-				const term = await Dates.findOne({
-					_id: { $regex: '^(AY).*' },
-					start: { $lt: timestamp },
-					end: { $gt: timestamp }
-				})
+				const term = await Dates.getAYTerm()
 				if (!term) throw Error('Missing term definition')
 
 				const { _id: ayterm } = term

@@ -16,6 +16,8 @@
     "@tailwindcss/forms": "^0.4.0",
     "axios": "^0.26.0",
     "classnames": "^2.3.1",
+    "json2csv": "^5.0.7",
+    "jszip": "^3.10.0",
     "match-sorter": "^6.3.1",
     "mongoose": "^6.2.3",
     "multiselect-react-dropdown": "^2.0.21",
@@ -35,6 +37,7 @@
     "zustand": "^3.7.0"
   },
   "devDependencies": {
+    "@types/json2csv": "^5.0.3",
     "@types/node": "17.0.21",
     "@types/nodemailer": "^6.4.4",
     "@types/react": "17.0.39",
