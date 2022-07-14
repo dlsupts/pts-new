@@ -113,8 +113,10 @@ const LibraryModal: FC<LibraryModalProps> = ({ isOpen, onClose, library, onDelet
 									{order.map((c, i) =>
 										<OrderItem key={i + c} content={c} idx={i} removeItem={removeItem} isKeyed={library?.isKeyed ?? false} />
 									)}
+									{provided.placeholder}
 								</div>
 							)}
+							
 						</Droppable>
 					</DragDropContext>
 				</div>

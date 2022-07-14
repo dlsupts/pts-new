@@ -2,7 +2,7 @@ import { Schema, models, model, Model, Document } from 'mongoose'
 import { ISchedule } from './schedule'
 import { userInfoSchema, IUserInfo } from './user'
 import * as yup from 'yup'
-import './schedule'
+import Schedule from './schedule'
 
 export const tuteeInfoSchema = userInfoSchema.shape({
 	campus: yup.string().required('Campus is required.'),
@@ -31,6 +31,11 @@ const tuteeSchema = new Schema<ITutee>({
 		type: Schema.Types.ObjectId,
 		ref: 'Schedule',
 	}
+})
+
+tuteeSchema.pre('remove', function(next) {
+	Schedule.deleteOne({ _id: this.schedule })
+	next()
 })
 
 export default models?.Tutee as Model<ITutee & Document> || model<ITutee>('Tutee', tuteeSchema, 'tutees')

@@ -31,7 +31,7 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					'-_id -contact -url -membership -tutoringService -tutorialType -tuteeCount -topics -schedule -userType -reset -__v'
 				).lean()
 				const tutees = await Tutee.find({}, '-_id -idNumber -url -friends -schedule -contact -__v').lean()
-				const sessions = await Session.find({}, '-_id -request -tutor').lean()
+				const sessions = await Session.find({}, '-_id -request -tutor -__v').lean()
 
 				try {
 					csv.file(`${prefix} tutors.csv`, parse(tutors))

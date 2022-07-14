@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import dbConnect from '@lib/db'
 import Dates from '@models/date'
+import { MongoError } from 'mongodb'
 
 const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
@@ -32,6 +33,9 @@ const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {
+		if ((err as MongoError).code == 11000) {
+			res.status(403).send('You have entered a duplicate key!')
+		}
 		console.log(err)
 		res.status(500).send('A server-side error has occured. Please try again later.')
 	} finally {

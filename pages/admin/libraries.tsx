@@ -14,6 +14,8 @@ import { toast } from 'react-toastify'
 import LibraryModal from '@components/admin/libraries/library-modal'
 import AddLibraryModal, { AddLibrarySchema } from '@components/admin/libraries/add-library-modal'
 import DateModal, { DateModalSchema } from '@components/admin/libraries/date-modal'
+import ConfirmationModal from '@components/modal/confirmation-modal'
+import axios from 'axios'
 
 type button = {
 	text: string
@@ -31,11 +33,21 @@ const LibraryPage: NextPage = () => {
 
 	function closeModal() { setModal('') }
 
+	async function handleReset() {
+		await app.delete('/api/maintenance')
+	}
+
 	async function addLibrary(details: AddLibrarySchema) {
-		await mutateLibraries(async () => {
-			const { data } = await app.post<ILib>('/api/libraries', details)
-			return libraries?.concat(data)
-		})
+		try {
+			await mutateLibraries(async () => {
+				const { data } = await app.post<ILib>('/api/libraries', details)
+				return libraries?.concat(data)
+			})
+		} catch (err) {
+			if (axios.isAxiosError(err)) {
+				toast.error(err.response?.data, toastErrorConfig)
+			}
+		}
 		closeModal()
 	}
 
@@ -62,17 +74,23 @@ const LibraryPage: NextPage = () => {
 	}
 
 	async function updateDate(details: DateModalSchema,) {
-		if (date == undefined) {
-			await mutateDates(async () => {
-				const { data } = await app.post<IDate>('/api/dates', details)
-				return dates?.concat([data])
-			})
-		} else {
-			await app.patch(`/api/dates/${date._id}`, details)
-			await mutateDates()
+		try {
+			if (date == undefined) {
+				await mutateDates(async () => {
+					const { data } = await app.post<IDate>('/api/dates', details)
+					return dates?.concat([data])
+				})
+			} else {
+				await app.patch(`/api/dates/${date._id}`, details)
+				await mutateDates()
+			}
+			closeModal()
+			toast.success('Dates updated!', toastSuccessConfig)
+		} catch (err) {
+			if (axios.isAxiosError(err)) {
+				toast.error(err.response?.data, toastErrorConfig)
+			}
 		}
-		closeModal()
-		toast.success('Dates updated!', toastSuccessConfig)
 	}
 
 	async function deleteDate() {
@@ -87,7 +105,7 @@ const LibraryPage: NextPage = () => {
 			tooltip: 'Download data in JSON and CSV format',
 			async onClick() {
 				const { data } = await app.get<string>('/api/export')
-				
+
 				const filePath = 'data:application/zip;base64,' + data
 				const a = document.createElement('a')
 				a.href = filePath
@@ -100,7 +118,7 @@ const LibraryPage: NextPage = () => {
 		{
 			text: 'Reset Data',
 			tooltip: 'Reset data for incoming term',
-			onClick() { console.log('hello') }
+			onClick() { setModal('reset') }
 		},
 	] as const, [])
 
@@ -115,10 +133,15 @@ const LibraryPage: NextPage = () => {
 
 	return (
 		<AdminLayout>
+			<ConfirmationModal isOpen={modal === 'reset'} message="Proceed with term reset?" onActionClick={handleReset} onClose={closeModal} />
 			<LibraryModal isOpen={modal === 'library'} onClose={closeModal}
-				library={libraries?.[libIdx]} onDelete={deleteLibrary} onUpdate={updateLibrary} />
+				library={libraries?.[libIdx]} onDelete={() => setModal('del lib')} onUpdate={updateLibrary} />
+			<ConfirmationModal isOpen={modal === 'del lib'} message={`Remove ${libraries?.[libIdx]._id} Library?`}
+				onClose={() => setModal('library')} onActionClick={deleteLibrary} />
 			<AddLibraryModal isOpen={modal === 'add library'} onClose={closeModal} onSubmit={addLibrary} />
-			<DateModal isOpen={modal === 'date'} date={date} onClose={closeModal} onSubmit={updateDate} onDelete={deleteDate} />
+			<DateModal isOpen={modal === 'date'} date={date} onClose={closeModal} onSubmit={updateDate} onDelete={() => setModal('del date')} />
+			<ConfirmationModal isOpen={modal === 'del date'} message={`Remove ${date?._id} Dates?`}
+				onClose={() => setModal('date')} onActionClick={deleteDate} />
 			<div className="grid gap-y-8">
 				<section>
 					<h2 className={styles['section-header']}>Libraries</h2>
