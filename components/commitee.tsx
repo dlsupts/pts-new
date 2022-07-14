@@ -2,7 +2,7 @@ import { FC } from 'react'
 import Image from 'next/image'
 import { ICommittee, IOfficer } from '../models/committee'
 
-const OfficerTile: FC<IOfficer> = ({ position, image, name }) => {
+const OfficerTile: FC<Omit<IOfficer, 'userType'>> = ({ position, image, name }) => {
 	let fullPosition = position
 
 	switch (position) {

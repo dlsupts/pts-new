@@ -17,7 +17,6 @@ const tuteeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 			case "POST": {
 				const timestamp = new Date()
 				const term = await Dates.getAYTerm()
-				if (!term) throw Error('Missing term definition')
 
 				const { _id: ayterm } = term
 				const { _id: schedId } = await Schedule.create(body.tutee.schedule)

@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import dbConnect from '@lib/db'
 import User, { IUser } from '@models/user'
+import Dates from '@models/date'
 
 const meHandler = async (req: NextApiRequest, res: NextApiResponse<IUser>) => {
 	const session = await getSession({ req })
@@ -26,6 +27,10 @@ const meHandler = async (req: NextApiRequest, res: NextApiResponse<IUser>) => {
 			}
 
 			case "PATCH": {
+				if (req.body.membership) {
+					req.body.lastActive = (await Dates.getAYTerm())._id
+				}
+
 				const user = await User.findOneAndUpdate({ email }, req.body, { new: true }).lean().exec()
 				if (user == null) throw new Error('User not found in registry!')
 				res.send(user)

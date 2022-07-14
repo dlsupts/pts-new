@@ -30,11 +30,13 @@ dateSchema.statics.getAYTerm = async function (timestamp = new Date(), allowFall
 		end: { $gt: timestamp }
 	}).lean()
 
-	if (term == null && allowFallback) {
+	if (term != null) return term
+
+	if (allowFallback) {
 		return await this.findOne({ _id: { $regex: '^(AY).*' } }).sort({ 'start': -1 }).limit(1).lean()
 	}
 
-	return term
+	throw Error('No term definition found!')
 }
 
 export default models.Date as unknown as DateModel || model<IDate>('Date', dateSchema, 'dates')
