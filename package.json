@@ -21,6 +21,7 @@
     "multiselect-react-dropdown": "^2.0.21",
     "next": "^12.1.0",
     "next-auth": "^4.2.1",
+    "nodemailer": "^6.7.7",
     "react": "17.0.2",
     "react-beautiful-dnd": "^13.1.0",
     "react-dom": "17.0.2",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@types/node": "17.0.21",
+    "@types/nodemailer": "^6.4.4",
     "@types/react": "17.0.39",
     "@types/react-beautiful-dnd": "^13.1.2",
     "@types/react-table": "^7.7.10",

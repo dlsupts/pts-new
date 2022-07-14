@@ -1,3 +1,4 @@
+import { sendApplicationConfirmation } from '@lib/mailer'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import dbConnect from '../../../lib/db'
@@ -32,7 +33,7 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					return res.status(406).send('You are already a tutor!')
 				}
 				await Application.create(req.body)
-				
+				await sendApplicationConfirmation(req.body.email)
 				break
 			}
 
