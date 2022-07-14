@@ -9,11 +9,10 @@ import { ICommittee } from '@models/committee'
 import AddOfficerModal, { AddOfficerSchema } from '@components/admin/officers/add-officer-modal'
 import { IUser } from '@models/user'
 import UpdateOfficerModal, { UpdateOfficerSchema } from '@components/admin/officers/update-officer-modal'
-import DeleteOfficerModal from '@components/admin/officers/delete-officer-modal'
-import DeleteCommitteeModal from '@components/admin/officers/delete-committee-modal'
 import AddCommitteeModal, { AddCommitteeSchema } from '@components/admin/officers/add-committee-modal'
 import ChangeOrderModal from '@components/admin/officers/change-order-modal'
 import useRetriever from '@lib/useRetriever'
+import ConfirmationModal from '@components/modal/confirmation-modal'
 
 const OfficerPage: NextPage = () => {
 	const { data: committees, isLoading, mutate } = useRetriever<ICommittee[]>('/api/committees')
@@ -79,9 +78,9 @@ const OfficerPage: NextPage = () => {
 	return (
 		<AdminLayout>
 			<UpdateOfficerModal isOpen={modal === 'update officer'} officer={officer} onClose={closeModal} onSubmit={updateOfficer} />
-			<DeleteOfficerModal isOpen={modal === 'delete officer'} officer={officer} onClose={closeModal} onDelete={deleteOfficer} />
+			<ConfirmationModal isOpen={modal === 'delete officer'} message={`Remove ${officer?.name}?`} onClose={closeModal} onActionClick={deleteOfficer} />
 			<AddOfficerModal isOpen={modal === 'add officer'} onClose={closeModal} users={tutors || []} onSubmit={addOfficer} />
-			<DeleteCommitteeModal isOpen={modal === 'delete committee'} onClose={closeModal} committee={committee} onDelete={deleteCommittee} />
+			<ConfirmationModal isOpen={modal === 'delete committee'} onClose={closeModal} message={`Remove ${committee?.name}?`} onActionClick={deleteCommittee} />
 			<AddCommitteeModal isOpen={modal === 'add committee'} onClose={closeModal} onSubmit={addCommittee} />
 			<ChangeOrderModal isOpen={modal === 'sort'} onClose={closeModal} initOrder={order || []} onSubmit={updateOrder} />
 			<div className="flex justify-end mb-6 -mt-2">
