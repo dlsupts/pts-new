@@ -27,7 +27,7 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				if (csv == null || json == null) throw Error('Error exporting database!')
 
 				const tutors = await User.find(
-					{ email: { $ne: process.env.ADMIN_EMAIL } },
+					{ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL } },
 					'-_id -contact -url -membership -tutoringService -tutorialType -tuteeCount -topics -schedule -userType -reset -__v'
 				).lean()
 				const tutees = await Tutee.find({}, '-_id -idNumber -url -friends -schedule -contact -__v').lean()

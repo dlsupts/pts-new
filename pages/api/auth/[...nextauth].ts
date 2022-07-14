@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth'
 import GoogleProvider from "next-auth/providers/google"
-import User from '../../../models/user'
-import dbConnect from '../../../lib/db'
+import User from '@models/user'
+import dbConnect from '@lib/db'
 import { Schema } from 'mongoose'
 
 export default NextAuth({
@@ -16,7 +16,7 @@ export default NextAuth({
 	},
 	callbacks: {
 		async signIn({ account, profile }) {
-			if (account.provider === 'google' && (profile.hd == 'dlsu.edu.ph' || profile.email == process.env.ADMIN_EMAIL)) {
+			if (account.provider === 'google' && (profile.hd == 'dlsu.edu.ph' || profile.email == process.env.NEXT_PUBLIC_ADMIN_EMAIL)) {
 				let temp
 
 				try {

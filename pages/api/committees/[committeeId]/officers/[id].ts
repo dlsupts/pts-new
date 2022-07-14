@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import dbConnect from '@lib/db'
 import Committee from '@models/committee'
+import User from '@models/user'
 
 const officerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const session = await getSession({ req })
@@ -17,6 +18,10 @@ const officerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					{ $set: { 'officers.$[idx].image': req.body.image } },
 					{ arrayFilters: [{ 'idx.user': req.query.id }] }
 				)
+
+				if (session.user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {					
+					await User.updateOne({ _id: req.query.id }, { userType: req.body.userType })
+				}
 				break
 			}
 

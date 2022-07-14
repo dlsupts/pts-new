@@ -13,6 +13,8 @@ import AddCommitteeModal, { AddCommitteeSchema } from '@components/admin/officer
 import ChangeOrderModal from '@components/admin/officers/change-order-modal'
 import useRetriever from '@lib/useRetriever'
 import ConfirmationModal from '@components/modal/confirmation-modal'
+import { toast } from 'react-toastify'
+import { toastSuccessConfig } from '@lib/toast-defaults'
 
 const OfficerPage: NextPage = () => {
 	const { data: committees, isLoading, mutate } = useRetriever<ICommittee[]>('/api/committees')
@@ -39,9 +41,13 @@ const OfficerPage: NextPage = () => {
 		setModal('')
 	}
 
-	async function updateOfficer(data: UpdateOfficerSchema) {
-		await app.patch(`/api/committees/${committee?._id}/officers/${officer?.user}`, data)
+	async function updateOfficer(data: UpdateOfficerSchema, userType: string) {
+		await app.patch(`/api/committees/${committee?._id}/officers/${officer?.user}`, {
+			...data,
+			userType
+		})
 		await mutate()
+		toast.success('Officer details updated!', toastSuccessConfig)
 		setModal('')
 	}
 

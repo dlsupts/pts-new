@@ -6,7 +6,6 @@ import { formatDate } from '@lib/utils'
 import useRetriever, { useRetrieverWithFallback } from '@lib/useRetriever'
 import { IDate } from '@models/date'
 import { ILib } from '@models/library'
-import { Switch } from '@headlessui/react'
 import { useCallback, useMemo, useState } from 'react'
 import app from '@lib/axios-config'
 import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
@@ -16,6 +15,7 @@ import AddLibraryModal, { AddLibrarySchema } from '@components/admin/libraries/a
 import DateModal, { DateModalSchema } from '@components/admin/libraries/date-modal'
 import ConfirmationModal from '@components/modal/confirmation-modal'
 import axios from 'axios'
+import MySwitch from '@components/switch'
 
 type button = {
 	text: string
@@ -179,11 +179,7 @@ const LibraryPage: NextPage = () => {
 						<div className="flex justify-between group relative" onClick={handleMaintenanceToggle}>
 							<p>Maintenance Mode</p>
 							{/*eslint-disable-next-line @typescript-eslint/no-empty-function*/}
-							<Switch checked={isInMaintenance} onChange={() => { }} className={`${isInMaintenance ? 'bg-blue-600' : 'bg-gray-200'} transition-colors relative inline-flex h-6 w-11 items-center rounded-full`}>
-								<span
-									className={`${isInMaintenance ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform transition-all rounded-full bg-white`}
-								/>
-							</Switch>
+							<MySwitch isChecked={isInMaintenance} onChange={() => { }} />
 							<span className={styles.tooltip + ' group-hover:scale-100'}>Prevent new requests and applications from coming in</span>
 						</div>
 						<div className="!hidden"></div>

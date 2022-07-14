@@ -17,11 +17,11 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 			case 'GET': {
 				const committees = await Committee.find().populate({
 					path: 'officers.user',
-					select: 'firstName lastName'
+					select: 'firstName lastName userType'
 				}).lean()
 
 				const order = await Library.findById('Committees').lean('-_id content').exec()
-
+				
 				// arrange committees based on order in library
 				const arranged = order?.content?.map(o => committees.find(c => c.name == o))
 
@@ -29,12 +29,13 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				arranged?.forEach(c => c?.officers.forEach(o => {
 					if (typeof o.user != 'string' && 'firstName' in o.user) {
 						o.name = o.user.firstName + ' ' + o.user.lastName
+						o.userType = o.user.userType
 						o.user = o.user._id.toString()
 					} else {
 						o.user = o.user.toString()
 					}
 				}))
-
+				
 				res.json(arranged)
 				break
 			}

@@ -33,6 +33,7 @@ export interface ITutorInfo {
 export interface IUser extends IUserInfo, ITutorInfo {
 	userType: role
 	reset: boolean
+	lastActive: string
 }
 
 const userSchema = new Schema<IUser>({
@@ -46,7 +47,7 @@ const userSchema = new Schema<IUser>({
 	url: { type: String, default: '' },
 	terms: { type: Number, default: 0 },
 	membership: { type: Boolean, default: true },
-	tutoringService: [String], /* [WHOLE TERM, ONE SESSION] */
+	tutoringService: [String], // [WHOLE TERM, ONE SESSION]
 	tutorialType: [String],
 	tuteeCount: { type: Number, default: 0 },
 	maxTuteeCount: { type: Number, default: 0 },
@@ -55,8 +56,9 @@ const userSchema = new Schema<IUser>({
 		type: Schema.Types.ObjectId,
 		ref: 'Schedule',
 	},
-	userType: String, /* [ADMIN, TUTOR] */
+	userType: String, 	// [ADMIN, TUTOR]
 	reset: Boolean,
+	lastActive: String, // ayterm
 })
 
 export default models?.User as Model<IUser & Document> || model<IUser>('User', userSchema, 'users')

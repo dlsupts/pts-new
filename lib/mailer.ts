@@ -11,7 +11,7 @@ async function sendEmail(to: string, subject: string, html: string) {
 	const transporter = nodemailer.createTransport({
 		service: 'gmail',
 		auth: {
-			user: process.env.ADMIN_EMAIL,
+			user: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
 			pass: process.env.MAIL_PASS,
 		},
 		tls: {
@@ -19,7 +19,7 @@ async function sendEmail(to: string, subject: string, html: string) {
 		}
 	})
 
-	return await transporter.sendMail({ from: process.env.ADMIN_EMAIL, to, subject, html })
+	return await transporter.sendMail({ from: process.env.NEXT_PUBLIC_ADMIN_EMAIL, to, subject, html })
 }
 
 export async function sendApplicationConfirmation(to: string) {

@@ -17,13 +17,13 @@ const maintenanceHandler = async (req: NextApiRequest, res: NextApiResponse<bool
 
 		switch (method) {
 			case 'GET': {
-				const user = await User.findOne({ email: process.env.ADMIN_EMAIL }).lean()
+				const user = await User.findOne({ email: process.env.NEXT_PUBLIC_ADMIN_EMAIL }).lean()
 				res.send(user?.reset || false)
 				break
 			}
 
 			case 'PUT': {
-				await User.updateOne({ email: process.env.ADMIN_EMAIL }, { reset: body.reset })
+				await User.updateOne({ email: process.env.NEXT_PUBLIC_ADMIN_EMAIL }, { reset: body.reset })
 				res.send(body.reset)
 				break
 			}

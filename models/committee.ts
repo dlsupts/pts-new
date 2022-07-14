@@ -1,10 +1,12 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
 import { IUser } from './user'
 import './user' // force import in case of query population
+import { role } from '@types'
 
 export interface IOfficer {
 	user: Schema.Types.ObjectId | IUser | string;
 	name?: string; // frontend firstName + lastName
+	userType: role; // frontend
 	position: string;
 	image: string;
 }
