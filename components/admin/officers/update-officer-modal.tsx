@@ -9,6 +9,7 @@ import styles from '@styles/Modal.module.css'
 import { useSession } from 'next-auth/react'
 import LoadingSpinner from '@components/loading-spinner'
 import MySwitch from '@components/switch'
+import cn from 'classnames'
 
 const updateOfficerSchema = yup.object({
 	image: yup.string().required('Image ID is required!'),
@@ -47,6 +48,8 @@ const UpdateOfficerModal: FC<UpdateOfficerModalProps> = ({ isOpen, onClose, onSu
 		<LoadingSpinner className="w-20 aspect-square" />
 	}
 
+	const isSuperAdmin = data?.user.email == process.env.NEXT_PUBLIC_ADMIN_EMAIL
+
 	return (
 		<Modal isOpen={isOpen} close={handleClose} initialFocus={cancelButton}>
 			<div className={styles.panel}>
@@ -60,8 +63,8 @@ const UpdateOfficerModal: FC<UpdateOfficerModalProps> = ({ isOpen, onClose, onSu
 						</div>
 					</form>
 				</div>
-				<div className={styles.footer + ' flex !justify-between'}>
-					{data?.user.email == process.env.NEXT_PUBLIC_ADMIN_EMAIL &&
+				<div className={cn(styles.footer, { '!justify-between': isSuperAdmin })}>
+					{isSuperAdmin &&
 						<Switch.Group>
 							<div className="flex items-center space-x-4">
 								<MySwitch isChecked={isAdmin} onChange={() => setIsAdmin(!isAdmin)} />
