@@ -1,5 +1,4 @@
 import { NextPage } from 'next'
-import { Column } from 'react-table'
 import AdminLayout from '@components/admin-layout'
 import app from '@lib/axios-config'
 import type { IUserInfo } from '@models/user'
@@ -14,13 +13,17 @@ import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import Link from 'next/link'
 import LoadingSpinner from '@components/loading-spinner'
 import { useRetrieverWithFallback } from '@lib/useRetriever'
+import { createColumnHelper } from '@tanstack/react-table'
 
-const columns: Column<IUserInfo>[] = [
-	{ Header: 'ID Number', accessor: 'idNumber' },
-	{ Header: 'Last Name', accessor: 'lastName' },
-	{ Header: 'First Name', accessor: 'firstName' },
-	{ Header: 'Email', accessor: 'email' },
-	{ Header: 'URL', accessor: 'url' },
+const columnHelper = createColumnHelper<IUserInfo>()
+
+const columns = [
+	//@ts-expect-error: TypeScript limitation
+	columnHelper.accessor('idNumber', { header: 'ID Number' }),
+	columnHelper.accessor('lastName', { header: 'Last Name' }),
+	columnHelper.accessor('firstName', { header: 'First Name' }),
+	columnHelper.accessor('email', { header: 'email' }),
+	columnHelper.accessor('url', { header: 'URL' }),
 ]
 
 const ApplicantsPage: NextPage = () => {

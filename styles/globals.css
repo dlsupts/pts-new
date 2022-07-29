@@ -32,6 +32,10 @@
 	label {
 		@apply block text-sm font-medium text-gray-700
 	}
+
+	td {
+		@apply overflow-x-hidden text-ellipsis max-w-md
+	}
 }
 
 .main-height-full {

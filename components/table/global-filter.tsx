@@ -1,37 +1,35 @@
-import { FilterValue, useAsyncDebounce } from 'react-table'
-import { FC, useState } from 'react'
+// code from https://tanstack.com/table/v8/docs/examples/react/filters
+import { FilterFn, sortingFns, SortingFn } from '@tanstack/react-table'
+import { RankingInfo, rankItem, compareItems } from '@tanstack/match-sorter-utils'
 
-type filterprop = {
-	globalFilter: string
-	setGlobalFilter: (filterValue: FilterValue) => void
+declare module '@tanstack/table-core' {
+	interface FilterFns {
+		fuzzy: FilterFn<unknown>
+	}
+	interface FilterMeta {
+		itemRank: RankingInfo
+	}
 }
 
-// Define a default UI for filtering
-const GlobalFilter: FC<filterprop> = ({
-	globalFilter,
-	setGlobalFilter
-}) => {
-	const [value, setValue] = useState(globalFilter)
-	const onChange = useAsyncDebounce(value => {
-		setGlobalFilter(value || undefined)
-	}, 200)
+export const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
+	const itemRank = rankItem(row.getValue(columnId), value)
+	addMeta({
+		itemRank,
+	})
 
-	return (
-		<div className="mb-4">
-			<label htmlFor="tbl-search">Search</label>
-			<input
-				id="tbl-search"
-				type="text"
-				value={value || ""}
-				onChange={e => {
-					setValue(e.target.value)
-					onChange(e.target.value)
-				}}
-				placeholder="Search records..."
-				className="form-input"
-			/>
-		</div>
-	)
+	return itemRank.passed
 }
 
-export default GlobalFilter
+export const fuzzySort: SortingFn<unknown> = (rowA, rowB, columnId) => {
+	let dir = 0
+
+	if (rowA.columnFiltersMeta[columnId]) {
+		dir = compareItems(
+			rowA.columnFiltersMeta[columnId]?.itemRank,
+			rowB.columnFiltersMeta[columnId]?.itemRank
+		)
+	}
+
+	return dir === 0 ? sortingFns.alphanumeric(rowA, rowB, columnId) : dir
+}
+

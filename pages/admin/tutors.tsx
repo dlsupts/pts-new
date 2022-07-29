@@ -2,12 +2,10 @@ import { NextPage } from 'next'
 import AdminLayout from '@components/admin-layout'
 import app from '@lib/axios-config'
 import { IUser } from '@models/user'
-import Table from '@components/table/table'
 import LoadingSpinner from '@components/loading-spinner'
 import { toast } from 'react-toastify'
 import { toastErrorConfig } from '@lib/toast-defaults'
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { Column } from 'react-table'
 import Modal from '@components/modal'
 import styles from '@styles/Sessions.module.css'
 import modalStyles from '@styles/Modal.module.css'
@@ -16,13 +14,22 @@ import cn from 'classnames'
 import { ISchedule } from '@models/schedule'
 import Link from 'next/link'
 import useRetriever from '@lib/useRetriever'
+import { createColumnHelper } from '@tanstack/react-table'
+import Table from '@components/table'
 
-const columns: Column<IUser & { status?: string }>[] = [
-	{ Header: 'ID Number', accessor: 'idNumber' },
-	{ Header: 'Last Name', accessor: 'lastName' },
-	{ Header: 'First Name', accessor: 'firstName' },
-	{ Header: 'Email', accessor: 'email' },
-	{ Header: 'Status', accessor: 'status' },
+interface ITableProps extends IUser {
+	status?: string
+}
+
+const columnHelper = createColumnHelper<ITableProps>()
+
+const columns = [
+	//@ts-expect-error: TypeScript imitation
+	columnHelper.accessor('idNumber', { header: 'ID Number' }),
+	columnHelper.accessor('lastName', { header: 'Last Name' }),
+	columnHelper.accessor('firstName', { header: 'First Name' }),
+	columnHelper.accessor('email', { header: 'Email' }),
+	columnHelper.accessor('status', { header: 'Status' }),
 ]
 
 const AdminPage: NextPage = () => {
@@ -63,11 +70,12 @@ const AdminPage: NextPage = () => {
 		})
 		return tutors || []
 	}, [tutors])
-	const tableInstance = Table({ columns, data, onRowClick })
 
 	if (isError) {
 		toast.error('An error has occured. Please try again.', toastErrorConfig)
 	}
+
+	const tableInstance = Table<ITableProps>({ columns, data, onRowClick })
 
 	return (
 		<AdminLayout>
