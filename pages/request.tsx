@@ -12,7 +12,7 @@ import { toast } from 'react-toastify'
 import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import LoadingSpinner from '@components/loading-spinner'
 import { parseContent } from '@lib/utils'
-import useRetriever from '@lib/useRetriever'
+import { useRetriever } from '@lib/useRetriever'
 import { IDate } from '@models/date'
 
 interface RequestProps {

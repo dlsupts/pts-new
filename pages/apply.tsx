@@ -11,7 +11,7 @@ import { toast } from 'react-toastify'
 import { toastSuccessConfig, toastErrorConfig } from '../lib/toast-defaults'
 import axios from 'axios'
 import { parseContent } from '@lib/utils'
-import useRetriever from '@lib/useRetriever'
+import { useRetriever } from '@lib/useRetriever'
 import { IDate } from '@models/date'
 
 interface RequestProps {

@@ -13,7 +13,7 @@ import { days } from '@lib/times'
 import cn from 'classnames'
 import { ISchedule } from '@models/schedule'
 import Link from 'next/link'
-import useRetriever from '@lib/useRetriever'
+import { useRetriever } from '@lib/useRetriever'
 import { createColumnHelper } from '@tanstack/react-table'
 import Table from '@components/table'
 

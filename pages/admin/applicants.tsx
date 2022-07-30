@@ -12,7 +12,7 @@ import { toast } from 'react-toastify'
 import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import Link from 'next/link'
 import LoadingSpinner from '@components/loading-spinner'
-import { useRetrieverWithFallback } from '@lib/useRetriever'
+import { useRetriever } from '@lib/useRetriever'
 import { createColumnHelper } from '@tanstack/react-table'
 
 const columnHelper = createColumnHelper<IUserInfo>()
@@ -27,7 +27,7 @@ const columns = [
 ]
 
 const ApplicantsPage: NextPage = () => {
-	const { data: applicants, mutate, isLoading } = useRetrieverWithFallback<IUserInfo[]>('/api/applications', [])
+	const { data: applicants, mutate, isLoading } = useRetriever<IUserInfo[]>('/api/applications', [])
 	const [isOpen, setIsOpen] = useState(false) // for application info modal
 	const [applicant, setApplicant] = useState<IUserInfo>()
 	const [isDelOpen, setIsDelOpen] = useState<boolean>(false)

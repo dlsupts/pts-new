@@ -7,7 +7,7 @@ import cn from 'classnames'
 import { days } from '@lib/times'
 import tutorialTypes from '@lib/tutorial-types'
 import styles from '@styles/Sessions.module.css'
-import useRetriever from '@lib/useRetriever'
+import { useRetriever } from '@lib/useRetriever'
 import { IReqSesssion } from '@pages/api/me/sessions'
 
 const TutorSessions: NextPage = () => {

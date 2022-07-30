@@ -3,7 +3,7 @@ import AdminLayout from '@components/admin-layout'
 import styles from '@styles/Libraries.module.css'
 import { PlusIcon } from '@heroicons/react/outline'
 import { formatDate } from '@lib/utils'
-import useRetriever, { useRetrieverWithFallback } from '@lib/useRetriever'
+import { useRetriever } from '@lib/useRetriever'
 import { IDate } from '@models/date'
 import { ILib } from '@models/library'
 import { useCallback, useMemo, useState } from 'react'
@@ -26,7 +26,7 @@ type button = {
 const LibraryPage: NextPage = () => {
 	const { data: libraries, mutate: mutateLibraries } = useRetriever<ILib[]>('/api/libraries')
 	const { data: dates, mutate: mutateDates } = useRetriever<IDate[]>('/api/dates')
-	const { data: isInMaintenance, mutate: mutateIsInMaintenance } = useRetrieverWithFallback<boolean>('/api/maintenance', true)
+	const { data: isInMaintenance, mutate: mutateIsInMaintenance } = useRetriever<boolean>('/api/maintenance', true)
 	const [libIdx, setLibIdx] = useState(0)
 	const [date, setDate] = useState<IDate>()
 	const [modal, setModal] = useState('')
