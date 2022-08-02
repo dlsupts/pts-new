@@ -2,10 +2,10 @@ import { Disclosure, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/outline'
 import { ITutee } from '@models/tutee'
 import cn from 'classnames'
-import { days } from '@lib/times'
 import styles from '@styles/Sessions.module.css'
 import { IReqSession } from '@pages/api/requests'
 import tutorialTypes from '@lib/tutorial-types'
+import ScheduleDisplay from '@components/schedule-display'
 
 type TuteeDisclosureProps = {
 	tutee?: ITutee
@@ -70,17 +70,7 @@ const TuteeDisclosure = ({ tutee, request }: TuteeDisclosureProps) => {
 										}
 										<div className="col-span-full">
 											<p className={styles.label}>Schedule</p>
-											<table className="w-full shadow-sm">
-												<tbody>
-													{days.map((day, index) => (
-														<tr key={day.key} className={cn({ 'bg-gray-100': index % 2 })}>
-															<td className="font-medium pl-2 py-2 sm:pl-6 w-32 sm:w-36">{day.text}</td>
-															<td className="py-2" dangerouslySetInnerHTML={{ __html: tutee?.schedule[day.key].join('<br>') || '' }} />
-														</tr>
-													))
-													}
-												</tbody>
-											</table>
+											<ScheduleDisplay schedule={tutee?.schedule} />
 										</div>
 									</div>
 								</div>
@@ -90,9 +80,6 @@ const TuteeDisclosure = ({ tutee, request }: TuteeDisclosureProps) => {
 				)}
 			</Disclosure>
 			<div className={styles['data-display']}>
-				<div className={styles.header}>
-					<h3>Tutorial Session</h3>
-				</div>
 				<div className={styles.content}>
 					<div>
 						<p className={styles.label}>Duration</p>

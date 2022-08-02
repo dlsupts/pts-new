@@ -4,11 +4,11 @@ import LoadingSpinner from '@components/loading-spinner'
 import { Disclosure, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import cn from 'classnames'
-import { days } from '@lib/times'
 import tutorialTypes from '@lib/tutorial-types'
 import styles from '@styles/Sessions.module.css'
 import { useRetriever } from '@lib/useRetriever'
 import { IReqSesssion } from '@pages/api/me/sessions'
+import ScheduleDisplay from '@components/schedule-display'
 
 const TutorSessions: NextPage = () => {
 	const { data: sessions, isLoading, isError } = useRetriever<IReqSesssion[]>('/api/me/sessions')
@@ -117,17 +117,7 @@ const TutorSessions: NextPage = () => {
 											}
 											<div className="col-span-full">
 												<p className={styles.label}>Schedule</p>
-												<table className="w-full shadow-sm">
-													<tbody>
-														{days.map((day, index) => (
-															<tr key={day.key} className={cn({ 'bg-gray-100': index % 2 })}>
-																<td className="font-medium pl-2 py-2 sm:pl-6 w-32 sm:w-36">{day.text}</td>
-																<td className="py-2" dangerouslySetInnerHTML={{ __html: tutee.schedule[day.key].join('<br>') }} />
-															</tr>
-														))
-														}
-													</tbody>
-												</table>
+												<ScheduleDisplay schedule={tutee.schedule} />
 											</div>
 										</div>
 									</div>
