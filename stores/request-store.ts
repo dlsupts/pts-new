@@ -7,7 +7,7 @@ export type RequestFormData = Pick<IRequest, 'duration' | 'tutorialType'> & {
 }
 
 export type RequestStore = {
-	tutee: ITutee
+	tutee: Omit<ITutee, '_id'>
 	request: RequestFormData
 	selectedSubjects: string[][]
 	setTutee: (tutee: Partial<ITutee>) => void

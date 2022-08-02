@@ -24,7 +24,7 @@ interface ITableProps extends IUser {
 const columnHelper = createColumnHelper<ITableProps>()
 
 const columns = [
-	//@ts-expect-error: TypeScript imitation
+	//@ts-ignore: TypeError: Recursively deep, library/typescript limitation. 
 	columnHelper.accessor('idNumber', { header: 'ID Number' }),
 	columnHelper.accessor('lastName', { header: 'Last Name' }),
 	columnHelper.accessor('firstName', { header: 'First Name' }),
@@ -127,7 +127,7 @@ const AdminPage: NextPage = () => {
 							</div>
 							<div className="col-span-full">
 								<p className={styles.label}>Tutoring Services</p>
-								<p className={styles.data}>{tutor?.tutoringService == 'None' ? 'None' : tutor?.tutoringService.join(', ')}</p>
+								<p className={styles.data}>{tutor?.tutoringService.join(', ')}</p>
 							</div>
 							<div className="col-span-full">
 								<p className={styles.label}>Tutoring Types</p>

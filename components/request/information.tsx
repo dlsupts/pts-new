@@ -1,7 +1,7 @@
 import { Dispatch, FC, MouseEventHandler, SetStateAction } from 'react'
 import { useForm } from 'react-hook-form'
-import useStore, { RequestStore } from '../../stores/request-store'
-import { tuteeInfoSchema } from '../../models/tutee'
+import useStore, { RequestStore } from '@stores/request-store'
+import { tuteeInfoSchema } from '@models/tutee'
 import { yupResolver } from '@hookform/resolvers/yup'
 import shallow from 'zustand/shallow'
 
@@ -14,9 +14,12 @@ type InformationProps = {
 
 const storeSelector = (state: RequestStore) => [state.tutee, state.setTutee] as const
 
+
+
 const Information: FC<InformationProps> = ({ colleges, degreePrograms, campuses, setStep }) => {
 	const [tutee, setTutee] = useStore(storeSelector, shallow)
-	const { register, handleSubmit, formState: { errors }, watch } = useForm<typeof tutee>({
+	type Tutee = Omit<typeof tutee, '_id'>
+	const { register, handleSubmit, formState: { errors }, watch } = useForm<Tutee>({
 		reValidateMode: 'onBlur',
 		resolver: yupResolver(tuteeInfoSchema),
 		defaultValues: tutee
@@ -29,7 +32,7 @@ const Information: FC<InformationProps> = ({ colleges, degreePrograms, campuses,
 		setStep(x => --x)
 	}
 
-	const onSubmit = (values: typeof tutee) => {
+	const onSubmit = (values: Tutee) => {
 		setTutee(values)
 		setStep(x => ++x) // move to next page
 	}

@@ -18,7 +18,7 @@ import { createColumnHelper } from '@tanstack/react-table'
 const columnHelper = createColumnHelper<IUserInfo>()
 
 const columns = [
-	//@ts-expect-error: TypeScript limitation
+	//@ts-ignore: TypeError: Recursively deep, library/typescript limitation. 
 	columnHelper.accessor('idNumber', { header: 'ID Number' }),
 	columnHelper.accessor('lastName', { header: 'Last Name' }),
 	columnHelper.accessor('firstName', { header: 'First Name' }),

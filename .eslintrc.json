@@ -8,6 +8,7 @@
 	"plugins": [ "@typescript-eslint" ],
 	"rules": {
 		"indent": [ "error", "tab", { "SwitchCase": 1 } ],
-		"semi": [ "error", "never" ]
+		"semi": [ "error", "never" ],
+		"@typescript-eslint/ban-ts-comment": "off"
 	}
 }

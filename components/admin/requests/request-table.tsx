@@ -42,7 +42,7 @@ const Table = ({ data, onRowClick, tutors, tutees }: TableProps) => {
 
 
 	const columns = useMemo(() => ([
-		//@ts-expect-error: TypeScript limitation
+		//@ts-expect-error: Library limitation. Note that this may result in build error, so just copy paste this comment.
 		columnHelper.accessor(row => {
 			const tutee = tutees.get(row.tutee)
 			return `${tutee?.firstName} ${tutee?.lastName}:${row._id}`
