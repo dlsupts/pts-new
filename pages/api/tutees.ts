@@ -14,6 +14,12 @@ const tuteeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 		await dbConnect()
 
 		switch (method) {
+			case 'GET': {
+				const tutees = await Tutee.find({}, '-__v').populate('schedule').lean()
+				res.json(tutees)
+				break
+			}
+
 			case "POST": {
 				const timestamp = new Date()
 				const term = await Dates.getAYTerm()
@@ -37,7 +43,7 @@ const tuteeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 			}
 
 			default:
-				res.setHeader('Allow', ['POST'])
+				res.setHeader('Allow', ['POST', 'GET'])
 				res.status(405).end(`Method ${method} Not Allowed`)
 		}
 	} catch (err) {
