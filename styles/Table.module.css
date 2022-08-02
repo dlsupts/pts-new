@@ -6,6 +6,10 @@
 	@apply min-w-full divide-y divide-gray-200 table-fixed
 }
 
+.table.has-checkbox td, .table.has-checkbox th {
+	@apply first:w-4 pr-2
+}
+
 .table thead {
 	@apply bg-gray-100 text-gray-600
 }

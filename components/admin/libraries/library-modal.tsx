@@ -116,7 +116,6 @@ const LibraryModal: FC<LibraryModalProps> = ({ isOpen, onClose, library, onDelet
 									{provided.placeholder}
 								</div>
 							)}
-							
 						</Droppable>
 					</DragDropContext>
 				</div>
@@ -124,8 +123,8 @@ const LibraryModal: FC<LibraryModalProps> = ({ isOpen, onClose, library, onDelet
 					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose}>Close</button>
 					<button className={styles.btn + ' btn blue'} onClick={() => onUpdate(order)}>Save</button>
 				</div>
-			</div >
-		</Modal >
+			</div>
+		</Modal>
 	)
 }
 
