@@ -14,6 +14,7 @@ import { fuzzyFilter } from './global-filter'
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
 import DebouncedInput from './debounced-input'
+import styles from '@styles/Table.module.css'
 
 type TableProps<T extends object> = {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,7 +48,7 @@ const Table = <T extends object>({ columns, data, onRowClick, id }: TableProps<T
 	})
 
 	return (
-		<div className="py-2 align-middle inline-block w-full sm:px-6 lg:px-8 overflow-x-auto">
+		<div className="align-middle inline-block w-full sm:px-6 lg:px-8 overflow-x-auto">
 			<div className="mb-4">
 				<label htmlFor="tbl-search">Search</label>
 				<DebouncedInput
@@ -60,15 +61,15 @@ const Table = <T extends object>({ columns, data, onRowClick, id }: TableProps<T
 					className="form-input"
 				/>
 			</div>
-			<div className="w-full overflow-x-auto">
-				<table className="min-w-full divide-y divide-gray-200 table-fixed rounded-lg shadow-md overflow-hidden" id={id}>
-					<thead className="bg-gray-100">
+			<div className={styles.container}>
+				<table className={styles.table} id={id}>
+					<thead>
 						{table.getHeaderGroups().map(headerGroup => (
-							<tr key={headerGroup.id} className="text-gray-600">
+							<tr key={headerGroup.id}>
 								{headerGroup.headers.map(header => (
-									<th key={header.id} className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider select-none">
+									<th key={header.id}>
 										{header.isPlaceholder ? null :
-											<div className={cn('flex space-x-2 items-center', { 'cursor-pointer select-none': header.column.getCanSort() })}
+											<div className={cn({ 'cursor-pointer select-none': header.column.getCanSort() })}
 												onClick={header.column.getToggleSortingHandler()}>
 												<p>
 													{flexRender(
@@ -76,10 +77,10 @@ const Table = <T extends object>({ columns, data, onRowClick, id }: TableProps<T
 														header.getContext()
 													)}
 												</p>
-												<div className="w-3">
+												<div className={styles['chevron-container']}>
 													{{
-														asc: <ChevronUpIcon className="w-3 inline" />,
-														desc: <ChevronDownIcon className="w-3 inline" />
+														asc: <ChevronUpIcon />,
+														desc: <ChevronDownIcon />
 													}[header.column.getIsSorted() as string] ?? null}
 												</div>
 											</div>
