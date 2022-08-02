@@ -24,7 +24,7 @@ export function useRetriever<T, V>(key: string, fallback: T, processor: (data: T
 
 export function useRetriever<T, V = unknown>(key: string, fallback?: T, processor?: (data: T) => V) {
 	const { data, error, mutate } = useSWR(key, url => app.get<T>(url).then(res => res.data))
-	const temp = data ? data : fallback
+	const temp = data === undefined ? fallback : data
 
 	return {
 		data: processor ? processor(temp as T) : temp,
