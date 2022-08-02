@@ -3,7 +3,7 @@ import { NextPage } from 'next'
 import { ITutorInfo, IUserInfo } from '@models/user'
 import { ITutee } from '@models/tutee'
 import { IReqSession } from '@pages/api/requests'
-import { useCallback, useState } from 'react'
+import { useRef, useState } from 'react'
 import RequestTable from '@components/admin/requests/request-table'
 import LoadingSpinner from '@components/loading-spinner'
 import { useRetriever } from '@lib/useRetriever'
@@ -12,6 +12,9 @@ import styles from '@styles/Modal.module.css'
 import { Dialog } from '@headlessui/react'
 import TuteeDisclosure from '@components/admin/requests/tutee-disclosure'
 import MySwitch from '@components/switch'
+import TutorTable from '@components/admin/requests/tutor-table'
+import cn from 'classnames'
+import TutorModal from '@components/table/tutor-modal'
 
 export type Tutor = Omit<ITutorInfo, 'membership'> & Pick<IUserInfo, 'firstName' | 'lastName' | '_id'>
 
@@ -36,16 +39,24 @@ const RequestPage: NextPage = () => {
 			return map
 		}
 	)
-	const [isOpen, setIsOpen] = useState(false)
+	const [modal, setModal] = useState<string>('')
 	const [requestMode, setRequestMode] = useState(false)
-	const [selection, setSelection] = useState<IReqSession>()
+	const [request, setRequest] = useState<IReqSession>()
+	const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
+	const [tutor, setTutor] = useState<Tutor>()
+	const cancelButton = useRef<HTMLButtonElement>(null)
 
-	const onRowClick = useCallback((data: IReqSession) => {
-		setSelection(data)
-		setIsOpen(true)
-	}, [])
+	function onRequestRowClick(data: IReqSession) {
+		setRequest(data)
+		setModal('request')
+	}
 
-	const tableInstance = RequestTable({ data: requests, onRowClick, tutors, tutees })
+	function onTutorRowClick(tutor: Tutor) {
+		setTutor(tutor)
+		setModal('tutor')
+	}
+
+	const tableInstance = RequestTable({ data: requests, onRowClick: onRequestRowClick, tutors, tutees })
 
 	if (isTuteeLoading || isTutorLoading) {
 		return (
@@ -57,20 +68,33 @@ const RequestPage: NextPage = () => {
 
 	return (
 		<AdminLayout>
-			<Modal isOpen={isOpen} close={() => setIsOpen(false)}>
+			<Modal isOpen={modal == 'request'} close={() => setModal('')}>
 				<div className={styles.panel}>
 					<div className={styles.body}>
 						<div className={styles['title-container']}>
-							<Dialog.Title as="h3" className={styles.title}>Request</Dialog.Title>
+							<Dialog.Title as="h3" className={styles.title}>{requestMode ? 'Request' : 'Session'}</Dialog.Title>
 							<MySwitch isChecked={requestMode} onChange={() => setRequestMode(!requestMode)} label="Set request mode" />
 						</div>
 						<div>
-							<TuteeDisclosure tutee={tutees.get(selection?.tutee as string)} request={selection} />
-
+							<TuteeDisclosure tutee={tutees.get(request?.tutee as string)} request={request} />
+							<TutorTable data={Array.from(tutors.values())}
+								rowSelection={rowSelection}
+								setRowSelection={setRowSelection}
+								onRowClick={onTutorRowClick} />
+						</div>
+					</div>
+					<div className={cn(styles.footer, '!justify-between')}>
+						<button className={cn(styles.btn, 'btn gray')}>
+							Delete
+						</button>
+						<div className="space-x-2">
+							<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={() => setModal('')}>Close</button>
+							<button className={styles.btn + ' btn blue'} disabled={Object.keys(rowSelection).length == 0}>Assign tutor</button>
 						</div>
 					</div>
 				</div>
 			</Modal>
+			<TutorModal isOpen={modal == 'tutor'} onClose={() => setModal('request')} tutor={tutor} />
 			{requests ? tableInstance : <LoadingSpinner />}
 		</AdminLayout>
 	)
