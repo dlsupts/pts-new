@@ -9,7 +9,7 @@ export const tuteeInfoSchema = userInfoSchema.shape({
 	college: yup.string().required('College is required.'),
 }).omit(['terms', 'middleName']).required()
 
-export interface ITutee extends Omit<IUserInfo, '_id' | 'terms' | 'middleName'> {
+export interface ITutee extends Omit<IUserInfo, | 'terms' | 'middleName'> {
 	campus: string
 	college: string
 	schedule: ISchedule
@@ -33,7 +33,7 @@ const tuteeSchema = new Schema<ITutee>({
 	}
 })
 
-tuteeSchema.pre('remove', function(next) {
+tuteeSchema.pre('remove', function (next) {
 	Schedule.deleteOne({ _id: this.schedule })
 	next()
 })

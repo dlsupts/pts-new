@@ -10,7 +10,6 @@ export interface IRequest {
 	tutorialType: string
 	preferred: Schema.Types.ObjectId | IUser | null
 	tutee: Schema.Types.ObjectId | ITutee
-	seen: boolean
 }
 
 const requestSchema = new Schema<IRequest>({
@@ -26,7 +25,6 @@ const requestSchema = new Schema<IRequest>({
 		type: Schema.Types.ObjectId,
 		ref: 'Tutee'
 	},
-	seen: { type: Boolean, default: false }
 })
 
 export default models.Request as Model<IRequest & Document> || model<IRequest>('Request', requestSchema, 'requests')
