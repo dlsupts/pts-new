@@ -1,9 +1,9 @@
 .container {
- @apply w-full overflow-x-auto max-h-[calc(100vh-380px)]
+ @apply w-full overflow-x-auto max-h-[calc(100vh-380px)] rounded-lg shadow-md
 }
 
 .table {
-	@apply min-w-full divide-y divide-gray-200 table-fixed rounded-lg shadow-md overflow-scroll
+	@apply min-w-full divide-y divide-gray-200 table-fixed
 }
 
 .table thead {
