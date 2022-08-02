@@ -9,34 +9,71 @@ import {
 	getGroupedRowModel,
 	getExpandedRowModel,
 	flexRender,
-	ColumnDef,
 	GroupingState,
 	Table,
 	ExpandedState,
+	createColumnHelper,
 } from '@tanstack/react-table'
 import cn from 'classnames'
 import { fuzzyFilter } from '../../table/global-filter'
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/outline'
-import { MutableRefObject, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import DebouncedInput from '../../table/debounced-input'
 import styles from '@styles/Table.module.css'
+import { IReqSession } from '@pages/api/requests'
+import { ITutee } from '@models/tutee'
+import { Tutor } from '@pages/admin/requests'
 
-type TableProps<T extends object> = {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	columns: ColumnDef<T, any>[]
-	data: T[]
-	onRowClick?: (data: T) => void
-	ref?: MutableRefObject<Table<T> | undefined>
+type TableProps = {
+	data: IReqSession[]
+	onRowClick?: (data: IReqSession) => void
+	tutors: Map<string, Tutor>
+	tutees: Map<string, ITutee>
 }
 
-const Table = <T extends object>({ columns, data, onRowClick, ref }: TableProps<T>) => {
+const columnHelper = createColumnHelper<IReqSession>()
+
+const Table = ({ data, onRowClick, tutors, tutees }: TableProps) => {
 	const [globalFilter, setGlobalFilter] = useState('')
 	const [grouping, setGrouping] = useState<GroupingState>([])
 	const [expanded] = useState<ExpandedState>(true)
 	let shouldPrint = false
 	let ctr = 1
 
-	const table = useReactTable<T>({
+
+	const columns = useMemo(() => ([
+		//@ts-expect-error: TypeScript limitation
+		columnHelper.accessor(row => {
+			const tutee = tutees.get(row.tutee)
+			return `${tutee?.firstName} ${tutee?.lastName}:${row._id}`
+		}, {
+			id: '_id',
+			header: 'Tutee',
+			cell: props => {
+				const tutee = tutees.get(props.row.original.tutee)
+				return `${tutee?.firstName} ${tutee?.lastName}`
+			}
+		}),
+		columnHelper.accessor('session.subject', { header: 'Subject', enableSorting: false }),
+		columnHelper.accessor(row => {
+			if (row.session.tutor) {
+				const tutor = tutors.get(row.session.tutor.toString())
+				return `${tutor?.firstName} ${tutor?.lastName}`
+			}
+
+			return ''
+		}, { id: 'tutor', header: 'Tutor', enableSorting: false }),
+		columnHelper.accessor(row => {
+			if (row.session.tutor) {
+				const tutor = tutors.get(row.session.tutor.toString())
+				return `${tutor?.tuteeCount}/${tutor?.maxTuteeCount}`
+			}
+
+			return ''
+		}, { id: 'load', header: 'Tutor Load', enableSorting: false }),
+	]), [tutors, tutees])
+
+	const table = useReactTable<IReqSession>({
 		data,
 		columns,
 		filterFns: {
@@ -64,9 +101,11 @@ const Table = <T extends object>({ columns, data, onRowClick, ref }: TableProps<
 		getExpandedRowModel: getExpandedRowModel(),
 	})
 
-	if (ref) {
-		ref.current = table
-	}
+	useEffect(() => {
+		table.reset()
+		table.setGrouping(['_id'])
+		setTimeout(() => table.toggleAllRowsExpanded(), 0) // setTimeout is required, for some reason, for this to work
+	}, [table])
 
 	return (
 		<div className="py-2 align-middle inline-block w-full sm:px-6 lg:px-8 overflow-x-auto">
