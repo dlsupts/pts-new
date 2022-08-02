@@ -3,16 +3,17 @@ import { ChevronDownIcon } from '@heroicons/react/outline'
 import { ITutee } from '@models/tutee'
 import cn from 'classnames'
 import styles from '@styles/Sessions.module.css'
-import { IReqSession } from '@pages/api/requests'
+import { BareSession, IReqSession } from '@pages/api/requests'
 import tutorialTypes from '@lib/tutorial-types'
 import ScheduleDisplay from '@components/schedule-display'
 
 type TuteeDisclosureProps = {
 	tutee?: ITutee
 	request?: IReqSession
+	sessions: BareSession[]
 }
 
-const TuteeDisclosure = ({ tutee, request }: TuteeDisclosureProps) => {
+const TuteeDisclosure = ({ tutee, request, sessions }: TuteeDisclosureProps) => {
 	return (
 		<>
 			<Disclosure>
@@ -92,7 +93,9 @@ const TuteeDisclosure = ({ tutee, request }: TuteeDisclosureProps) => {
 					</div>
 					<div>
 						<p className={styles.label}>Subject - Specific Topic</p>
-						<p className={styles.data}>{request?.session.subject} - {request?.session.topics}</p>
+						{sessions.map(({ subject, topics }) => (
+							<p key={subject} className={styles.data}>{subject} - {topics}</p>
+						))}
 					</div>
 				</div>
 			</div>

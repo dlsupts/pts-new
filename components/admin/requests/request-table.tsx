@@ -15,10 +15,10 @@ import {
 	createColumnHelper,
 } from '@tanstack/react-table'
 import cn from 'classnames'
-import { fuzzyFilter } from '../../table/global-filter'
+import { fuzzyFilter } from '@components/table/global-filter'
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/outline'
 import { useMemo, useState, useEffect } from 'react'
-import DebouncedInput from '../../table/debounced-input'
+import DebouncedInput from '@components/table/debounced-input'
 import styles from '@styles/Table.module.css'
 import { IReqSession } from '@pages/api/requests'
 import { ITutee } from '@models/tutee'
@@ -26,7 +26,7 @@ import { Tutor } from '@pages/admin/requests'
 
 type TableProps = {
 	data: IReqSession[]
-	onRowClick?: (data: IReqSession) => void
+	onRowClick: (data: IReqSession, index: number) => void
 	tutors: Map<string, Tutor>
 	tutees: Map<string, ITutee>
 }
@@ -158,7 +158,7 @@ const Table = ({ data, onRowClick, tutors, tutees }: TableProps) => {
 									'bg-gray-50': ctr % 2,
 									'cursor-pointer hover:text-gray-900': onRowClick,
 									'hidden': row.subRows.length
-								}, 'text-gray-600')} onClick={() => onRowClick?.(row.original)}>
+								}, 'text-gray-600')} onClick={() => onRowClick(row.original, row.index)}>
 									{row.getVisibleCells().map(cell => (
 										<td key={cell.id} className={cn({ 'bg-white': cell.getIsPlaceholder() })}>
 											{cell.getIsGrouped() ? (

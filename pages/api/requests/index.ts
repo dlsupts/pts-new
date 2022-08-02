@@ -5,10 +5,12 @@ import Request, { IRequest } from '@models/request'
 import { ISession } from '@models/session'
 import { Types } from 'mongoose'
 
+export type BareSession = Omit<ISession, 'request'>
+
 export interface IReqSession extends Omit<IRequest, 'ayterm' | 'timestamp' | 'tutee'> {
 	_id: Types.ObjectId
 	tutee: string
-	session: Omit<ISession, 'request'>
+	session: BareSession
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<IReqSession[]>) => {

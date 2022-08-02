@@ -2,7 +2,7 @@ import AdminLayout from '@components/admin-layout'
 import { NextPage } from 'next'
 import { ITutorInfo, IUserInfo } from '@models/user'
 import { ITutee } from '@models/tutee'
-import { IReqSession } from '@pages/api/requests'
+import { BareSession, IReqSession } from '@pages/api/requests'
 import { useRef, useState } from 'react'
 import RequestTable from '@components/admin/requests/request-table'
 import LoadingSpinner from '@components/loading-spinner'
@@ -42,12 +42,32 @@ const RequestPage: NextPage = () => {
 	const [modal, setModal] = useState<string>('')
 	const [requestMode, setRequestMode] = useState(false)
 	const [request, setRequest] = useState<IReqSession>()
+	const [sessions, setSessions] = useState<BareSession[]>([])
 	const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
 	const [tutor, setTutor] = useState<Tutor>()
 	const cancelButton = useRef<HTMLButtonElement>(null)
 
-	function onRequestRowClick(data: IReqSession) {
+	function onRequestRowClick(data: IReqSession, index: number) {
 		setRequest(data)
+
+		const temp: BareSession[] = []
+		for (let i = index; i < requests.length; i++) {
+			if (requests[i]._id == data._id) {
+				temp.push(requests[i].session)
+			} else {
+				break
+			}
+		}
+
+		for (let i = index - 1; i >= 0; i--) {
+			if (requests[i]._id == data._id) {
+				temp.push(requests[i].session)
+			} else {
+				break
+			}
+		}
+
+		setSessions(temp)
 		setModal('request')
 	}
 
@@ -76,7 +96,13 @@ const RequestPage: NextPage = () => {
 							<MySwitch isChecked={requestMode} onChange={() => setRequestMode(!requestMode)} label="Set request mode" />
 						</div>
 						<div>
-							<TuteeDisclosure tutee={tutees.get(request?.tutee as string)} request={request} />
+							{request &&
+								<TuteeDisclosure
+									tutee={tutees.get(request?.tutee as string)}
+									request={request}
+									sessions={requestMode ? sessions : [request.session]}
+								/>
+							}
 							<TutorTable data={Array.from(tutors.values())}
 								rowSelection={rowSelection}
 								setRowSelection={setRowSelection}
