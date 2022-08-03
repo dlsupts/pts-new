@@ -12,13 +12,13 @@ type TutorModalProps = IModalProps & {
 }
 
 const TutorModal = ({ isOpen, onClose, tutor }: TutorModalProps) => {
-	const cancelButton = useRef<HTMLButtonElement>(null)
+	const header = useRef<HTMLDivElement>(null)
 
 	return (
 		<Modal isOpen={isOpen} close={onClose}>
 			<div className={styles.panel}>
 				<div className={styles.body}>
-					<div className={styles['title-container']}>
+					<div className={styles['title-container']} ref={header} tabIndex={0}>
 						<Dialog.Title as="h3" className={styles.title}>{tutor?.firstName} {tutor?.lastName}</Dialog.Title>
 					</div>
 					<div>
@@ -50,7 +50,7 @@ const TutorModal = ({ isOpen, onClose, tutor }: TutorModalProps) => {
 					</div>
 				</div>
 				<div className={styles.footer}>
-					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose}>Close</button>
+					<button className={styles.btn + ' btn gray'} onClick={onClose}>Close</button>
 				</div>
 			</div>
 		</Modal>

@@ -6,14 +6,19 @@ import styles from '@styles/Sessions.module.css'
 import { BareSession, IReqSession } from '@pages/api/requests'
 import tutorialTypes from '@lib/tutorial-types'
 import ScheduleDisplay from '@components/schedule-display'
+import { Tutor } from '@pages/admin/requests'
 
 type TuteeDisclosureProps = {
 	tutee?: ITutee
 	request?: IReqSession
 	sessions: BareSession[]
+	tutors: Map<string, Tutor>
 }
 
-const TuteeDisclosure = ({ tutee, request, sessions }: TuteeDisclosureProps) => {
+const TuteeDisclosure = ({ tutee, request, sessions, tutors }: TuteeDisclosureProps) => {
+	const tutor = tutors.get(request?.preferred?.toString() || '')
+	const preferred = tutor ? `${tutor?.firstName} ${tutor?.lastName}` : ''
+
 	return (
 		<>
 			<Disclosure>
@@ -91,10 +96,16 @@ const TuteeDisclosure = ({ tutee, request, sessions }: TuteeDisclosureProps) => 
 						<p className={styles.data}>{request?.duration == 'One Session' ?
 							tutorialTypes['One Session'].find(t => t.value == request?.tutorialType)?.text : request?.tutorialType}</p>
 					</div>
-					<div>
+					{preferred &&
+						<div>
+							<p className={styles.label}>Preferred Tutor</p>
+							<p className={styles.data}>{preferred}</p>
+						</div>
+					}
+					<div className="col-span-full">
 						<p className={styles.label}>Subject - Specific Topic</p>
 						{sessions.map(({ subject, topics }) => (
-							<p key={subject} className={styles.data}>{subject} - {topics}</p>
+							<p key={subject} className={styles.data}>{subject} {topics && `- ${topics}`}</p>
 						))}
 					</div>
 				</div>

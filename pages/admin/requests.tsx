@@ -15,11 +15,13 @@ import MySwitch from '@components/switch'
 import TutorTable from '@components/admin/requests/tutor-table'
 import cn from 'classnames'
 import TutorModal from '@components/table/tutor-modal'
+import app from '@lib/axios-config'
+import { toastAxiosError } from '@lib/utils'
 
 export type Tutor = Omit<ITutorInfo, 'membership'> & Pick<IUserInfo, 'firstName' | 'lastName' | '_id'>
 
 const RequestPage: NextPage = () => {
-	const { data: requests } = useRetriever<IReqSession[]>('/api/requests', [])
+	const { data: requests, isLoading: isRequestLoading, mutate: mutateRequests } = useRetriever<IReqSession[]>('/api/requests', [])
 	const { data: tutees, isLoading: isTuteeLoading } = useRetriever<ITutee[], Map<string, ITutee>>('/api/tutees', [],
 		(tutees: ITutee[]) => {
 			const map = new Map<string, ITutee>()
@@ -76,9 +78,23 @@ const RequestPage: NextPage = () => {
 		setModal('tutor')
 	}
 
+	async function handleDeleteRecord() {
+		try {
+			if (requestMode) {
+				await app.delete(`/api/requests/${request?._id}`)
+			} else {
+				await app.delete(`/api/sessions/${request?.session._id}`)
+			}
+			await mutateRequests()
+			setModal('')
+		} catch (err) {
+			toastAxiosError(err)
+		}
+	}
+
 	const tableInstance = RequestTable({ data: requests, onRowClick: onRequestRowClick, tutors, tutees })
 
-	if (isTuteeLoading || isTutorLoading) {
+	if (isTuteeLoading || isTutorLoading || isRequestLoading) {
 		return (
 			<AdminLayout>
 				<LoadingSpinner />
@@ -101,6 +117,7 @@ const RequestPage: NextPage = () => {
 									tutee={tutees.get(request?.tutee as string)}
 									request={request}
 									sessions={requestMode ? sessions : [request.session]}
+									tutors={tutors}
 								/>
 							}
 							<TutorTable data={Array.from(tutors.values())}
@@ -110,7 +127,7 @@ const RequestPage: NextPage = () => {
 						</div>
 					</div>
 					<div className={cn(styles.footer, '!justify-between')}>
-						<button className={cn(styles.btn, 'btn gray')}>
+						<button className={cn(styles.btn, 'btn gray')} onClick={() => setModal('delete')}>
 							Delete
 						</button>
 						<div className="space-x-2">
@@ -121,7 +138,25 @@ const RequestPage: NextPage = () => {
 				</div>
 			</Modal>
 			<TutorModal isOpen={modal == 'tutor'} onClose={() => setModal('request')} tutor={tutor} />
-			{requests ? tableInstance : <LoadingSpinner />}
+			<Modal isOpen={modal == 'delete'} close={() => setModal('request')} initialFocus={cancelButton}>
+				<div className={styles.panel}>
+					<div className={styles['confirmation-body']}>
+						<p className="text-xl">Remove
+							<span className="font-medium">
+								{' '}{tutees.get(request?.tutee as string)?.firstName}&apos;s{' '}
+							</span>{requestMode ? 'request' : 'session'}?</p>
+						<div className={styles['btn-group']}>
+							<button type="button" className={styles.btn + ' btn gray'} ref={cancelButton} onClick={() => setModal('request')}>Cancel</button>
+							<button type="button" className={styles.btn + ' btn red'} onClick={handleDeleteRecord}>Confirm</button>
+						</div>
+					</div>
+				</div>
+			</Modal>
+			{requests.length ? tableInstance :
+				<div className="grid place-items-center h-[calc(100vh-theme(spacing.64))]">
+					<h1 className="text-2xl font-medium text-gray-400">No Requests Yet</h1>
+				</div>
+			}
 		</AdminLayout>
 	)
 }

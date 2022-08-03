@@ -1,3 +1,7 @@
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { toastErrorConfig } from './toast-defaults'
+
 export function matchPath(pathname: string, route: string, isHome?: boolean) {
 	return isHome ? pathname === route : pathname.startsWith(route)
 }
@@ -64,4 +68,14 @@ export function formatDate(date: Date | string) {
 export function parseContent(content: string) {
 	const i = content.indexOf(':')
 	return [content.slice(0, i), content.slice(i + 1)]
+}
+
+/**
+ * Used to show the error message in a toast
+ * @param error - an error object of unknown type
+ */
+export function toastAxiosError(error: unknown) {
+	if (axios.isAxiosError(error)) {
+		toast.error(error.message, toastErrorConfig)
+	}
 }
