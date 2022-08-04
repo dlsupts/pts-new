@@ -7,6 +7,9 @@ import { BareSession, IReqSession } from '@pages/api/requests'
 import tutorialTypes from '@lib/tutorial-types'
 import ScheduleDisplay from '@components/schedule-display'
 import { Tutor } from '@pages/admin/requests'
+import { useCallback } from 'react'
+import { Schema } from 'mongoose'
+import { IUser } from '@models/user'
 
 type TuteeDisclosureProps = {
 	tutee?: ITutee
@@ -16,8 +19,10 @@ type TuteeDisclosureProps = {
 }
 
 const TuteeDisclosure = ({ tutee, request, sessions, tutors }: TuteeDisclosureProps) => {
-	const tutor = tutors.get(request?.preferred?.toString() || '')
-	const preferred = tutor ? `${tutor?.firstName} ${tutor?.lastName}` : ''
+	const getTutorName = useCallback((id?: string | Schema.Types.ObjectId | IUser) => {
+		const tutor = tutors.get(id?.toString() || '')
+		return `${tutor?.firstName} ${tutor?.lastName}`
+	}, [tutors])
 
 	return (
 		<>
@@ -96,16 +101,16 @@ const TuteeDisclosure = ({ tutee, request, sessions, tutors }: TuteeDisclosurePr
 						<p className={styles.data}>{request?.duration == 'One Session' ?
 							tutorialTypes['One Session'].find(t => t.value == request?.tutorialType)?.text : request?.tutorialType}</p>
 					</div>
-					{preferred &&
+					{request?.preferred &&
 						<div>
 							<p className={styles.label}>Preferred Tutor</p>
-							<p className={styles.data}>{preferred}</p>
+							<p className={styles.data}>{getTutorName(request.preferred)}</p>
 						</div>
 					}
 					<div className="col-span-full">
 						<p className={styles.label}>Subject - Specific Topic</p>
-						{sessions.map(({ subject, topics }) => (
-							<p key={subject} className={styles.data}>{subject} {topics && `- ${topics}`}</p>
+						{sessions.map(({ subject, topics, tutor }) => (
+							<p key={subject} className={styles.data}>{subject} {tutor ? `(${getTutorName(tutor)})` : (topics && `- ${topics}`)}</p>
 						))}
 					</div>
 				</div>

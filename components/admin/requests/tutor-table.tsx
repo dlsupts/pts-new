@@ -43,7 +43,7 @@ const TutorTable = ({ data, onRowClick, rowSelection, setRowSelection }: TutorTa
 				/>
 			)
 		}),
-		//@ts-expect-error: Library limitation. Note that this may result in build error, so just copy paste this comment.
+		//@ts-ignore: TypeError: Recursively deep, library/typescript limitation. 
 		columnHelper.accessor(row => {
 			return `${row._id}:${row.firstName} ${row.lastName}`
 		}, {

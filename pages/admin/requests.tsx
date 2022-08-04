@@ -3,7 +3,7 @@ import { NextPage } from 'next'
 import { ITutorInfo, IUserInfo } from '@models/user'
 import { ITutee } from '@models/tutee'
 import { BareSession, IReqSession } from '@pages/api/requests'
-import { useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import RequestTable from '@components/admin/requests/request-table'
 import LoadingSpinner from '@components/loading-spinner'
 import { useRetriever } from '@lib/useRetriever'
@@ -17,6 +17,7 @@ import cn from 'classnames'
 import TutorModal from '@components/table/tutor-modal'
 import app from '@lib/axios-config'
 import { toastAxiosError } from '@lib/utils'
+import { ObjectId } from 'mongoose'
 
 export type Tutor = Omit<ITutorInfo, 'membership'> & Pick<IUserInfo, 'firstName' | 'lastName' | '_id'>
 
@@ -31,7 +32,7 @@ const RequestPage: NextPage = () => {
 
 			return map
 		})
-	const { data: tutors, isLoading: isTutorLoading } = useRetriever<Tutor[], Map<string, Tutor>>('/api/tutors?filter=request', [],
+	const { data: tutors, isLoading: isTutorLoading, mutate: mutateTutors } = useRetriever<Tutor[], Map<string, Tutor>>('/api/tutors?filter=request', [],
 		(tutors: Tutor[]) => {
 			const map = new Map<string, Tutor>()
 			for (let i = 0; i < tutors.length; i++) {
@@ -41,19 +42,29 @@ const RequestPage: NextPage = () => {
 			return map
 		}
 	)
+	const tutorArray = useMemo(() => Array.from(tutors.values()), [tutors])
 	const [modal, setModal] = useState<string>('')
 	const [requestMode, setRequestMode] = useState(false)
 	const [request, setRequest] = useState<IReqSession>()
 	const [sessions, setSessions] = useState<BareSession[]>([])
-	const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
+	const unassignedSessionsCount = useMemo(() => (sessions.filter(s => !s.tutor)).length, [sessions])
+	const [rowSelection, setRowSelection] = useState<Record<number, boolean>>({})
 	const [tutor, setTutor] = useState<Tutor>()
 	const cancelButton = useRef<HTMLButtonElement>(null)
+
+	useEffect(() => {
+		// clear tutor selection every time modal closes
+		if (modal == '') {
+			setTimeout(() => setRowSelection({}), 50)
+		}
+	}, [modal])
 
 	function onRequestRowClick(data: IReqSession, index: number) {
 		setRequest(data)
 
 		const temp: BareSession[] = []
 		for (let i = index; i < requests.length; i++) {
+			// only push in unmatched subjects
 			if (requests[i]._id == data._id) {
 				temp.push(requests[i].session)
 			} else {
@@ -78,13 +89,38 @@ const RequestPage: NextPage = () => {
 		setModal('tutor')
 	}
 
+	async function handleAssign() {
+		const tutor = tutorArray[Number(Object.keys(rowSelection)[0])]._id
+		await updateAssignment(tutor)
+	}
+
+	async function handleUnassign() {
+		await updateAssignment(null)
+	}
+
+	async function updateAssignment(tutor: ObjectId | null) {
+		try {
+			if (requestMode) {
+				await app.patch(`/api/requests/${request?._id}`, { tutor })
+			} else {
+				await app.patch(`/api/requests/${request?._id}/sessions/${request?.session._id}`, { tutor })
+			}
+			await mutateTutors()
+			await mutateRequests()
+			setModal('')
+		} catch (err) {
+			toastAxiosError(err)
+		}
+	}
+
 	async function handleDeleteRecord() {
 		try {
 			if (requestMode) {
 				await app.delete(`/api/requests/${request?._id}`)
 			} else {
-				await app.delete(`/api/sessions/${request?.session._id}`)
+				await app.delete(`/api/requests/${request?._id}/sessions/${request?.session._id}`)
 			}
+			await mutateTutors()
 			await mutateRequests()
 			setModal('')
 		} catch (err) {
@@ -120,10 +156,14 @@ const RequestPage: NextPage = () => {
 									tutors={tutors}
 								/>
 							}
-							<TutorTable data={Array.from(tutors.values())}
-								rowSelection={rowSelection}
-								setRowSelection={setRowSelection}
-								onRowClick={onTutorRowClick} />
+							{
+								(requestMode && unassignedSessionsCount || !request?.session.tutor) &&
+								<TutorTable data={tutorArray}
+									rowSelection={rowSelection}
+									setRowSelection={setRowSelection}
+									onRowClick={onTutorRowClick}
+								/>
+							}
 						</div>
 					</div>
 					<div className={cn(styles.footer, '!justify-between')}>
@@ -132,7 +172,11 @@ const RequestPage: NextPage = () => {
 						</button>
 						<div className="space-x-2">
 							<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={() => setModal('')}>Close</button>
-							<button className={styles.btn + ' btn blue'} disabled={Object.keys(rowSelection).length == 0}>Assign tutor</button>
+							{(requestMode && unassignedSessionsCount || !request?.session.tutor) ?
+								<button className={styles.btn + ' btn blue'} disabled={Object.keys(rowSelection).length == 0} onClick={handleAssign}>Assign tutor</button>
+								:
+								<button className={styles.btn + ' btn red'} onClick={handleUnassign}>Unmatch Tutor{requestMode && 's'}</button>
+							}
 						</div>
 					</div>
 				</div>
@@ -152,12 +196,13 @@ const RequestPage: NextPage = () => {
 					</div>
 				</div>
 			</Modal>
-			{requests.length ? tableInstance :
-				<div className="grid place-items-center h-[calc(100vh-theme(spacing.64))]">
-					<h1 className="text-2xl font-medium text-gray-400">No Requests Yet</h1>
-				</div>
+			{
+				requests.length ? tableInstance :
+					<div className="grid place-items-center h-[calc(100vh-theme(spacing.64))]">
+						<h1 className="text-2xl font-medium text-gray-400">No Requests Yet</h1>
+					</div>
 			}
-		</AdminLayout>
+		</AdminLayout >
 	)
 }
 
