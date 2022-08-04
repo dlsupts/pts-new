@@ -33,9 +33,8 @@ const tuteeSchema = new Schema<ITutee>({
 	}
 })
 
-tuteeSchema.pre('remove', function (next) {
-	Schedule.deleteOne({ _id: this.schedule })
-	next()
+tuteeSchema.post('remove', async function (doc: ITutee) {
+	await Schedule.deleteOne({ _id: doc.schedule })
 })
 
 export default models?.Tutee as Model<ITutee & Document> || model<ITutee>('Tutee', tuteeSchema, 'tutees')

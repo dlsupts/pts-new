@@ -2,7 +2,7 @@ import { NextPage } from 'next'
 import AdminLayout from '@components/admin-layout'
 import styles from '@styles/Libraries.module.css'
 import { PlusIcon } from '@heroicons/react/outline'
-import { formatDate } from '@lib/utils'
+import { formatDate, toastAxiosError } from '@lib/utils'
 import { useRetriever } from '@lib/useRetriever'
 import { IDate } from '@models/date'
 import { ILib } from '@models/library'
@@ -34,7 +34,13 @@ const LibraryPage: NextPage = () => {
 	function closeModal() { setModal('') }
 
 	async function handleReset() {
-		await app.delete('/api/maintenance')
+		try {
+			await app.delete('/api/maintenance')
+			toast.success('Term data has been reset!', toastSuccessConfig)
+			setModal('')
+		} catch (err) {
+			toastAxiosError(err)
+		}
 	}
 
 	async function addLibrary(details: AddLibrarySchema) {
