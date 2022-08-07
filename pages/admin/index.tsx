@@ -9,8 +9,9 @@ import { Statistics } from '@pages/api/statistics'
 import LoadingSpinner from '@components/loading-spinner'
 import DashboardTable from '@components/admin/dashboard-table'
 import chroma from 'chroma-js'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { DownloadIcon } from '@heroicons/react/outline'
+import app from '@lib/axios-config'
 
 const scale = chroma.bezier(['#0070BE', '#0170C0', '#555']).scale().mode('lch').correctLightness()
 const legend = <Legend verticalAlign="bottom" height={36} iconType="square" />
@@ -32,6 +33,7 @@ const AdminPage: NextPage = () => {
 	const totalTutees = useMemo(() => data?.[1] ? data[1].reduce((sum, i) => sum + i.count, 0) : 0, [data])
 	const totalTutors = useMemo(() => data?.[3] ? data[3].reduce((sum, i) => sum + i.count, 0) : 0, [data])
 	const totalRequests = useMemo(() => data?.[0] ? data[0].reduce((sum, i) => sum + i.count, 0) : 0, [data])
+	const [isWaiting, setIsWaiting] = useState(false)
 
 	if (isLoading || !data) {
 		return (
@@ -41,13 +43,27 @@ const AdminPage: NextPage = () => {
 		)
 	}
 
+	async function handleDownloadClick() {
+		setIsWaiting(true)
+		const { data } = await app.get<string>('/api/statistics/download')
+
+		const filePath = 'data:application/zip;base64,' + data
+		const a = document.createElement('a')
+		a.href = filePath
+		a.download = 'export.zip'
+		document.body.appendChild(a)
+		a.click()
+		document.body.removeChild(a)
+		setIsWaiting(false)
+	}
+
 	return (
 		<AdminLayout>
 			<Head>
 				<title>{siteTitle} | Dashboard</title>
 			</Head>
 			<div className="flex justify-end mb-2">
-				<button className="btn blue px-4 py-2 rounded-md flex items-center space-x-2">
+				<button className="btn blue px-4 py-2 rounded-md flex items-center space-x-2" disabled={isWaiting} onClick={handleDownloadClick}>
 					<DownloadIcon className="w-5" />
 					<span>Download Reports</span>
 				</button>

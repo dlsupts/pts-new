@@ -5,6 +5,7 @@ import Session from '@models/session'
 export type Aggregate = {
 	_id: string
 	count: number
+	[key: string]: unknown
 }
 
 export type ComplexAggregate = {
