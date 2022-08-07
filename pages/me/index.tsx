@@ -15,6 +15,8 @@ import Modal from '@components/modal'
 import styles from '@styles/Modal.module.css'
 import { Dialog } from '@headlessui/react'
 import { signOut } from 'next-auth/react'
+import Head from 'next/head'
+import { siteTitle } from '@components/layout'
 
 type FormSchema = Omit<IUserInfo, '_id'>
 
@@ -66,6 +68,9 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 
 	return (
 		<UserLayout>
+			<Head>
+				<title>{siteTitle} | Profile</title>
+			</Head>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<div className="shadow overflow-hidden sm:rounded-md">
 					<div className="px-4 py-5 bg-white sm:p-6">

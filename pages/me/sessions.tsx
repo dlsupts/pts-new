@@ -9,6 +9,8 @@ import styles from '@styles/Sessions.module.css'
 import { useRetriever } from '@lib/useRetriever'
 import { IReqSesssion } from '@pages/api/me/sessions'
 import ScheduleDisplay from '@components/schedule-display'
+import Head from 'next/head'
+import { siteTitle } from '@components/layout'
 
 const TutorSessions: NextPage = () => {
 	const { data: sessions, isLoading, isError } = useRetriever<IReqSesssion[]>('/api/me/sessions')
@@ -31,6 +33,9 @@ const TutorSessions: NextPage = () => {
 
 	return (
 		<UserLayout>
+			<Head>
+				<title>{siteTitle} | Sessions</title>
+			</Head>
 			{sessions?.map(({ _id, sessions, tutee, duration, tutorialType }) => (
 				<Disclosure key={_id.toString()}>
 					{({ open }: { open: boolean }) => (

@@ -24,6 +24,7 @@ const navItems: NavItemProp[] = [
 	{ path: '/admin/tutors', text: 'Tutors' },
 	{ path: '/admin/officers', text: 'Officers' },
 	{ path: '/admin/libraries', text: 'Libraries' },
+	{ path: '/me', text: 'Exit' },
 ]
 
 const MobNavItem: FC<MobNavItemProp> = ({ text, path, isHome, onClick }) => {
