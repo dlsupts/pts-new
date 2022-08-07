@@ -24,11 +24,12 @@ interface RequestProps {
 	colleges: string[]
 	degreePrograms: string[]
 	campuses: string[]
+	dataPrivacy: string[]
 }
 
 const steps = ['Tutorial Service', 'Personal Info', 'Schedule (Free Time)']
 
-const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, colleges, degreePrograms, campuses }) => {
+const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, colleges, degreePrograms, campuses, dataPrivacy }) => {
 	const [help, setHelp] = useState(faqs[0][1])
 	const [step, setStep] = useState(0)
 	const [requestError, setRequestError] = useState('Checking availability...')
@@ -59,7 +60,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 				comp = <Information colleges={colleges} degreePrograms={degreePrograms} campuses={campuses} setStep={setStep} />
 				break
 			case 3:
-				comp = <Schedule setStep={setStep} />
+				comp = <Schedule setStep={setStep} dataPrivacy={dataPrivacy} />
 				break
 			case 4:
 				comp = <LoadingSpinner />
@@ -136,6 +137,9 @@ export const getStaticProps: GetStaticProps = async () => {
 	const degreePrograms = await Library.getDegreeCodes()
 	const campuses = await Library.findById('Campuses', '-_id').lean().exec()
 	const languages = await Library.findById('Programming Languages').lean().exec()
+	const dataPrivacy = await Library.findById('Data Privacy Consent', '-_id').lean().exec()
+
+
 
 	return {
 		props: {
@@ -145,8 +149,8 @@ export const getStaticProps: GetStaticProps = async () => {
 			colleges: colleges?.content?.map(c => c.split(':')[0]),
 			degreePrograms,
 			campuses: campuses?.content,
+			dataPrivacy: dataPrivacy?.content,
 		},
-		revalidate: Number(process.env.NEXT_PUBLIC_REVALIDATION_INTERVAL)
 	}
 }
 
