@@ -1,10 +1,18 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
-import Session, { ISession } from '../../../models/session'
-import Request from '../../../models/request'
-import dbConnect from '../../../lib/db'
+import Session, { ISession } from '@models/session'
+import { Types } from 'mongoose'
+import dbConnect from '@lib/db'
+import { ITutee } from '@models/tutee'
+import { IRequest } from '@models/request'
 
-const mySessionsHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+export interface IReqSesssion extends Pick<IRequest, 'duration' | 'tutorialType'> {
+	_id: Types.ObjectId
+	sessions: Pick<ISession, 'subject' | 'topics'>[]
+	tutee: ITutee
+}
+
+const mySessionsHandler = async (req: NextApiRequest, res: NextApiResponse<IReqSesssion[]>) => {
 	const session = await getSession({ req })
 
 	// no session found
@@ -20,33 +28,48 @@ const mySessionsHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 		switch (req.method) {
 			case "GET": {
-				const sessions = await Session.find({ tutor: _id }).lean().exec()
-				const reqSessMap = new Map<string, ISession[]>()
+				const requests = await Session.aggregate()
+					.match({ tutor: new Types.ObjectId(_id.toString()) })
+					.group({
+						_id: '$request',
+						sessions: {
+							$push: { topics: '$topics', subject: '$subject' }
+						}
+					})
+					.lookup({
+						from: 'requests',
+						localField: '_id',
+						foreignField: '_id',
+						as: 'request'
+					})
+					.lookup({
+						from: 'tutees',
+						localField: 'request.tutee',
+						foreignField: '_id',
+						as: 'tutee',
+						pipeline: [
+							{
+								$lookup: {
+									from: 'schedules',
+									localField: 'schedule',
+									foreignField: '_id',
+									as: 'schedule'
+								},
+							},
+							{ $set: { schedule: { $first: '$schedule' } } },
+							{ $project: { 'schedule.__v': 0, 'schedule._id': 0, __v: 0 } }
+						]
+					})
+					.replaceRoot({
+						$mergeObjects: [
+							{ $first: '$request' },
+							'$$ROOT'
+						]
+					})
+					.unwind({ path: '$tutee' })
+					.project({ duration: 1, tutorialType: 1, tutee: 1, sessions: 1 })
 
-				// create a mapping of unique requests to multiple sessions
-				for (let i = 0; i < sessions.length; i++) {
-					const reqId = sessions[i].request.toString()
-					if (reqSessMap.has(reqId)) {
-						reqSessMap.get(reqId)?.push(sessions[i])
-					} else {
-						reqSessMap.set(reqId, [sessions[i]])
-					}
-				}
-
-				// populate unique requests and corresponding tutee and schedule
-				const reqKeys = Array.from(reqSessMap.keys())
-				const requests = await Request.find({ _id: { $in: reqKeys } }, 'duration tutorialType tutee').populate({
-					path: 'tutee',
-					select: '-__v',
-					populate: 'schedule'
-				}).lean().exec()
-
-				// map request and sessions together
-				const response = requests.map(request => ({
-					request,
-					sessions: reqSessMap.get(request._id.toString())
-				}))
-				res.send(response)
+				res.send(requests)
 				break
 			}
 

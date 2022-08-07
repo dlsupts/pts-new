@@ -15,6 +15,8 @@ import { ISchedule } from '@models/schedule'
 import AddSubjectModal from '@components/subject-list/modal'
 import SubjectList from '@components/subject-list/list'
 import SchedulePicker from '@components/schedule-picker'
+import Head from 'next/head'
+import { siteTitle } from '@components/layout'
 
 interface TutorDetailsProps {
 	types: string[]
@@ -96,6 +98,9 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 
 	return (
 		<>
+			<Head>
+				<title>{siteTitle} | Tutor Details</title>
+			</Head>
 			<AddSubjectModal
 				isOpen={isOpen}
 				setIsOpen={setIsOpen}

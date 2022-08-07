@@ -30,17 +30,18 @@ const maintenanceHandler = async (req: NextApiRequest, res: NextApiResponse<bool
 
 			// reset data for next term
 			case 'DELETE': {
-				await Session.deleteMany()
-				await Tutee.deleteMany()	// also deletes their respective schedules
-				await User.updateMany({ userType: 'TUTOR' }, {
-					tutorialType: [],
-					tutoringService: [],
-					tuteeCount: 0,
-					maxTuteeCount: 0,
-					reset: true,
-				} as Partial<IUser>)
-				await Schedule.updateMany({ M: [], T: [], W: [], H: [], F: [], S: [] } as ISchedule)
-
+				await Promise.all([
+					Session.deleteMany(),
+					Tutee.deleteMany(),	// also deletes their respective schedules
+					User.updateMany({ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL } }, {
+						tutorialType: [],
+						tutoringService: [],
+						tuteeCount: 0,
+						maxTuteeCount: 0,
+						reset: true,
+					} as Partial<IUser>),
+					Schedule.updateMany({ M: [], T: [], W: [], H: [], F: [], S: [] } as ISchedule)
+				])
 				break
 			}
 

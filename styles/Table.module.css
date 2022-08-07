@@ -1,0 +1,35 @@
+.container {
+ @apply w-full overflow-x-auto max-h-[calc(100vh-380px)] rounded-lg shadow-md
+}
+
+.table {
+	@apply min-w-full divide-y divide-gray-200 table-fixed
+}
+
+.table.has-checkbox td, .table.has-checkbox th {
+	@apply first:w-4 pr-2
+}
+
+.table thead {
+	@apply bg-gray-100 text-gray-600
+}
+
+.table th {
+	@apply px-6 py-4 text-left text-xs font-bold uppercase tracking-wider select-none
+}
+
+.table th > div {
+	@apply flex space-x-2 items-center
+}
+
+.chevron-container {
+	@apply w-3
+}
+
+.chevron-container > * {
+	@apply w-3 inline
+}
+
+.table td {
+	@apply px-6 py-3 whitespace-nowrap text-sm
+}

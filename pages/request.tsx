@@ -12,8 +12,10 @@ import { toast } from 'react-toastify'
 import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import LoadingSpinner from '@components/loading-spinner'
 import { parseContent } from '@lib/utils'
-import useRetriever from '@lib/useRetriever'
+import { useRetriever } from '@lib/useRetriever'
 import { IDate } from '@models/date'
+import { siteTitle } from '@components/layout'
+import Head from 'next/head'
 
 interface RequestProps {
 	faqs: string[][]
@@ -96,6 +98,9 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 
 	return (
 		<div className="main-height flex flex-col justify-center px-4 mt-6 lg:mt-0">
+			<Head>
+				<title>{siteTitle} | Request</title>
+			</Head>
 			<div className="grid place-items-center lg:grid-cols-2 mx-auto container min-h-[20rem] gap-y-8">
 				<div className="flex flex-col items-center py-16">
 					<div className="mb-6">

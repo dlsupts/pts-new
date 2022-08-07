@@ -45,7 +45,7 @@ const OrderItem: FC<OrderItemProps> = ({ content, idx, removeItem, isKeyed }) =>
 								{parseContent(content).map((t, i) => <p key={t + i}>{t}</p>)}
 							</div>
 							:
-							<p>{content}</p>
+							<p className="break-all">{content}</p>
 						}
 					</div>
 					<TrashIcon className={styles['delete-icon']} onClick={() => removeItem(idx)} />
@@ -89,22 +89,20 @@ const LibraryModal: FC<LibraryModalProps> = ({ isOpen, onClose, library, onDelet
 						<Dialog.Title as="h3" className={styles.title}>{library?._id}</Dialog.Title>
 						<button className={styles['delete-btn'] + ' btn red'} onClick={onDelete}>Delete</button>
 					</div>
-					<form id="update" onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-10 gap-x-2 gap-y-1 mb-2">
-						<div className={cn({ 'hidden': !library?.isKeyed }, 'col-span-full')}>
+					<form id="update" onSubmit={handleSubmit(onSubmit)} className="flex flex-wrap mb-2">
+						<div className={cn({ 'hidden': !library?.isKeyed }, 'flex-[0_0_100%] mb-1')}>
 							<label htmlFor="code">Code</label>
 							<input type={library?.isKeyed ? 'text' : 'hidden'} {...register('code')} id="code" defaultValue={library?.isKeyed ? '' : "0"} />
 							<p className="form-err-msg text-sm">{errors.code?.message}</p>
 						</div>
-						<div className="col-span-9">
+						<div className="flex-1 mr-2">
 							<label htmlFor="content">Content</label>
 							<input type="text" {...register('content')} id="content" />
 							<p className="form-err-msg text-sm">{errors.content?.message}</p>
 						</div>
-						<div>
-							<button type="submit" className="btn blue h-[2.4rem] aspect-square rounded-md mt-6">
-								<PlusIcon className="h-3/4 m-auto" />
-							</button>
-						</div>
+						<button type="submit" className="btn blue h-[2.4rem] aspect-square rounded-md mt-6 flex-none">
+							<PlusIcon className="h-3/4 m-auto" />
+						</button>
 					</form>
 					<DragDropContext onDragEnd={onDragEnd}>
 						<Droppable droppableId="library-modal">
@@ -116,7 +114,6 @@ const LibraryModal: FC<LibraryModalProps> = ({ isOpen, onClose, library, onDelet
 									{provided.placeholder}
 								</div>
 							)}
-							
 						</Droppable>
 					</DragDropContext>
 				</div>
@@ -124,8 +121,8 @@ const LibraryModal: FC<LibraryModalProps> = ({ isOpen, onClose, library, onDelet
 					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose}>Close</button>
 					<button className={styles.btn + ' btn blue'} onClick={() => onUpdate(order)}>Save</button>
 				</div>
-			</div >
-		</Modal >
+			</div>
+		</Modal>
 	)
 }
 

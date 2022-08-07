@@ -1,7 +1,7 @@
 .panel {
 	@apply relative inline-block align-bottom w-full bg-white rounded-lg 
 	text-left overflow-hidden shadow-xl transition-all transform-none
-	sm:my-8 sm:align-middle sm:max-w-lg sm:w-full
+	sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full
 }
 
 .title-container {

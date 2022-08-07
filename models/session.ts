@@ -4,10 +4,11 @@ import { IRequest } from './request'
 import { IUser } from './user'
 
 export interface ISession {
+	_id: Schema.Types.ObjectId
 	request: Schema.Types.ObjectId | IRequest
 	subject: string
 	topics: string
-	tutor: Schema.Types.ObjectId | IUser
+	tutor?: Schema.Types.ObjectId | IUser
 	status: session_status
 }
 

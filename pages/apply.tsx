@@ -11,8 +11,10 @@ import { toast } from 'react-toastify'
 import { toastSuccessConfig, toastErrorConfig } from '../lib/toast-defaults'
 import axios from 'axios'
 import { parseContent } from '@lib/utils'
-import useRetriever from '@lib/useRetriever'
+import { useRetriever } from '@lib/useRetriever'
 import { IDate } from '@models/date'
+import Head from 'next/head'
+import { siteTitle } from '@components/layout'
 
 interface RequestProps {
 	faqs: string[][]
@@ -56,6 +58,9 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 
 	return (
 		<div className="main-height flex flex-col justify-center px-4 mt-10 md:mt-0">
+			<Head>
+				<title>{siteTitle} | Apply</title>
+			</Head>
 			<div className="grid place-items-center lg:grid-cols-2 grid-cols-auto mx-auto min-h-[20rem] container gap-y-8">
 				{showForm ?
 					<form className="grid grid-cols-4 gap-4 w-full px-10 py-8 my-0 sm:my-8 border shadow-sm rounded-md" onSubmit={handleSubmit(onSubmit)}>

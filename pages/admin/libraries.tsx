@@ -2,8 +2,8 @@ import { NextPage } from 'next'
 import AdminLayout from '@components/admin-layout'
 import styles from '@styles/Libraries.module.css'
 import { PlusIcon } from '@heroicons/react/outline'
-import { formatDate } from '@lib/utils'
-import useRetriever, { useRetrieverWithFallback } from '@lib/useRetriever'
+import { formatDate, toastAxiosError } from '@lib/utils'
+import { useRetriever } from '@lib/useRetriever'
 import { IDate } from '@models/date'
 import { ILib } from '@models/library'
 import { useCallback, useMemo, useState } from 'react'
@@ -16,6 +16,8 @@ import DateModal, { DateModalSchema } from '@components/admin/libraries/date-mod
 import ConfirmationModal from '@components/modal/confirmation-modal'
 import axios from 'axios'
 import MySwitch from '@components/switch'
+import { siteTitle } from '@components/layout'
+import Head from 'next/head'
 
 type button = {
 	text: string
@@ -26,7 +28,7 @@ type button = {
 const LibraryPage: NextPage = () => {
 	const { data: libraries, mutate: mutateLibraries } = useRetriever<ILib[]>('/api/libraries')
 	const { data: dates, mutate: mutateDates } = useRetriever<IDate[]>('/api/dates')
-	const { data: isInMaintenance, mutate: mutateIsInMaintenance } = useRetrieverWithFallback<boolean>('/api/maintenance', true)
+	const { data: isInMaintenance, mutate: mutateIsInMaintenance } = useRetriever<boolean>('/api/maintenance', true)
 	const [libIdx, setLibIdx] = useState(0)
 	const [date, setDate] = useState<IDate>()
 	const [modal, setModal] = useState('')
@@ -34,7 +36,13 @@ const LibraryPage: NextPage = () => {
 	function closeModal() { setModal('') }
 
 	async function handleReset() {
-		await app.delete('/api/maintenance')
+		try {
+			await app.delete('/api/maintenance')
+			toast.success('Term data has been reset!', toastSuccessConfig)
+			setModal('')
+		} catch (err) {
+			toastAxiosError(err)
+		}
 	}
 
 	async function addLibrary(details: AddLibrarySchema) {
@@ -133,6 +141,9 @@ const LibraryPage: NextPage = () => {
 
 	return (
 		<AdminLayout>
+			<Head>
+				<title>{siteTitle} | Libraries</title>
+			</Head>
 			<ConfirmationModal isOpen={modal === 'reset'} message="Proceed with term reset?" onActionClick={handleReset} onClose={closeModal} />
 			<LibraryModal isOpen={modal === 'library'} onClose={closeModal}
 				library={libraries?.[libIdx]} onDelete={() => setModal('del lib')} onUpdate={updateLibrary} />

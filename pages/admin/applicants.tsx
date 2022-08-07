@@ -1,5 +1,4 @@
 import { NextPage } from 'next'
-import { Column } from 'react-table'
 import AdminLayout from '@components/admin-layout'
 import app from '@lib/axios-config'
 import type { IUserInfo } from '@models/user'
@@ -13,18 +12,24 @@ import { toast } from 'react-toastify'
 import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import Link from 'next/link'
 import LoadingSpinner from '@components/loading-spinner'
-import { useRetrieverWithFallback } from '@lib/useRetriever'
+import { useRetriever } from '@lib/useRetriever'
+import { createColumnHelper } from '@tanstack/react-table'
+import Head from 'next/head'
+import { siteTitle } from '@components/layout'
 
-const columns: Column<IUserInfo>[] = [
-	{ Header: 'ID Number', accessor: 'idNumber' },
-	{ Header: 'Last Name', accessor: 'lastName' },
-	{ Header: 'First Name', accessor: 'firstName' },
-	{ Header: 'Email', accessor: 'email' },
-	{ Header: 'URL', accessor: 'url' },
+const columnHelper = createColumnHelper<IUserInfo>()
+
+const columns = [
+	//@ts-ignore: TypeError: Recursively deep, library/typescript limitation. 
+	columnHelper.accessor('idNumber', { header: 'ID Number' }),
+	columnHelper.accessor('lastName', { header: 'Last Name' }),
+	columnHelper.accessor('firstName', { header: 'First Name' }),
+	columnHelper.accessor('email', { header: 'email' }),
+	columnHelper.accessor('url', { header: 'URL' }),
 ]
 
 const ApplicantsPage: NextPage = () => {
-	const { data: applicants, mutate, isLoading } = useRetrieverWithFallback<IUserInfo[]>('/api/applications', [])
+	const { data: applicants, mutate, isLoading } = useRetriever<IUserInfo[]>('/api/applications', [])
 	const [isOpen, setIsOpen] = useState(false) // for application info modal
 	const [applicant, setApplicant] = useState<IUserInfo>()
 	const [isDelOpen, setIsDelOpen] = useState<boolean>(false)
@@ -66,6 +71,9 @@ const ApplicantsPage: NextPage = () => {
 
 	return (
 		<AdminLayout>
+			<Head>
+				<title>{siteTitle} | Applicants</title>
+			</Head>
 			<Modal isOpen={isOpen} close={() => setIsOpen(false)}>
 				<div className={modalStyles.panel}>
 					<div className={cn(styles['data-display'], '!border-0')}>

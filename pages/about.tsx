@@ -4,6 +4,8 @@ import dbConnect from '../lib/db'
 import Committee, { ICommittee } from '../models/committee'
 import Library, { ILib } from '../models/library'
 import Image from 'next/image'
+import Head from 'next/head'
+import { siteTitle } from '@components/layout'
 
 interface AboutPageProps {
 	committees: ICommittee[]
@@ -22,6 +24,9 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees, sessionPhotos, groupP
 
 	return (
 		<div className="container mx-auto px-4 lg:px-20">
+			<Head>
+				<title>{siteTitle} | About</title>
+			</Head>
 			<div className="my-14">
 				<p className="font-light text-5xl text-center">About Us</p>
 				<hr className="mt-2 mb-6" />

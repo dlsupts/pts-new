@@ -20,10 +20,11 @@ interface MobNavItemProp extends NavItemProp {
 }
 
 const navItems: NavItemProp[] = [
-	{ path: '/admin', text: 'Requests', isHome: true },
+	{ path: '/admin/requests', text: 'Requests' },
 	{ path: '/admin/tutors', text: 'Tutors' },
 	{ path: '/admin/officers', text: 'Officers' },
 	{ path: '/admin/libraries', text: 'Libraries' },
+	{ path: '/me', text: 'Exit' },
 ]
 
 const MobNavItem: FC<MobNavItemProp> = ({ text, path, isHome, onClick }) => {
@@ -53,9 +54,9 @@ const NavItem: FC<NavItemProp> = ({ text, path, isHome }) => {
 
 	return (
 		<Link href={path} passHref>
-			<div className={className}>
+			<a className={className}>
 				<p className="px-3 py-2 font-medium" aria-current={path == pathname ? 'page' : undefined}>{text}</p>
-			</div>
+			</a>
 		</Link>
 	)
 }
@@ -79,10 +80,10 @@ const Header: FC = () => {
 									</Disclosure.Button>
 								</div>
 								<div className="flex-1 flex items-center h-full justify-center md:items-stretch md:justify-start">
-									<Link href="/me" passHref>
-										<div className="flex-shrink-0 flex items-center cursor-pointer mr-6">
+									<Link href="/admin" passHref>
+										<a className="flex-shrink-0 flex items-center cursor-pointer mr-6">
 											<Image className="block w-auto" src="/header-logo.png" alt="PTS Logo" width={96} height={50} />
-										</div>
+										</a>
 									</Link>
 									<div className="hidden md:block md:ml-6">
 										<div className="flex space-x-4 items-center h-full">

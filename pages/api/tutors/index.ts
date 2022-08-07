@@ -35,15 +35,32 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				const session = await getSession({ req })
 				if (session?.user.type != 'ADMIN') return res.status(403)
 
-				if (query.filter == 'simple') {					
-					const tutors = await User.find({ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL } }, 'firstName lastName')
-						.sort('firstName').lean().exec()
-					return res.json(tutors)
-				}
+				switch (query.filter) {
+					case 'simple': {
+						const tutors = await User.find({ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL } }, 'firstName lastName')
+							.sort('firstName').lean().exec()
+						res.json(tutors)
+						break
+					}
 
-				const tutors = await User.find({ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL }, })
-					.sort('lastName').populate('schedule').lean().exec()
-				res.json(tutors)
+					case 'request': {
+						const tutors = await User.find(
+							{ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL }, membership: true },
+							'firstName lastName schedule tutoringService tutorialType tuteeCount maxTuteeCount topics'
+						)
+							.populate({ path: 'schedule', select: '-_id' })
+							.sort('firstName')
+							.lean()
+						res.json(tutors)
+						break
+					}
+
+					default: {
+						const tutors = await User.find({ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL }, })
+							.sort('lastName').populate('schedule').lean().exec()
+						res.json(tutors)
+					}
+				}
 				break
 			}
 

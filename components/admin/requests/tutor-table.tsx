@@ -7,27 +7,62 @@ import {
 	getFacetedUniqueValues,
 	getFacetedMinMaxValues,
 	flexRender,
-	ColumnDef
+	createColumnHelper,
 } from '@tanstack/react-table'
 import cn from 'classnames'
-import { fuzzyFilter } from './global-filter'
+import { fuzzyFilter } from '@components/table/global-filter'
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/outline'
-import { useState } from 'react'
-import DebouncedInput from './debounced-input'
+import { Dispatch, SetStateAction, useMemo, useState } from 'react'
+import DebouncedInput from '@components/table/debounced-input'
 import styles from '@styles/Table.module.css'
+import { Tutor } from '@pages/admin/requests'
+import IndeterminateCheckbox from '@components/table/indeterminate-checkbox'
 
-type TableProps<T extends object> = {
+type TutorTableProps = {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	columns: ColumnDef<T, any>[]
-	data: T[]
-	onRowClick?: (id: string) => void
-	id?: string
+	data: Tutor[]
+	onRowClick: (tutor: Tutor) => void
+	rowSelection: Record<string, boolean>
+	setRowSelection: Dispatch<SetStateAction<Record<string, boolean>>>
 }
 
-const Table = <T extends object>({ columns, data, onRowClick, id }: TableProps<T>) => {
+const columnHelper = createColumnHelper<Tutor>()
+
+const TutorTable = ({ data, onRowClick, rowSelection, setRowSelection }: TutorTableProps) => {
 	const [globalFilter, setGlobalFilter] = useState('')
 
-	const table = useReactTable<T>({
+	const columns = useMemo(() => [
+		columnHelper.display({
+			id: 'select',
+			cell: ({ row }) => (
+				<IndeterminateCheckbox
+					checked={row.getIsSelected()}
+					indeterminate={row.getIsSomeSelected()}
+					onChange={row.getToggleSelectedHandler()}
+					className="cursor-pointer"
+				/>
+			)
+		}),
+		//@ts-ignore: TypeError: Recursively deep, library/typescript limitation. 
+		columnHelper.accessor(row => {
+			return `${row._id}:${row.firstName} ${row.lastName}`
+		}, {
+			cell: (props) => `${props.row.original.firstName} ${props.row.original.lastName}`,
+			header: 'Tutor',
+			id: '_id',
+		}),
+		columnHelper.accessor(row => {
+			return `${row.tuteeCount}/${row.maxTuteeCount}`
+		}, {
+			cell(props) {
+				const { tuteeCount, maxTuteeCount } = props.row.original
+				return <p className={cn({ 'text-red-400': tuteeCount > maxTuteeCount })}>{props.getValue()}</p>
+			},
+			header: 'Load', id: 'load'
+		})
+	], [])
+
+	const table = useReactTable<Tutor>({
 		data,
 		columns,
 		filterFns: {
@@ -35,6 +70,7 @@ const Table = <T extends object>({ columns, data, onRowClick, id }: TableProps<T
 		},
 		state: {
 			globalFilter,
+			rowSelection,
 		},
 		onGlobalFilterChange: setGlobalFilter,
 		//@ts-expect-error: TypeError. Not sure why, but this is the code from the documentation and it works.
@@ -45,24 +81,26 @@ const Table = <T extends object>({ columns, data, onRowClick, id }: TableProps<T
 		getFacetedRowModel: getFacetedRowModel(),
 		getFacetedUniqueValues: getFacetedUniqueValues(),
 		getFacetedMinMaxValues: getFacetedMinMaxValues(),
+		onRowSelectionChange: setRowSelection,
+		enableMultiRowSelection: false,
 	})
 
 	return (
-		<div className="align-middle inline-block w-full sm:px-6 lg:px-8 overflow-x-auto">
+		<div className="align-middle inline-block w-full overflow-x-auto px-1">
 			<div className="mb-4">
-				<label htmlFor="tbl-search">Search</label>
+				<label htmlFor="tutor-tbl-search">Search</label>
 				<DebouncedInput
-					id="tbl-search"
+					id="tutor-tbl-search"
 					type="text"
 					debounce={200}
 					value={globalFilter}
 					onChange={value => setGlobalFilter(String(value))}
-					placeholder="Search records..."
+					placeholder="Search tutors..."
 					className="form-input"
 				/>
 			</div>
-			<div className={styles.container}>
-				<table className={styles.table} id={id}>
+			<div className={cn(styles.container, '!h-80')}>
+				<table className={cn(styles.table, styles['has-checkbox'])}>
 					<thead>
 						{table.getHeaderGroups().map(headerGroup => (
 							<tr key={headerGroup.id}>
@@ -94,7 +132,7 @@ const Table = <T extends object>({ columns, data, onRowClick, id }: TableProps<T
 						{table.getRowModel().rows.map((row, i) => {
 							return (
 								<tr key={row.id} className={cn({ 'bg-gray-50': i % 2, 'cursor-pointer hover:text-gray-900': onRowClick }, 'text-gray-600')}
-									onClick={() => onRowClick && onRowClick(row.id)}>
+									onClick={() => onRowClick(row.original)}>
 									{row.getVisibleCells().map(cell => {
 										return <td key={cell.id} className="px-6 py-3 whitespace-nowrap text-sm">{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
 									})}
@@ -108,4 +146,4 @@ const Table = <T extends object>({ columns, data, onRowClick, id }: TableProps<T
 	)
 }
 
-export default Table
+export default TutorTable
