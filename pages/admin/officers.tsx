@@ -15,6 +15,8 @@ import { useRetriever } from '@lib/useRetriever'
 import ConfirmationModal from '@components/modal/confirmation-modal'
 import { toast } from 'react-toastify'
 import { toastSuccessConfig } from '@lib/toast-defaults'
+import Head from 'next/head'
+import { siteTitle } from '@components/layout'
 
 const OfficerPage: NextPage = () => {
 	const { data: committees, isLoading, mutate } = useRetriever<ICommittee[]>('/api/committees')
@@ -83,13 +85,16 @@ const OfficerPage: NextPage = () => {
 
 	return (
 		<AdminLayout>
+			<Head>
+				<title>{siteTitle} | Officers</title>
+			</Head>
 			<UpdateOfficerModal isOpen={modal === 'update officer'} officer={officer} onClose={closeModal} onSubmit={updateOfficer} />
 			<ConfirmationModal isOpen={modal === 'delete officer'} message={`Remove ${officer?.name}?`} onClose={closeModal} onActionClick={deleteOfficer} />
 			<AddOfficerModal isOpen={modal === 'add officer'} onClose={closeModal} users={tutors || []} onSubmit={addOfficer} />
 			<ConfirmationModal isOpen={modal === 'delete committee'} onClose={closeModal} message={`Remove ${committee?.name}?`} onActionClick={deleteCommittee} />
 			<AddCommitteeModal isOpen={modal === 'add committee'} onClose={closeModal} onSubmit={addCommittee} />
 			<ChangeOrderModal isOpen={modal === 'sort'} onClose={closeModal} initOrder={order || []} onSubmit={updateOrder} />
-			<div className="flex justify-end mb-6 -mt-2">
+			<div className="flex justify-end mb-6">
 				<button onClick={() => setModal('sort')} className="btn gray px-4 py-2 rounded-lg mr-2">Sort Order</button>
 				<button onClick={() => setModal('add committee')} className="btn blue px-4 py-2 rounded-lg">Add Committee</button>
 			</div>

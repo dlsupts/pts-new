@@ -16,6 +16,8 @@ import DateModal, { DateModalSchema } from '@components/admin/libraries/date-mod
 import ConfirmationModal from '@components/modal/confirmation-modal'
 import axios from 'axios'
 import MySwitch from '@components/switch'
+import { siteTitle } from '@components/layout'
+import Head from 'next/head'
 
 type button = {
 	text: string
@@ -139,6 +141,9 @@ const LibraryPage: NextPage = () => {
 
 	return (
 		<AdminLayout>
+			<Head>
+				<title>{siteTitle} | Libraries</title>
+			</Head>
 			<ConfirmationModal isOpen={modal === 'reset'} message="Proceed with term reset?" onActionClick={handleReset} onClose={closeModal} />
 			<LibraryModal isOpen={modal === 'library'} onClose={closeModal}
 				library={libraries?.[libIdx]} onDelete={() => setModal('del lib')} onUpdate={updateLibrary} />

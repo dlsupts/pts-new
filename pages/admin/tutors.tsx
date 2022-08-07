@@ -16,6 +16,8 @@ import Link from 'next/link'
 import { useRetriever } from '@lib/useRetriever'
 import { createColumnHelper } from '@tanstack/react-table'
 import Table from '@components/table'
+import Head from 'next/head'
+import { siteTitle } from '@components/layout'
 
 interface ITableProps extends IUser {
 	status?: string
@@ -79,6 +81,9 @@ const AdminPage: NextPage = () => {
 
 	return (
 		<AdminLayout>
+			<Head>
+				<title>{siteTitle} | Tutors</title>
+			</Head>
 			<Modal isOpen={isOpen} close={() => setIsOpen(false)}>
 				<div className={modalStyles.panel}>
 					<div className={cn(styles['data-display'], '!border-0')}>

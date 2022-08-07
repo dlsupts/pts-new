@@ -1,0 +1,15 @@
+.section {
+	@apply rounded-lg shadow-md px-6 py-8
+}
+
+.section > h1 {
+	@apply text-xl font-bold mb-4
+}
+
+.graphs-container {
+	@apply grid md:grid-cols-2 place-items-center gap-y-8
+}
+
+.middle-label {
+	@apply text-lg font-medium
+}

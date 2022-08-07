@@ -18,6 +18,8 @@ import TutorModal from '@components/table/tutor-modal'
 import app from '@lib/axios-config'
 import { toastAxiosError } from '@lib/utils'
 import { ObjectId } from 'mongoose'
+import Head from 'next/head'
+import { siteTitle } from '@components/layout'
 
 export type Tutor = Omit<ITutorInfo, 'membership'> & Pick<IUserInfo, 'firstName' | 'lastName' | '_id'>
 
@@ -140,6 +142,9 @@ const RequestPage: NextPage = () => {
 
 	return (
 		<AdminLayout>
+			<Head>
+				<title>{siteTitle} | Requests</title>
+			</Head>
 			<Modal isOpen={modal == 'request'} close={() => setModal('')}>
 				<div className={styles.panel}>
 					<div className={styles.body}>

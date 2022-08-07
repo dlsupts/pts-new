@@ -14,6 +14,8 @@ import Link from 'next/link'
 import LoadingSpinner from '@components/loading-spinner'
 import { useRetriever } from '@lib/useRetriever'
 import { createColumnHelper } from '@tanstack/react-table'
+import Head from 'next/head'
+import { siteTitle } from '@components/layout'
 
 const columnHelper = createColumnHelper<IUserInfo>()
 
@@ -69,6 +71,9 @@ const ApplicantsPage: NextPage = () => {
 
 	return (
 		<AdminLayout>
+			<Head>
+				<title>{siteTitle} | Applicants</title>
+			</Head>
 			<Modal isOpen={isOpen} close={() => setIsOpen(false)}>
 				<div className={modalStyles.panel}>
 					<div className={cn(styles['data-display'], '!border-0')}>
