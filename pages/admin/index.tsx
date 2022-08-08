@@ -8,12 +8,13 @@ import { siteTitle } from '@components/layout'
 import { Statistics } from '@pages/api/statistics'
 import LoadingSpinner from '@components/loading-spinner'
 import DashboardTable from '@components/admin/dashboard-table'
-import chroma from 'chroma-js'
 import { useMemo, useState } from 'react'
 import { DownloadIcon } from '@heroicons/react/outline'
 import app from '@lib/axios-config'
+import { interpolateCool } from 'd3-scale-chromatic'
+import interpolateColors from '@lib/color-generator'
 
-const scale = chroma.bezier(['#0070BE', '#0170C0', '#555']).scale().mode('lch').correctLightness()
+const scale = interpolateCool
 const legend = <Legend verticalAlign="bottom" height={36} iconType="square" />
 const tooltip = <Tooltip allowEscapeViewBox={{ x: true, y: true }} />
 const PIE_CHART_CONFIG = {
@@ -34,6 +35,7 @@ const AdminPage: NextPage = () => {
 	const totalTutors = useMemo(() => data?.[3] ? data[3].reduce((sum, i) => sum + i.count, 0) : 0, [data])
 	const totalRequests = useMemo(() => data?.[0] ? data[0].reduce((sum, i) => sum + i.count, 0) : 0, [data])
 	const [isWaiting, setIsWaiting] = useState(false)
+	let colors: string[]
 
 	if (isLoading || !data) {
 		return (
@@ -83,9 +85,10 @@ const AdminPage: NextPage = () => {
 									{legend}
 									{tooltip}
 									<Pie data={data[2]} {...PIE_CONFIG}>
-										{data[2].map((entry, index) => (
-											<Cell key={entry._id} name={entry._id} fill={scale.colors(data[2].length)[index]} />
-										))}
+										{(colors = interpolateColors(data[2].length, scale)) &&
+											data[2].map((entry, index) => (
+												<Cell key={entry._id} name={entry._id} fill={colors[index]} />
+											))}
 										<Label className={styles['middle-label']} position="center">
 											ID Number
 										</Label>
@@ -99,9 +102,10 @@ const AdminPage: NextPage = () => {
 									{legend}
 									{tooltip}
 									<Pie data={data[1]} {...PIE_CONFIG}>
-										{data[1].map((entry, index) => (
-											<Cell key={entry._id} name={entry._id} fill={scale.colors(data[1].length)[index]} />
-										))}
+										{(colors = interpolateColors(data[1].length, scale)) &&
+											data[1].map((entry, index) => (
+												<Cell key={entry._id} name={entry._id} fill={colors[index]} />
+											))}
 										<Label className={styles['middle-label']} position="center">
 											College
 										</Label>
@@ -121,9 +125,10 @@ const AdminPage: NextPage = () => {
 									{legend}
 									{tooltip}
 									<Pie data={data[3]} {...PIE_CONFIG}>
-										{data[3].map((entry, index) => (
-											<Cell key={entry._id} name={entry._id} fill={scale.colors(data[3].length)[index]} />
-										))}
+										{(colors = interpolateColors(data[3].length, scale)) &&
+											data[3].map((entry, index) => (
+												<Cell key={entry._id} name={entry._id} fill={colors[index]} />
+											))}
 										<Label className={styles['middle-label']} position="center">
 											ID Number
 										</Label>
@@ -137,9 +142,10 @@ const AdminPage: NextPage = () => {
 									{legend}
 									{tooltip}
 									<Pie data={data[4]} {...PIE_CONFIG}>
-										{data[4].map((entry, index) => (
-											<Cell key={entry._id} name={entry._id} fill={scale.colors(data[4].length)[index]} />
-										))}
+										{(colors = interpolateColors(data[4].length, scale)) &&
+											data[4].map((entry, index) => (
+												<Cell key={entry._id} name={entry._id} fill={colors[index]} />
+											))}
 										<Label className={styles['middle-label']} position="center">
 											Program
 										</Label>

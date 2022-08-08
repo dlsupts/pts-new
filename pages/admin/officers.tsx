@@ -20,7 +20,7 @@ import { siteTitle } from '@components/layout'
 
 const OfficerPage: NextPage = () => {
 	const { data: committees, isLoading, mutate } = useRetriever<ICommittee[]>('/api/committees')
-	const { data: tutors } = useRetriever<IUser[]>('/api/tutors?query=simple')
+	const { data: tutors } = useRetriever<IUser[]>('/api/tutors?filter=simple')
 	const [modal, setModal] = useState('')
 	const [selection, setSelection] = useState([0, 0])
 	const committee = useMemo(() => committees?.[selection[0]], [committees, selection])
