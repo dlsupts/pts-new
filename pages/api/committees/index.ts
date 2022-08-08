@@ -21,7 +21,7 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				}).lean()
 
 				const order = await Library.findById('Committees').lean('-_id content').exec()
-				
+
 				// arrange committees based on order in library
 				const arranged = order?.content?.map(o => committees.find(c => c.name == o))
 
@@ -35,17 +35,20 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 						o.user = o.user.toString()
 					}
 				}))
-				
+
 				res.json(arranged)
 				break
 			}
 
 			case 'POST': {
-				await Committee.create({ name: req.body.name })
-				await Library.updateOne(
-					{ _id: 'Committees' },
-					{ $push: { content: req.body.name }}
-				)
+				await Promise.all([
+					Committee.create({ name: req.body.name }),
+					Library.updateOne(
+						{ _id: 'Committees' },
+						{ $push: { content: req.body.name } }
+					)
+				])
+				await res.revalidate('/about')
 				break
 			}
 

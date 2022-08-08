@@ -10,7 +10,6 @@ import {
 	getExpandedRowModel,
 	flexRender,
 	GroupingState,
-	Table,
 	ExpandedState,
 	createColumnHelper,
 } from '@tanstack/react-table'
@@ -33,13 +32,12 @@ type TableProps = {
 
 const columnHelper = createColumnHelper<IReqSession>()
 
-const Table = ({ data, onRowClick, tutors, tutees }: TableProps) => {
+const RequestTable = ({ data, onRowClick, tutors, tutees }: TableProps) => {
 	const [globalFilter, setGlobalFilter] = useState('')
 	const [grouping, setGrouping] = useState<GroupingState>([])
 	const [expanded] = useState<ExpandedState>(true)
 	let shouldPrint = false
 	let ctr = 1
-
 
 	const columns = useMemo(() => ([
 		//@ts-expect-error: Library limitation. Note that this may result in build error, so just copy paste this comment.
@@ -185,4 +183,4 @@ const Table = ({ data, onRowClick, tutors, tutees }: TableProps) => {
 	)
 }
 
-export default Table
+export default RequestTable

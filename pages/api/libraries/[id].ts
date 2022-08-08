@@ -6,18 +6,24 @@ import Library from '@models/library'
 const libraryHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
 		const session = await getSession({ req })
-		if (session?.user.type != 'ADMIN') return res.status(403)	
+		if (session?.user.type != 'ADMIN') return res.status(403)
 
 		await dbConnect()
 
 		switch (req.method) {
 			case 'PUT': {
-				await Library.updateOne({ _id: req.query.id }, { content: req.body.content })
+				const lib = await Library.findOneAndUpdate({ _id: req.query.id }, { content: req.body.content }).lean()
+				if (lib?.revalidatePaths) {
+					Promise.all(lib.revalidatePaths.map(path => res.revalidate(path)))
+				}
 				break
 			}
 
 			case 'DELETE': {
-				await Library.deleteOne({ _id: req.query.id })
+				const lib = await Library.findOneAndDelete({ _id: req.query.id }).lean()
+				if (lib?.revalidatePaths) {
+					Promise.all(lib.revalidatePaths.map(path => res.revalidate(path)))
+				}
 				break
 			}
 

@@ -18,6 +18,7 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					{ _id: 'Committees' },
 					{ $pull: { content: committee?.name } }
 				)
+				await res.revalidate('/about')
 				break
 			}
 

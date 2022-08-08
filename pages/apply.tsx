@@ -146,15 +146,17 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 
 export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
-	const courses = await Library.getDegreeCodes()
-	const faq = await Library.findById('Tutor Recruitment FAQ', '-_id').lean().exec()
+
+	const data = await Promise.all([
+		Library.getDegreeCodes(),
+		Library.findById('Tutor Recruitment FAQ', '-_id').lean().exec()
+	])
 
 	return {
 		props: {
-			faqs: faq?.content.map(f => parseContent(f)),
-			courses
+			courses: data[0],
+			faqs: data[1]?.content.map(f => parseContent(f)),
 		},
-		revalidate: Number(process.env.NEXT_PUBLIC_REVALIDATION_INTERVAL)
 	}
 }
 
