@@ -130,26 +130,26 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 
 export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
-	const faq = await Library.findById('Tutor Request FAQ', '-_id').lean().exec()
-	const services = await Library.findById('Tutoring Services', '-_id').lean().exec()
-	const subjects = await Library.findById('Subjects', '-_id').lean().exec()
-	const colleges = await Library.findById('Colleges', '-_id').lean().exec()
-	const degreePrograms = await Library.getDegreeCodes()
-	const campuses = await Library.findById('Campuses', '-_id').lean().exec()
-	const languages = await Library.findById('Programming Languages').lean().exec()
-	const dataPrivacy = await Library.findById('Data Privacy Consent', '-_id').lean().exec()
-
-
+	const data = await Promise.all([
+		Library.findById('Tutor Request FAQ', '-_id').lean(),
+		Library.findById('Tutoring Services', '-_id').lean(),
+		Library.findById('Subjects', '-_id').lean(),
+		Library.findById('Colleges', '-_id').lean(),
+		Library.getDegreeCodes(),
+		Library.findById('Campuses', '-_id').lean(),
+		Library.findById('Programming Languages').lean(),
+		Library.findById('Data Privacy Consent', '-_id').lean(),
+	])
 
 	return {
 		props: {
-			faqs: faq?.content.map(f => parseContent(f)),
-			services: services?.content?.filter(c => c !== 'None'),
-			subjects: subjects?.content.concat(languages?.content ?? []),
-			colleges: colleges?.content?.map(c => c.split(':')[0]),
-			degreePrograms,
-			campuses: campuses?.content,
-			dataPrivacy: dataPrivacy?.content,
+			faqs: data[0]?.content.map(f => parseContent(f)),
+			services: data[1]?.content?.filter(c => c !== 'None'),
+			subjects: data[2]?.content.concat(data[6]?.content ?? []),
+			colleges: data[3]?.content?.map(c => c.split(':')[0]),
+			degreePrograms: data[4],
+			campuses: data[5]?.content,
+			dataPrivacy: data[7]?.content,
 		},
 	}
 }

@@ -185,18 +185,19 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
 
-	const types = await Library.findById('Tutorial Types', '-__v').lean().exec()
-	const services = await Library.findById('Tutoring Services', '-__v').lean().exec()
-	const subjects = await Library.findById('Subjects', '-__v').lean().exec()
-	const languages = await Library.findById('Programming Languages', '-__v').lean().exec()
+	const data = await Promise.all([
+		Library.findById('Tutorial Types', '-__v').lean(),
+		Library.findById('Tutoring Services', '-__v').lean(),
+		Library.findById('Subjects', '-__v').lean(),
+		Library.findById('Programming Languages', '-__v').lean(),
+	])
 
 	return {
 		props: {
-			types: types?.content,
-			services: services?.content,
-			subjects: subjects?.content?.concat(languages?.content ?? [])
+			types: data[0]?.content,
+			services: data[1]?.content,
+			subjects: data[2]?.content?.concat(data[3]?.content ?? [])
 		},
-		revalidate: Number(process.env.NEXT_PUBLIC_REVALIDATION_INTERVAL)
 	}
 }
 

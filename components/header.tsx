@@ -53,9 +53,9 @@ const NavItem: FC<NavItemProp> = ({ text, path, isHome }) => {
 
 	return (
 		<Link href={path} passHref>
-			<div className={className}>
+			<a className={className}>
 				<p className="px-3 py-2 font-medium" aria-current={path == pathname ? 'page' : undefined}>{text}</p>
-			</div>
+			</a>
 		</Link>
 	)
 }

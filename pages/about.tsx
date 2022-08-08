@@ -105,12 +105,16 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees, sessionPhotos, groupP
 export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
 
-	const committees = await Committee.find({}, '-_id -__v')
-		.populate({ path: 'officers', populate: { path: 'user', select: 'firstName lastName' } }).lean().exec()
-	const order = await Library.findById('Committees').lean('-_id content').exec()
+	const data = await Promise.all([
+		Committee.find({}, '-_id -__v')
+			.populate({ path: 'officers', populate: { path: 'user', select: 'firstName lastName' } }).lean().exec(),
+		Library.findById('Committees').lean('-_id content').exec(),
+		Library.findById('Tutoring Sessions Photos', '-__v').lean().exec(),
+		Library.findById('Group Studies Photos', '-__v').lean().exec(),
+	])
 
 	// arrange committees based on order in library
-	const arranged = order?.content?.map(o => committees.find(c => c.name == o))
+	const arranged = data[1]?.content?.map(o => data[0].find(c => c.name == o))
 
 	// parse names
 	arranged?.forEach(c => c?.officers.forEach(o => {
@@ -124,16 +128,12 @@ export const getStaticProps: GetStaticProps = async () => {
 		}
 	}))
 
-	const sessionPhotos = await Library.findById('Tutoring Sessions Photos', '-__v').lean().exec()
-	const groupPhotos = await Library.findById('Group Studies Photos', '-__v').lean().exec()
-
 	return {
 		props: {
 			committees: arranged,
-			sessionPhotos,
-			groupPhotos,
-		},
-		revalidate: Number(process.env.NEXT_PUBLIC_REVALIDATION_INTERVAL)
+			sessionPhotos: data[2],
+			groupPhotos: data[3],
+		}
 	}
 }
 
