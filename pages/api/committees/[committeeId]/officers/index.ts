@@ -16,6 +16,7 @@ const officerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					{ _id: req.query.committeeId },
 					{ $push: { officers: req.body } },
 				)
+				await res.revalidate('/about')
 				break
 			}
 

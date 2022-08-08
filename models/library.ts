@@ -4,6 +4,7 @@ export interface ILib {
 	_id: string
 	isKeyed: boolean
 	content: string[]
+	revalidatePaths: string[]
 }
 
 interface LibModel extends Model<ILib> {
@@ -14,6 +15,7 @@ const libSchema = new Schema<ILib>({
 	_id: { type: String, required: true },
 	isKeyed: { type: Boolean, required: true, default: false },
 	content: { type: [String], required: true, default: [] },
+	revalidatePaths: { type: [String], required: true, default: [] },
 })
 
 libSchema.statics.getDegreeCodes = async function () {
