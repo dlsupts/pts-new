@@ -20,6 +20,7 @@ import { toastAxiosError } from '@lib/utils'
 import { ObjectId } from 'mongoose'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
+import sorter from '@lib/sorter'
 
 export type Tutor = Omit<ITutorInfo, 'membership'> & Pick<IUserInfo, 'firstName' | 'lastName' | '_id'>
 
@@ -44,7 +45,6 @@ const RequestPage: NextPage = () => {
 			return map
 		}
 	)
-	const tutorArray = useMemo(() => Array.from(tutors.values()), [tutors])
 	const [modal, setModal] = useState<string>('')
 	const [requestMode, setRequestMode] = useState(false)
 	const [request, setRequest] = useState<IReqSession>()
@@ -53,6 +53,15 @@ const RequestPage: NextPage = () => {
 	const [rowSelection, setRowSelection] = useState<Record<number, boolean>>({})
 	const [tutor, setTutor] = useState<Tutor>()
 	const cancelButton = useRef<HTMLButtonElement>(null)
+	const tutorArray = useMemo(() => {
+		const tutee = tutees.get(request?.tutee as string)
+
+		if (!request || !tutee) {
+			return Array.from(tutors.values())
+		}
+		
+		return sorter(Array.from(tutors.values()), request, tutee, requestMode ? sessions : [request.session])
+	},  [tutors, request])
 
 	useEffect(() => {
 		// clear tutor selection every time modal closes
