@@ -55,13 +55,11 @@ const RequestPage: NextPage = () => {
 	const cancelButton = useRef<HTMLButtonElement>(null)
 	const tutorArray = useMemo(() => {
 		const tutee = tutees.get(request?.tutee as string)
-
 		if (!request || !tutee) {
 			return Array.from(tutors.values())
 		}
-		
 		return sorter(Array.from(tutors.values()), request, tutee, requestMode ? sessions : [request.session])
-	},  [tutors, request])
+	}, [tutors, request, requestMode, sessions, tutees])
 
 	useEffect(() => {
 		// clear tutor selection every time modal closes
