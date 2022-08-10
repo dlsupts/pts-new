@@ -15,7 +15,10 @@ const tuteeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 		switch (method) {
 			case 'GET': {
-				const tutees = await Tutee.find({}, '-__v').populate('schedule').lean()
+				const tutees = await Tutee.find({}, '-__v').populate({
+					path: 'schedule',
+					select: '-_id -__v'
+				}).lean()
 				res.json(tutees)
 				break
 			}

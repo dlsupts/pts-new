@@ -20,6 +20,7 @@ export interface ICommittee {
 const committeeSchema = new Schema<ICommittee>({
 	name: { type: String, required: true },
 	officers: [{
+		_id: false,
 		user: {
 			type: Schema.Types.ObjectId,
 			ref: 'User',
