@@ -21,7 +21,7 @@ interface RequestProps {
 	courses: string[]
 }
 
-type FormSchema = Omit<IUserInfo, '_id'>
+export type FormSchema = Omit<IUserInfo, '_id'>
 
 const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	const [help, setHelp] = useState(faqs[0][1])

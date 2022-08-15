@@ -1,9 +1,11 @@
-import { sendApplicationConfirmation } from '@lib/mailer'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
-import dbConnect from '../../../lib/db'
-import Application from '../../../models/application'
-import User from '../../../models/user'
+import dbConnect from '@lib/db'
+import Application from '@models/application'
+import User from '@models/user'
+import sendEmail from '@lib/mail/sendEmail'
+import { FormSchema } from '@pages/apply'
+import Committee from '@models/committee'
 
 const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
@@ -21,19 +23,30 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 			}
 
 			case 'POST': {
+				const body = req.body as FormSchema
 				// check if duplicate entry
 				const values = await Promise.all([
-					Application.findOne({ $or: [{ email: req.body.email }, { idNumber: req.body.idNumber }] }, '_id').lean(),
-					User.findOne({ $or: [{ email: req.body.email }, { idNumber: req.body.idNumber }] }, '_id').lean()
+					Application.findOne({ $or: [{ email: body.email }, { idNumber: body.idNumber }] }, '_id').lean(),
+					User.findOne({ $or: [{ email: body.email }, { idNumber: body.idNumber }] }, '_id').lean()
 				])
-				
+
 				if (values[0]) {
 					return res.status(406).send('You have already sent an application!')
-				} else if (values[1]) {
+				}  else if (values[1]) {
 					return res.status(406).send('You are already a tutor!')
 				}
-				await Application.create(req.body)
-				await sendApplicationConfirmation(req.body.email)
+
+				const [, email] = await Promise.all([
+					Application.create(req.body),
+					// get VP Internals' email address
+					Committee.getVPEmail('Activities')
+				])
+
+				await Promise.all([
+					sendEmail(body.email, '[PTS] Tutor Application', 'application/applicant'),
+					sendEmail(email, '[PTS] Tutor Application', 'application/officer', body),
+				])
+				res.status(405)
 				break
 			}
 
