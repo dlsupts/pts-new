@@ -1,4 +1,4 @@
-import { Schema, models, model, Model, Document } from 'mongoose'
+import { Schema, models, model, Model } from 'mongoose'
 import { IUser } from './user'
 import './user' // force import in case of query population
 import { role } from '@types'
@@ -17,6 +17,15 @@ export interface ICommittee {
 	officers: IOfficer[];
 }
 
+interface CommitteModel extends Model<ICommittee> {
+	/**
+	 * Gets the email of the current VP of the given commitee
+	 * @param name - committee name
+	 * @return a promise that returns the email
+	 */
+	getVPEmail(name: string): Promise<string>
+}
+
 const committeeSchema = new Schema<ICommittee>({
 	name: { type: String, required: true },
 	officers: [{
@@ -31,4 +40,20 @@ const committeeSchema = new Schema<ICommittee>({
 	}]
 })
 
-export default models.Committee as Model<ICommittee & Document> || model<ICommittee>('Committee', committeeSchema, 'committees')
+committeeSchema.statics.getVPEmail = async function (name: string) {
+	const [{ email }] = await this.aggregate()
+		.match({ name })
+		.unwind('$officers')
+		.match({ 'officers.position': 'VP' })
+		.lookup({
+			from: 'users',
+			localField: 'officers.user',
+			foreignField: '_id',
+			as: 'officer'
+		})
+		.replaceRoot({ email: { $first: '$officer.email' } })
+
+	return email
+}
+
+export default models.Committee as unknown as CommitteModel || model<ICommittee, CommitteModel>('Committee', committeeSchema, 'committees')
