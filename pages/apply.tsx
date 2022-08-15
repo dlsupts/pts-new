@@ -109,7 +109,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 						</div>
 						<div className="col-span-full sm:col-span-2">
 							<label htmlFor="url">Facebook Profile URL<span className='text-red-500'>*</span></label>
-							<input type="url" {...register('url')} id="url" autoComplete="contact-number" required />
+							<input type="text" {...register('url')} id="url" placeholder="https://facebook.com/pts.dlsu" required />
 							<p className="form-err-msg text-sm">{errors.url?.message}</p>
 						</div>
 

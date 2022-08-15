@@ -13,7 +13,7 @@ export const userInfoSchema = yup.object({
 	course: yup.string().required('Course is required.'),
 	terms: yup.number().typeError('Remaining terms is required.').positive('Input should be positive.').required('Remaining terms in required.').integer(),
 	contact: yup.string().trim().matches(/\d*/, 'Only numerical input is allowed.').required('Contact number is required.'),
-	url: yup.string().trim().url('Invalid URL.').required('Facebook URL is required.'),
+	url: yup.string().trim().url('Must include "https://"').matches(/facebook.com\/\w+/, 'Invalid format!').required('Facebook URL is required.'),
 }).required()
 
 export interface IUserInfo extends yup.InferType<typeof userInfoSchema> {

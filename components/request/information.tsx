@@ -14,8 +14,6 @@ type InformationProps = {
 
 const storeSelector = (state: RequestStore) => [state.tutee, state.setTutee] as const
 
-
-
 const Information: FC<InformationProps> = ({ colleges, degreePrograms, campuses, setStep }) => {
 	const [tutee, setTutee] = useStore(storeSelector, shallow)
 	type Tutee = Omit<typeof tutee, '_id'>
