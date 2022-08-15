@@ -43,7 +43,8 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees, sessionPhotos, groupP
 
 			<div className="grid lg:grid-cols-2 gap-x-8 gap-y-8">
 				<div className="rounded-md border flex flex-col items-center p-8">
-					<i className="fa-solid fa-eye fa-3x mb-8"></i>
+					<i className="fa-solid fa-eye fa-3x mb-4"></i>
+					<h3 className="text-center text-xl font-semibold mb-2">Vision</h3>
 					<p className="max-w-prose text-center">
 						A service-oriented tutoring organization that bridges gaps between students and faculty,
 						caters to the different academic needs of CCS students and builds
@@ -51,7 +52,8 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees, sessionPhotos, groupP
 					</p>
 				</div>
 				<div className="rounded-md border flex flex-col items-center p-8">
-					<i className="fa-solid fa-rocket fa-3x mb-8"></i>
+					<i className="fa-solid fa-rocket fa-3x mb-4"></i>
+					<h3 className="text-center text-xl font-semibold mb-2" >Mission</h3>
 					<div className="max-w-prose text-center">
 						<p>To share knowledge</p>
 						<p>To inspire tutees and other students outside the organization</p>

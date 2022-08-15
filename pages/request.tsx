@@ -121,7 +121,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 						className="w-full max-w-prose border px-3 py-1.5 bg-clip-padding rounded transition ease-in-out cursor-pointer text-sm sm:text-base">
 						{faqs.map(f => <option key={f[0]} value={f[1]} className="py-2">{f[0]}</option>)}
 					</select>
-					<p className="max-w-prose mt-6 font-black italic text-center min-h-[120px] lg:min-h-[70px]">{help}</p>
+					<p className="max-w-prose mt-6 font-black text-center min-h-[120px] lg:min-h-[70px]">{help}</p>
 				</div>
 			</div>
 		</div>
