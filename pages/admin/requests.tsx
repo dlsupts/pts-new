@@ -9,7 +9,7 @@ import LoadingSpinner from '@components/loading-spinner'
 import { useRetriever } from '@lib/useRetriever'
 import Modal from '@components/modal'
 import styles from '@styles/Modal.module.css'
-import { Dialog } from '@headlessui/react'
+import { Dialog, Switch } from '@headlessui/react'
 import TuteeDisclosure from '@components/admin/requests/tutee-disclosure'
 import MySwitch from '@components/switch'
 import TutorTable from '@components/admin/requests/tutor-table'
@@ -157,7 +157,11 @@ const RequestPage: NextPage = () => {
 					<div className={styles.body}>
 						<div className={styles['title-container']}>
 							<Dialog.Title as="h3" className={styles.title}>{requestMode ? 'Request' : 'Session'}</Dialog.Title>
-							<MySwitch isChecked={requestMode} onChange={() => setRequestMode(!requestMode)} label="Set request mode" />
+							<Switch.Group as="div" className="flex space-x-2 items-center">
+								<Switch.Label className="select-none">Request mode</Switch.Label>
+								<MySwitch isChecked={requestMode} onChange={() => setRequestMode(!requestMode)} label="Set request mode" />
+							</Switch.Group>
+
 						</div>
 						<div>
 							{request &&

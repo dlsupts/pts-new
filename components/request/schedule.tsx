@@ -78,7 +78,7 @@ const Schedule: FC<ScheduleProps> = ({ setStep, dataPrivacy }) => {
 				<div className="flex col-span-full space-x-2 items-center mt-4">
 					<input type="checkbox" id="correct" checked={isConfirmedChecked}
 						onChange={() => setIsConfirmedChecked(x => !x)} />
-					<label htmlFor="correct" className="max-w-prose">
+					<label htmlFor="correct" className="max-w-prose select-none">
 						I hereby declare that all statements contained in this application are true and correct, and I
 						understand that false or inaccurate information in the application will lead to my disqualification.
 					</label>
@@ -87,7 +87,9 @@ const Schedule: FC<ScheduleProps> = ({ setStep, dataPrivacy }) => {
 					<input type="checkbox" id="data-privacy" checked={isPrivacyChecked}
 						onChange={() => setIsPrivacyChecked(x => !x)} />
 					<label htmlFor="data-privacy">
-						I have read and agree to the {' '}
+						<span className="select-none">
+							I have read and agree to the {' '}
+						</span>
 						<span className="cursor-pointer text-blue-700 hover:underline" onClick={(e) => {
 							e.preventDefault()
 							setIsOpen(true)
