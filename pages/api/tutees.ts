@@ -9,7 +9,6 @@ import { Types } from 'mongoose'
 import { RequestStore } from '@stores/request-store'
 import sendEmail from '@lib/mail/sendEmail'
 import Committee from '@models/committee'
-import { IUser } from '@models/user'
 
 export type TuteePostAPIBody = Pick<RequestStore, 'tutee' | 'request' | 'selectedSubjects'>
 
@@ -31,7 +30,7 @@ const tuteeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 			}
 
 			case "POST": {
-				const [, committee] = await Promise.all([
+				const [, email] = await Promise.all([
 					(async () => {
 						const timestamp = new Date()
 
@@ -56,15 +55,12 @@ const tuteeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 							topics,
 						})))
 					})(),
-					// get VP Internals' email address
-					Committee.findOne({ name: 'Internal Affairs', 'officers.position': 'VP' })
-						.populate({ path: 'officers.user', select: '-_id email' })
-						.select('-_id officers.1.user.email').lean()
+					Committee.getVPEmail('Internal Affairs')
 				])
 
 				await Promise.all([
-					sendEmail(body.tutee.email, 'New Tutor Request', 'request', { toTutee: true, ...body }),
-					sendEmail((committee?.officers[0].user as IUser).email, 'New Tutor Request', 'request', { toTutee: false, ...body })
+					sendEmail(body.tutee.email, '[PTS] New Tutor Request', 'request', { toTutee: true, ...body }),
+					sendEmail(email, '[PTS] New Tutor Request', 'request', { toTutee: false, ...body })
 				])
 				break
 			}

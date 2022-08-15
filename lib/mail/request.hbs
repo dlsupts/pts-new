@@ -1,32 +1,30 @@
-{{#> layout}}
-	{{#if toTutee}}
-		<p>Your request has been received. Please wait for our tutors to contact you through Facebook.</p>
-	{{else}}
-		<p>A new tutor request has been submitted.</p>
-	{{/if}}
+{{#if toTutee}}
+	<p>Your request has been received. Please wait for our tutors to contact you through Facebook.</p>
+{{else}}
+	<p>A new tutor request has been submitted.</p>
+{{/if}}
 
-	<div>
-		<strong>Request Details</strong><br>
-		Duration: <strong>{{request.duration}}</strong><br>
-		Subjects:
-		<ol style="margin-top: 0;">
-		{{#each selectedSubjects}}
-			 <li><strong>{{this.[0]}}</strong>{{#if this.[1]}}- {{this.[1]}}</li>{{/if}}
-		{{/each}}
-		</ol>
-	</div>
+<div>
+	<strong>Request Details</strong><br>
+	Duration: <strong>{{request.duration}}</strong><br>
+	Subjects:
+	<ol style="margin-top: 0;">
+	{{#each selectedSubjects}}
+			<li><strong>{{this.[0]}}</strong>{{#if this.[1]}}- {{this.[1]}}</li>{{/if}}
+	{{/each}}
+	</ol>
+</div>
 
-	<p>
-		<strong>Tutee Information</strong><br>
-		{{#with tutee}}
-			Name: <strong>{{firstName}} {{lastName}}</strong><br>
-			ID Number: <strong>{{idNumber}}</strong><br>
-			College: <strong>{{college}}</strong><br>
-			Course: <strong>{{course}}</strong><br>
-			Email: <a href="mailto:{{email}}">{{email}}</a><br>
-			Contact Number: <strong>{{contact}}</strong><br>
-			Facebook Profile: <a href="{{url}}">{{url}}</a><br>
-			Campus: <strong>{{campus}}</strong><br>
-		{{/with}}
-	</p>
-{{/layout}}
+<p>
+	<strong>Tutee Information</strong><br>
+	{{#with tutee}}
+		Name: <strong>{{firstName}} {{lastName}}</strong><br>
+		ID Number: <strong>{{idNumber}}</strong><br>
+		College: <strong>{{college}}</strong><br>
+		Course: <strong>{{course}}</strong><br>
+		Email: <strong><a href="mailto:{{email}}">{{email}}</a></strong><br>
+		Contact Number: <strong>{{contact}}</strong><br>
+		Facebook Profile: <strong><a href="{{url}}">{{url}}</a></strong><br>
+		Campus: <strong>{{campus}}</strong><br>
+	{{/with}}
+</p>
