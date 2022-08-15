@@ -5,9 +5,6 @@ import Dates from '@models/date'
 
 const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
-		const session = await getSession({ req })
-		if (session?.user.type != 'ADMIN') return res.status(403)
-
 		await dbConnect()
 
 		switch (req.method) {
@@ -18,6 +15,9 @@ const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 			}
 
 			case 'PATCH': {
+				const session = await getSession({ req })
+				if (session?.user.type != 'ADMIN') return res.status(403)
+
 				await Dates.updateOne({ _id: req.query.id }, {
 					start: new Date(req.body.start),
 					end: new Date(req.body.end)
@@ -26,6 +26,9 @@ const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 			}
 
 			case 'DELETE': {
+				const session = await getSession({ req })
+				if (session?.user.type != 'ADMIN') return res.status(403)
+
 				await Dates.deleteOne({ _id: req.query.id })
 				break
 			}

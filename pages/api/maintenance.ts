@@ -10,9 +10,6 @@ const maintenanceHandler = async (req: NextApiRequest, res: NextApiResponse<bool
 	const { body, method } = req
 
 	try {
-		const session = await getSession({ req })
-		if (session?.user.type != 'ADMIN') return res.status(403)
-
 		await dbConnect()
 
 		switch (method) {
@@ -23,6 +20,9 @@ const maintenanceHandler = async (req: NextApiRequest, res: NextApiResponse<bool
 			}
 
 			case 'PUT': {
+				const session = await getSession({ req })
+				if (session?.user.type != 'ADMIN') return res.status(403)
+				
 				await User.updateOne({ email: process.env.NEXT_PUBLIC_ADMIN_EMAIL }, { reset: body.reset })
 				res.send(body.reset)
 				break
@@ -30,6 +30,9 @@ const maintenanceHandler = async (req: NextApiRequest, res: NextApiResponse<bool
 
 			// reset data for next term
 			case 'DELETE': {
+				const session = await getSession({ req })
+				if (session?.user.type != 'ADMIN') return res.status(403)
+
 				await Promise.all([
 					Session.deleteMany(),
 					Tutee.deleteMany(),	// also deletes their respective schedules
