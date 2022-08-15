@@ -1,6 +1,6 @@
 // code from https://tanstack.com/table/v8/docs/examples/react/filters
 import { FilterFn, sortingFns, SortingFn } from '@tanstack/react-table'
-import { RankingInfo, rankItem, compareItems } from '@tanstack/match-sorter-utils'
+import { RankingInfo, rankItem, compareItems, rankings } from '@tanstack/match-sorter-utils'
 
 declare module '@tanstack/table-core' {
 	interface FilterFns {
@@ -12,7 +12,9 @@ declare module '@tanstack/table-core' {
 }
 
 export const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
-	const itemRank = rankItem(row.getValue(columnId), value)
+	const itemRank = rankItem(row.getValue(columnId), value, {
+		threshold: rankings.CONTAINS
+	})
 	addMeta({
 		itemRank,
 	})

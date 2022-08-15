@@ -86,8 +86,7 @@ const RequestTable = ({ data, onRowClick, tutors, tutees }: TableProps) => {
 			setGlobalFilter(str)
 			table.toggleAllRowsExpanded()
 		},
-		//@ts-expect-error: TypeError. Not sure why, but this is the code from the documentation and it works.
-		globalFilterFn: fuzzyFilter,
+		globalFilterFn: 'fuzzy',
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		getSortedRowModel: getSortedRowModel(),

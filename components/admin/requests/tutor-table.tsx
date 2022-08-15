@@ -73,8 +73,7 @@ const TutorTable = ({ data, onRowClick, rowSelection, setRowSelection }: TutorTa
 			rowSelection,
 		},
 		onGlobalFilterChange: setGlobalFilter,
-		//@ts-expect-error: TypeError. Not sure why, but this is the code from the documentation and it works.
-		globalFilterFn: fuzzyFilter,
+		globalFilterFn: 'fuzzy',
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		getSortedRowModel: getSortedRowModel(),

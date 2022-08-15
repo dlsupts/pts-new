@@ -37,8 +37,7 @@ const Table = <T extends object>({ columns, data, onRowClick, id }: TableProps<T
 			globalFilter,
 		},
 		onGlobalFilterChange: setGlobalFilter,
-		//@ts-expect-error: TypeError. Not sure why, but this is the code from the documentation and it works.
-		globalFilterFn: fuzzyFilter,
+		globalFilterFn: 'fuzzy',
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		getSortedRowModel: getSortedRowModel(),
