@@ -6,7 +6,7 @@ export function useRetriever<T>(key: string, fallback?: undefined, processor?: u
 	isLoading: boolean
 	isError: boolean
 	mutate: KeyedMutator<T>
-};
+}
 
 export function useRetriever<T>(key: string, fallback: T, processor?: undefined): {
 	data: T

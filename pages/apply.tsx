@@ -72,7 +72,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 						</div>
 						<div className="col-span-full sm:col-span-2">
 							<label htmlFor="email">DLSU Email<span className='text-red-500'>*</span></label>
-							<input type="email" {...register('email')} id="email" autoComplete="email" required pattern='.*(@dlsu.edu.ph)$' />
+							<input type="email" {...register('email')} id="email" autoComplete="email" required />
 							<p className="form-err-msg text-sm">{errors.email?.message}</p>
 						</div>
 						<div className="col-span-full">

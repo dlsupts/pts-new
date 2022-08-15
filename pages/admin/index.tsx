@@ -72,7 +72,7 @@ const AdminPage: NextPage = () => {
 			</div>
 			<div className="space-y-4">
 				<section className={styles.section}>
-					<h1>Request Statistics ({totalRequests})</h1>
+					<h1>Tutor Request Statistics ({totalRequests})</h1>
 					<DashboardTable data={data[0]} />
 				</section>
 

@@ -109,7 +109,7 @@ const ApplicantsPage: NextPage = () => {
 						</div>
 					</div>
 					<div className="flex items-center px-4 mb-4">
-						<button className="btn gray w-full rounded-md py-2" onClick={handleAcceptApplicant}>Accept Applicant</button>
+						<button className="btn blue w-full rounded-md py-2" onClick={handleAcceptApplicant}>Accept Applicant</button>
 					</div>
 				</div>
 			</Modal>
