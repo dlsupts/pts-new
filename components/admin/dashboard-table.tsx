@@ -18,6 +18,7 @@ import { useEffect, useMemo, useState } from 'react'
 import cn from 'classnames'
 import styles from '@styles/Table.module.css'
 import DebouncedInput from '@components/table/debounced-input'
+import { ChevronRightIcon } from '@heroicons/react/outline'
 
 type DashboardTableProps = {
 	data: ComplexAggregate[]
@@ -29,6 +30,7 @@ const DashboardTable = ({ data }: DashboardTableProps) => {
 	const [globalFilter, setGlobalFilter] = useState('')
 	const [grouping, setGrouping] = useState<GroupingState>([])
 	const [expanded, setExpanded] = useState<ExpandedState>(true)
+	const totalCount = useMemo(() => data.reduce((sum, item) => sum + item.count, 0), [data])
 
 	const columns = useMemo(() => [
 		columnHelper.accessor('_id.subject', {
@@ -41,9 +43,10 @@ const DashboardTable = ({ data }: DashboardTableProps) => {
 		columnHelper.accessor('count', {
 			header: 'count',
 			enableGrouping: false,
-			aggregationFn: 'sum'
+			aggregationFn: 'sum',
+			aggregatedCell: (info) => `${info.getValue()} (${(info.getValue() / totalCount * 100).toFixed(2)}%)`
 		})
-	], [])
+	], [totalCount])
 
 	const table = useReactTable({
 		data,
@@ -57,8 +60,7 @@ const DashboardTable = ({ data }: DashboardTableProps) => {
 			expanded,
 		},
 		onGlobalFilterChange: setGlobalFilter,
-		//@ts-expect-error: TypeError. Not sure why, but this is the code from the documentation and it works.
-		globalFilterFn: fuzzyFilter,
+		globalFilterFn: 'fuzzy',
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		getFacetedRowModel: getFacetedRowModel(),
@@ -70,6 +72,7 @@ const DashboardTable = ({ data }: DashboardTableProps) => {
 		onExpandedChange: setExpanded,
 	})
 
+	// if two groups are selected, only retain the latest selected grouping
 	useEffect(() => {
 		if (grouping.length > 1) {
 			setGrouping([grouping[1]])
@@ -135,11 +138,13 @@ const DashboardTable = ({ data }: DashboardTableProps) => {
 																},
 															}}
 														>
-															{row.getIsExpanded() ? '👇' : '👉'}{' '}
-															{flexRender(
-																cell.column.columnDef.cell,
-																cell.getContext()
-															)}{' '}
+															<div className="flex items-center">
+																<ChevronRightIcon className={cn('w-4 aspect-square inline transition-transform mr-1', { 'rotate-90': row.getIsExpanded() })} />
+																{flexRender(
+																	cell.column.columnDef.cell,
+																	cell.getContext()
+																)}
+															</div>
 														</button>
 													</>
 												) : cell.getIsAggregated() ? (
