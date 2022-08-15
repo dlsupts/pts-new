@@ -71,7 +71,7 @@ const TutorSessions: NextPage = () => {
 											<div>
 												<p className={styles.label}>Subjects - Specific Topics</p>
 												{sessions.map(({ subject, topics }) => (
-													<p key={subject} className={styles.data}>{subject} - {topics}</p>
+													<p key={subject} className={styles.data}>{subject} {topics && `- ${topics}`}</p>
 												))}
 											</div>
 										</div>
@@ -114,7 +114,7 @@ const TutorSessions: NextPage = () => {
 												<p className={styles.label}>Facebook Profile</p>
 												<a href={tutee.url} target="_blank" rel="noreferrer" className={cn(styles.data, 'underline')}>{tutee.url}</a>
 											</div>
-											{tutee.friends?.length &&
+											{tutee.friends && tutee.friends.length !== 0 &&
 												<div className="col-span-full">
 													<p className={styles.label}>Friends</p>
 													<p className={styles.data}>{tutee.friends.join(', ')}</p>
