@@ -44,7 +44,7 @@ const UserLayout: FC = ({ children }) => {
 		}
 	})
 
-	if (status == 'loading') {
+	if (status == 'loading' || !data) {
 		return <LoadingSpinner className="absolute h-screen w-screen top-0 left-0 bg-white" />
 	}
 
