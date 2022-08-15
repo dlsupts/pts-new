@@ -18,7 +18,7 @@ const navItems: NavItemProp[] = [
 
 const NavItem: FC<NavItemProp> = ({ text, path }) => {
 	const { pathname } = useRouter()
-	
+
 	const className = cn({
 		'border-blue-500 text-gray-900 bg-blue-50 text-blue-600': pathname == path,
 		'border-transparent text-gray-500 hover:text-gray-900': pathname != path
@@ -45,6 +45,11 @@ const UserLayout: FC = ({ children }) => {
 	})
 
 	if (status == 'loading') {
+		return <LoadingSpinner className="absolute h-screen w-screen top-0 left-0 bg-white" />
+	}
+
+	if (data.user.email == process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+		router.replace('/admin')
 		return <LoadingSpinner className="absolute h-screen w-screen top-0 left-0 bg-white" />
 	}
 

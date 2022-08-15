@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import { Disclosure, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import cn from 'classnames'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { matchPath } from '../lib/utils'
 
 interface NavItemProp {
@@ -24,7 +24,6 @@ const navItems: NavItemProp[] = [
 	{ path: '/admin/tutors', text: 'Tutors' },
 	{ path: '/admin/officers', text: 'Officers' },
 	{ path: '/admin/libraries', text: 'Libraries' },
-	{ path: '/me', text: 'Exit' },
 ]
 
 const MobNavItem: FC<MobNavItemProp> = ({ text, path, isHome, onClick }) => {
@@ -62,6 +61,8 @@ const NavItem: FC<NavItemProp> = ({ text, path, isHome }) => {
 }
 
 const Header: FC = () => {
+	const { data } = useSession()
+
 	function handleAuthClick() {
 		signOut({ callbackUrl: '/' })
 	}
@@ -88,6 +89,7 @@ const Header: FC = () => {
 									<div className="hidden md:block md:ml-6">
 										<div className="flex space-x-4 items-center h-full">
 											{navItems.map(nav => <NavItem key={nav.text} text={nav.text} path={nav.path} isHome={nav.isHome} />)}
+											{data?.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL && <NavItem text="Exit" path="/me" />}
 										</div>
 									</div>
 								</div>
@@ -105,10 +107,10 @@ const Header: FC = () => {
 							leaveFrom="transform scale-100 opacity-100"
 							leaveTo="transform scale-95 opacity-0"
 						>
-
 							<Disclosure.Panel className="md:hidden relative bg-white">
 								<div className="px-2 pt-2 pb-3 space-y-1">
 									{navItems.map(nav => <MobNavItem key={nav.text} text={nav.text} path={nav.path} isHome={nav.isHome} onClick={close} />)}
+									{data?.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL && <NavItem text="Exit" path="/me" />}
 								</div>
 							</Disclosure.Panel>
 						</Transition>
