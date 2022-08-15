@@ -1,0 +1,33 @@
+<p>You have been assigned a new tutee!</p>
+
+<div style="margin: 20 0;">
+	<strong>Request Details</strong><br>
+	Duration: <strong>{{request.duration}}</strong><br>
+	Tutorial Type: <strong>{{request.tutorialType}}</strong><br>
+	Subjects:
+	<ol>
+		{{#each subjects}}
+			<li><strong>{{this.subject}}</strong>{{#if this.topics}}- {{this.topics}}</li>{{/if}}
+		{{/each}}
+	</ol>
+</div>
+
+<p>
+	<strong>Tutee Information</strong><br>
+	{{#with tutee}}
+		Name: <strong>{{firstName}} {{lastName}}</strong><br>
+		ID Number: <strong>{{idNumber}}</strong><br>
+		College: <strong>{{college}}</strong><br>
+		Course: <strong>{{course}}</strong><br>
+		Email: <strong><a href="mailto:{{email}}">{{email}}</a></strong><br>
+		Contact Number: <strong>{{contact}}</strong><br>
+		Facebook Profile: <strong><a href="{{url}}">{{url}}</a></strong><br>
+		Campus: <strong>{{campus}}</strong><br>
+		{{#if friends}}
+		Friends:<br>
+			{{#each friends}}
+				{{this}}<br>
+			{{/each}}
+		{{/if}}
+	{{/with}}
+</p>

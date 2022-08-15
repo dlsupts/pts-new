@@ -6,6 +6,8 @@ import Session from '@models/session'
 import Tutee from '@models/tutee'
 import User from '@models/user'
 import { Types } from 'mongoose'
+import sendEmail from '@lib/mail/sendEmail'
+import tutorialTypes from '@lib/tutorial-types'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { method, body } = req
@@ -21,16 +23,37 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		switch (method) {
 			case 'PATCH': {
 				if (body.tutor) { // assigning a tutor
-					const wasMatched = await Session.exists({ request: query.reqId, tutor: body.tutor }) as boolean
+					const [wasMatched, subjects] = await Promise.all([
+						Session.exists({ request: query.reqId, tutor: body.tutor }),
+						Session.find({ request: query.reqId, tutor: null }, '-_id subject topics').lean()
+					])
 
-					await Promise.all([
-						Session.updateMany({ request: query.reqId, tutor: null }, body),
+					const [tutor, request] = await Promise.all([
+						User.findById(body.tutor, '-_id email').lean(),
+						Request.findById(query.reqId, '-_id tutee duration tutorialType').lean(),
+						Session.updateMany({ request: query.reqId, tutor: null }, body), //TODO: Update "matched" attribute but also update stastics.ts
 						(async () => {
 							if (!wasMatched) {
 								await User.updateOne({ _id: body.tutor }, { $inc: { 'tuteeCount': 1 } })
 							}
 						})()
 					])
+
+					const tutee = await Tutee.findById(request?.tutee, '-_id -schedule -__v').lean()
+
+					if (tutor?.email) {
+						await sendEmail(tutor.email, '[PTS] New Tutee', 'assignment', {
+							request: {
+								...request,
+								tutorialType: request?.duration == 'One Session' ?
+									tutorialTypes['One Session'].find(({ value }) => value == request.tutorialType)?.text
+									:
+									request?.tutorialType
+							},
+							subjects,
+							tutee,
+						})
+					}
 				} else { // unassigning all tutors from all sessions related to a request
 					const tutors: Types.ObjectId[] = await Session.find({ request: query.reqId }).distinct('tutor')
 					await Promise.all([

@@ -5,6 +5,8 @@ import Request from '@models/request'
 import Session from '@models/session'
 import Tutee from '@models/tutee'
 import User from '@models/user'
+import sendEmail from '@lib/mail/sendEmail'
+import tutorialTypes from '@lib/tutorial-types'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { method, body } = req
@@ -22,14 +24,34 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 				if (body.tutor) { // assigning a tutor
 					const wasMatched = await Session.exists({ request: query.reqId, tutor: body.tutor }) as boolean
 
-					await Promise.all([
-						Session.updateOne({ _id: query.sessId }, { tutor: body.tutor }),
+					const [tutor, request, session] = await Promise.all([
+						User.findById(body.tutor, '-_id email').lean(),
+						Request.findById(query.reqId, '-_id tutee duration tutorialType').lean(),
+						Session.findByIdAndUpdate(query.sessId, { tutor: body.tutor, status: 'matched' }, {
+							projection: '-_id subject topics'
+						}).lean(),
 						(async () => {
 							if (!wasMatched) { // only increment if was not matched before
 								await User.updateOne({ _id: body.tutor }, { $inc: { 'tuteeCount': 1 } })
 							}
 						})()
 					])
+					
+					const tutee = await Tutee.findById(request?.tutee, '-_id -schedule -__v').lean()
+
+					if (tutor?.email) {
+						await sendEmail(tutor.email, '[PTS] New Tutee', 'assignment', {
+							request: {
+								...request,
+								tutorialType: request?.duration == 'One Session' ?
+									tutorialTypes['One Session'].find(({ value }) => value == request.tutorialType)?.text
+									:
+									request?.tutorialType
+							},
+							subjects: [{ ...session }],
+							tutee,
+						})
+					}
 				} else { // unassigning a tutor
 					const sess = await Session.findByIdAndUpdate(query.sessId, { tutor: null }).lean()
 					const hasSessions = await Session.exists({ request: query.reqId, tutor: sess?.tutor })
