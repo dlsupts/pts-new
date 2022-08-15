@@ -31,9 +31,9 @@ const PIE_CONFIG = {
 
 const AdminPage: NextPage = () => {
 	const { data, isLoading } = useRetriever<Statistics>('/api/statistics')
-	const totalTutees = useMemo(() => data?.[1] ? data[1].reduce((sum, i) => sum + i.count, 0) : 0, [data])
-	const totalTutors = useMemo(() => data?.[3] ? data[3].reduce((sum, i) => sum + i.count, 0) : 0, [data])
-	const totalRequests = useMemo(() => data?.[0] ? data[0].reduce((sum, i) => sum + i.count, 0) : 0, [data])
+	const totalTutees = useMemo(() => data?.[1].reduce((sum, i) => sum + i.count, 0) ?? 0, [data])
+	const totalTutors = useMemo(() => data?.[3].reduce((sum, i) => sum + i.count, 0) ?? 0, [data])
+	const totalRequests = useMemo(() => data?.[0].reduce((sum, i) => sum + i.count, 0) ?? 0, [data])
 	const [isWaiting, setIsWaiting] = useState(false)
 	let colors: string[]
 
@@ -84,7 +84,13 @@ const AdminPage: NextPage = () => {
 								<PieChart {...PIE_CHART_CONFIG}>
 									{legend}
 									{tooltip}
-									<Pie data={data[2]} {...PIE_CONFIG}>
+									<Pie data={data[2]} {...PIE_CONFIG} label={({ count, percent, x, y, payload, cx }) => {
+										return (
+											<text x={x} y={y} textAnchor={x > cx ? 'start' : 'end'} fill={payload.fill} dominantBaseline="central">
+												{count} ({(percent * 100).toFixed(2)}%)
+											</text>
+										)
+									}}>
 										{(colors = interpolateColors(data[2].length, scale)) &&
 											data[2].map((entry, index) => (
 												<Cell key={entry._id} name={entry._id} fill={colors[index]} />
@@ -101,7 +107,13 @@ const AdminPage: NextPage = () => {
 								<PieChart {...PIE_CHART_CONFIG}>
 									{legend}
 									{tooltip}
-									<Pie data={data[1]} {...PIE_CONFIG}>
+									<Pie data={data[1]} {...PIE_CONFIG} label={({ count, percent, x, y, payload, cx }) => {
+										return (
+											<text x={x} y={y} textAnchor={x > cx ? 'start' : 'end'} fill={payload.fill} dominantBaseline="central">
+												{count} ({(percent * 100).toFixed(2)}%)
+											</text>
+										)
+									}}>
 										{(colors = interpolateColors(data[1].length, scale)) &&
 											data[1].map((entry, index) => (
 												<Cell key={entry._id} name={entry._id} fill={colors[index]} />
@@ -124,7 +136,13 @@ const AdminPage: NextPage = () => {
 								<PieChart {...PIE_CHART_CONFIG}>
 									{legend}
 									{tooltip}
-									<Pie data={data[3]} {...PIE_CONFIG}>
+									<Pie data={data[3]} {...PIE_CONFIG} label={({ count, percent, x, y, payload, cx }) => {
+										return (
+											<text x={x} y={y} textAnchor={x > cx ? 'start' : 'end'} fill={payload.fill} dominantBaseline="central">
+												{count} ({(percent * 100).toFixed(2)}%)
+											</text>
+										)
+									}}>
 										{(colors = interpolateColors(data[3].length, scale)) &&
 											data[3].map((entry, index) => (
 												<Cell key={entry._id} name={entry._id} fill={colors[index]} />
@@ -141,7 +159,13 @@ const AdminPage: NextPage = () => {
 								<PieChart {...PIE_CHART_CONFIG}>
 									{legend}
 									{tooltip}
-									<Pie data={data[4]} {...PIE_CONFIG}>
+									<Pie data={data[4]} {...PIE_CONFIG} label={({ count, percent, x, y, payload, cx }) => {
+										return (
+											<text x={x} y={y} textAnchor={x > cx ? 'start' : 'end'} fill={payload.fill} dominantBaseline="central">
+												{count} ({(percent * 100).toFixed(2)}%)
+											</text>
+										)
+									}}>
 										{(colors = interpolateColors(data[4].length, scale)) &&
 											data[4].map((entry, index) => (
 												<Cell key={entry._id} name={entry._id} fill={colors[index]} />
