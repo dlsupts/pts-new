@@ -7,7 +7,7 @@ import Dates from '@models/date'
 import Session from '@models/session'
 import { Types } from 'mongoose'
 import { RequestStore } from '@stores/request-store'
-import sendEmail from '@lib/mail/sendEmail'
+import sendEmail from '@lib/sendEmail'
 import Committee from '@models/committee'
 
 export type TuteePostAPIBody = Pick<RequestStore, 'tutee' | 'request' | 'selectedSubjects'>

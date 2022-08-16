@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer'
 import hbs from 'nodemailer-express-handlebars'
+import path from 'path'
 
 const transporter = nodemailer.createTransport({
 	service: 'gmail',
@@ -13,10 +14,10 @@ const transporter = nodemailer.createTransport({
 }).use('compile', hbs({
 	viewEngine: {
 		extname: '.hbs',
-		layoutsDir: 'lib/mail/layouts',
+		layoutsDir: 'public/mail/layouts',
 		defaultLayout: 'main',
 	},
-	viewPath: 'lib/mail',
+	viewPath: 'public/mail',
 	extName: '.hbs',
 }))
 
@@ -36,6 +37,6 @@ export default async function sendEmail(to: string, subject: string, template: s
 		subject,
 		//@ts-expect-error: Type library faults
 		template,
-		context,
+		context, 
 	})
 }

@@ -5,7 +5,7 @@ import { getSession } from 'next-auth/react'
 import Application from '@models/application'
 import '@models/schedule'
 import Schedule from '@models/schedule'
-import sendEmail from '@lib/mail/sendEmail'
+import sendEmail from '@lib/sendEmail'
 
 const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const {

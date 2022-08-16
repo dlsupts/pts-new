@@ -3,7 +3,7 @@ import { getSession } from 'next-auth/react'
 import dbConnect from '@lib/db'
 import Application from '@models/application'
 import User from '@models/user'
-import sendEmail from '@lib/mail/sendEmail'
+import sendEmail from '@lib/sendEmail'
 import { FormSchema } from '@pages/apply'
 import Committee from '@models/committee'
 
@@ -30,10 +30,12 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					User.findOne({ $or: [{ email: body.email }, { idNumber: body.idNumber }] }, '_id').lean()
 				])
 
-				if (values[0]) {
-					return res.status(406).send('You have already sent an application!')
-				}  else if (values[1]) {
-					return res.status(406).send('You are already a tutor!')
+				if (process.env.NODE_ENV !== 'development') {
+					if (values[0]) {
+						return res.status(406).send('You have already sent an application!')
+					} else if (values[1]) {
+						return res.status(406).send('You are already a tutor!')
+					}
 				}
 
 				const [, email] = await Promise.all([
@@ -46,7 +48,6 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					sendEmail(body.email, '[PTS] Tutor Application', 'application/applicant'),
 					sendEmail(email, '[PTS] Tutor Application', 'application/officer', body),
 				])
-				res.status(405)
 				break
 			}
 

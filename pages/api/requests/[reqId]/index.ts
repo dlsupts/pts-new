@@ -6,7 +6,7 @@ import Session from '@models/session'
 import Tutee from '@models/tutee'
 import User from '@models/user'
 import { Types } from 'mongoose'
-import sendEmail from '@lib/mail/sendEmail'
+import sendEmail from '@lib/sendEmail'
 import tutorialTypes from '@lib/tutorial-types'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
