@@ -1,3 +1,4 @@
+const wrapInLayout = (body: string) => `
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,7 +12,7 @@
 
 <body>
 	<p>Good day!</p>
-	{{{body}}}
+	${body}
 	<p>
 		Regards,<br>
 		<strong>Peer Tutors Society Web Service</strong>
@@ -19,3 +20,6 @@
 </body>
 
 </html>
+`
+
+export default wrapInLayout

@@ -7,6 +7,7 @@ import Tutee from '@models/tutee'
 import User from '@models/user'
 import sendEmail from '@lib/sendEmail'
 import tutorialTypes from '@lib/tutorial-types'
+import AssignmentEmail from '@components/mail/assignment'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { method, body } = req
@@ -36,21 +37,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 							}
 						})()
 					])
-					
+
 					const tutee = await Tutee.findById(request?.tutee, '-_id -schedule -__v').lean()
 
-					if (tutor?.email) {
-						await sendEmail(tutor.email, '[PTS] New Tutee', 'assignment', {
+					if (tutor?.email && request && session && tutee) {
+						await sendEmail(tutor.email, '[PTS] New Tutee', AssignmentEmail({
 							request: {
 								...request,
-								tutorialType: request?.duration == 'One Session' ?
-									tutorialTypes['One Session'].find(({ value }) => value == request.tutorialType)?.text
+								tutorialType: request.duration == 'One Session' ?
+									tutorialTypes['One Session'].find(({ value }) => value == request.tutorialType)?.text || ''
 									:
-									request?.tutorialType
+									request.tutorialType
 							},
-							subjects: [{ ...session }],
+							subjects: [session],
 							tutee,
-						})
+						}))
 					}
 				} else { // unassigning a tutor
 					const sess = await Session.findByIdAndUpdate(query.sessId, { tutor: null }).lean()

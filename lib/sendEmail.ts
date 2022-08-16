@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer'
-import hbs from 'nodemailer-express-handlebars'
-import path from 'path'
+import { ReactElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
+import wrapInLayout from '../components/mail/layout'
 
 const transporter = nodemailer.createTransport({
 	service: 'gmail',
@@ -11,32 +12,21 @@ const transporter = nodemailer.createTransport({
 	tls: {
 		rejectUnauthorized: false
 	}
-}).use('compile', hbs({
-	viewEngine: {
-		extname: '.hbs',
-		layoutsDir: 'public/mail/layouts',
-		defaultLayout: 'main',
-	},
-	viewPath: 'public/mail',
-	extName: '.hbs',
-}))
+})
 
 /**
  * Utility function for sending emails
  * @param to - email receipient
  * @param subject - email subject line
- * @param template - filename of the template, must be located in @lib/mail and has an .hbs extension
- * @param context - the object that contains the data to put inside the hbs template
+ * @param template - the component to statically render in the email
  * @returns a promise to the result of the email sending
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default async function sendEmail(to: string, subject: string, template: string, context?: Record<string, any>) {
+export default async function sendEmail(to: string, subject: string, template: ReactElement) {
 	return await transporter.sendMail({
 		from: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
 		to,
 		subject,
-		//@ts-expect-error: Type library faults
-		template,
-		context, 
+		html: wrapInLayout(renderToStaticMarkup(template))
 	})
 }

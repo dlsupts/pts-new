@@ -6,6 +6,8 @@ import User from '@models/user'
 import sendEmail from '@lib/sendEmail'
 import { FormSchema } from '@pages/apply'
 import Committee from '@models/committee'
+import ApplicationEmailToApplicant from '@components/mail/application/applicant'
+import ApplicationEmailToOfficer from '@components/mail/application/officer'
 
 const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
@@ -45,8 +47,8 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				])
 
 				await Promise.all([
-					sendEmail(body.email, '[PTS] Tutor Application', 'application/applicant'),
-					sendEmail(email, '[PTS] Tutor Application', 'application/officer', body),
+					sendEmail(body.email, '[PTS] Tutor Application', ApplicationEmailToApplicant()),
+					sendEmail(email, '[PTS] Tutor Application', ApplicationEmailToOfficer({ applicant: body })),
 				])
 				break
 			}

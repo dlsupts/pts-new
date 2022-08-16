@@ -9,6 +9,7 @@ import { Types } from 'mongoose'
 import { RequestStore } from '@stores/request-store'
 import sendEmail from '@lib/sendEmail'
 import Committee from '@models/committee'
+import RequestEmail from '@components/mail/request'
 
 export type TuteePostAPIBody = Pick<RequestStore, 'tutee' | 'request' | 'selectedSubjects'>
 
@@ -59,8 +60,8 @@ const tuteeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				])
 
 				await Promise.all([
-					sendEmail(body.tutee.email, '[PTS] New Tutor Request', 'request', { toTutee: true, ...body }),
-					sendEmail(email, '[PTS] New Tutor Request', 'request', { toTutee: false, ...body })
+					sendEmail(body.tutee.email, '[PTS] New Tutor Request', RequestEmail({ toTutee: true, ...body })),
+					sendEmail(email, '[PTS] New Tutor Request', RequestEmail({ toTutee: false, ...body }))
 				])
 				break
 			}

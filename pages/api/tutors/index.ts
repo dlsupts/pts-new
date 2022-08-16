@@ -6,6 +6,7 @@ import Application from '@models/application'
 import '@models/schedule'
 import Schedule from '@models/schedule'
 import sendEmail from '@lib/sendEmail'
+import AcceptanceEmail from '@components/mail/acceptance'
 
 const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const {
@@ -82,7 +83,7 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					...applicant,
 					schedule: schedule._id
 				})
-				await sendEmail(applicant.email, '[PTS] Welcome to PTS!', 'acceptance')
+				await sendEmail(applicant.email, '[PTS] Welcome to PTS!', AcceptanceEmail())
 
 				break
 			}
