@@ -13,6 +13,7 @@ import cn from 'classnames'
 
 const updateOfficerSchema = yup.object({
 	image: yup.string().required('Image ID is required!'),
+	position: yup.string().required('Position is required!'),
 })
 
 export type UpdateOfficerSchema = yup.InferType<typeof updateOfficerSchema>
@@ -24,8 +25,9 @@ type UpdateOfficerModalProps = IModalProps & {
 
 const UpdateOfficerModal: FC<UpdateOfficerModalProps> = ({ isOpen, onClose, onSubmit, officer }) => {
 	const cancelButton = useRef<HTMLButtonElement>(null)
-	const { register, handleSubmit, formState: { errors }, setValue, clearErrors } = useForm<UpdateOfficerSchema>({
+	const { register, handleSubmit, formState: { errors }, reset, clearErrors } = useForm<UpdateOfficerSchema>({
 		resolver: yupResolver(updateOfficerSchema),
+		mode: 'onBlur'
 	})
 	const { data, status } = useSession()
 	const [isAdmin, setIsAdmin] = useState(officer?.userType == 'ADMIN')
@@ -37,10 +39,10 @@ const UpdateOfficerModal: FC<UpdateOfficerModalProps> = ({ isOpen, onClose, onSu
 
 	useEffect(() => {
 		if (isOpen) {
-			setValue('image', officer?.image || '')
+			reset(officer)
 			setIsAdmin(officer?.userType == 'ADMIN')
 		}
-	}, [setValue, officer, isOpen])
+	}, [reset, officer, isOpen])
 
 	const getSubmission = (data: UpdateOfficerSchema) => onSubmit(data, isAdmin ? 'ADMIN' : 'TUTOR')
 
@@ -60,6 +62,11 @@ const UpdateOfficerModal: FC<UpdateOfficerModalProps> = ({ isOpen, onClose, onSu
 							<label htmlFor="image">Google Drive File ID</label>
 							<input type="text" {...register('image')} id="image" />
 							<p className="form-err-msg text-sm">{errors.image?.message}</p>
+						</div>
+						<div className="control">
+							<label htmlFor="position">Position</label>
+							<input type="text" id="position" {...register('position')} />
+							<p className="form-err-msg text-sm">{errors.position?.message}</p>
 						</div>
 					</form>
 				</div>

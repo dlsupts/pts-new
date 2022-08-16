@@ -16,7 +16,7 @@ const officerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				await Promise.all([
 					Committee.updateOne(
 						{ _id: req.query.committeeId },
-						{ $set: { 'officers.$[idx].image': req.body.image } },
+						{ $set: { 'officers.$[idx].image': req.body.image, 'officers.$[idx].position': req.body.position } },
 						{ arrayFilters: [{ 'idx.user': req.query.id }] }
 					),
 					(async () => {
