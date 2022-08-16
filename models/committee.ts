@@ -44,7 +44,7 @@ committeeSchema.statics.getVPEmail = async function (name: string) {
 	const [{ email }] = await this.aggregate()
 		.match({ name })
 		.unwind('$officers')
-		.match({ 'officers.position': 'VP' })
+		.match({ 'officers.position': 'Vice President' })
 		.lookup({
 			from: 'users',
 			localField: 'officers.user',

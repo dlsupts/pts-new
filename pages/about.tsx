@@ -30,15 +30,24 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees, sessionPhotos, groupP
 			<div className="my-14">
 				<p className="font-light text-5xl text-center">About Us</p>
 				<hr className="mt-2 mb-6" />
-				<p className="max-w-prose lg:text-center mx-auto text-lg">
-					The <b className="text-blue-800">Peer Tutors Society (PTS)</b> is an initiative under the Office of the Associate Dean of College of Computer Studies.
-					It is a society of volunteer students who are willing to serve as tutors to students who need academic assistance. PTS is unique to CCS.
-					It is most probably the only one in the university, and most probably the only one, or at least one of the very few, in the country.
-					PTS aims to select, train, qualify, and deploy a group of volunteer students in order to conduct individualized (one-on-one) or
-					group studies / tutoring sessions for students in various subjects. Any tutoring session will primarily be characterized by individualized
-					instruction (explaining and / or reviewing constructs, discussing solutions to sample programs) and remediation (providing corrections,
-					giving hints and / or advice, coaching).
-				</p>
+				<div className="contents lg:text-center text-lg space-y-6">
+					<p className="max-w-prose mx-auto">
+						The <b className="text-blue-800">Peer Tutors Society (PTS)</b> is an initiative under the Office of the
+						Associate Dean of the College of Computer Studies (CCS). Established in 2002, it aims to select, train,
+						qualify, and deploy a group of volunteer student tutors to conduct one-on-one and group tutoring sessions
+						for first- and second-year students. The subjects covered are courses related to math and computer studies.
+					</p>
+					<p className="max-w-prose mx-auto">
+						Aside from its flagship tutorial services, PTS spearheads and partners in activities that facilitate
+						the academic growth of Lasallians through college-wide group studies, reviewer distributions,
+						tutorial videos, and programming contests.
+					</p>
+					<p className="max-w-prose mx-auto">
+						As a service-oriented organization that provides academic assistance not only to CCS students but also
+						to all students from across the University&apos;s colleges, PTS is one of the few initiatives in the University
+						that offer free student-facilitated tutorial services.
+					</p>
+				</div>
 			</div>
 
 			<div className="grid lg:grid-cols-2 gap-x-8 gap-y-8">
@@ -46,18 +55,21 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees, sessionPhotos, groupP
 					<i className="fa-solid fa-eye fa-3x mb-4"></i>
 					<h3 className="text-center text-xl font-semibold mb-2">Vision</h3>
 					<p className="max-w-prose text-center">
-						A service-oriented tutoring organization that bridges gaps between students and faculty,
-						caters to the different academic needs of CCS students and builds
-						relationships with tutees not only as teachers but as friends.
+						The Peer Tutors Society envisions itself as a service-oriented tutor organization
+						working hand in hand with the College of Computer Studies in catering to the academic needs
+						of the students of the University and in nurturing the holistic development of tutors and tutees.
 					</p>
 				</div>
 				<div className="rounded-md border flex flex-col items-center p-8">
 					<i className="fa-solid fa-rocket fa-3x mb-4"></i>
-					<h3 className="text-center text-xl font-semibold mb-2" >Mission</h3>
+					<h3 className="text-center text-xl font-semibold mb-2">Mission</h3>
 					<div className="max-w-prose text-center">
-						<p>To share knowledge</p>
-						<p>To inspire tutees and other students outside the organization</p>
-						<p>To grow as a tutor, a tutee, and an individual </p>
+						The Peer Tutors Society commits itself to:
+						<ol className="list-decimal text-left">
+							<li className="ml-4">Sharing knowledge through activities that enrich the learning process;</li>
+							<li className="ml-4">Inspiring the development of tutors and tutees through training programs; and</li>
+							<li className="ml-4">Growing as an organization that promotes excellence in computer studies.</li>
+						</ol>
 					</div>
 				</div>
 			</div>
