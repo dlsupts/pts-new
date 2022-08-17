@@ -2,26 +2,16 @@ import { GetStaticProps, NextPage } from 'next'
 import CommiteeDiv from '../components/commitee'
 import dbConnect from '../lib/db'
 import Committee, { ICommittee } from '../models/committee'
-import Library, { ILib } from '../models/library'
+import Library from '../models/library'
 import Image from 'next/image'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
 
 interface AboutPageProps {
 	committees: ICommittee[]
-	sessionPhotos: ILib
-	groupPhotos: ILib
 }
 
-const AboutPage: NextPage<AboutPageProps> = ({ committees, sessionPhotos, groupPhotos }) => {
-	const sess = sessionPhotos.content.length == 0 ?
-		'https://via.placeholder.com/480x360' :
-		`https://drive.google.com/uc?export=view&id=${sessionPhotos.content[0].trim()}`
-
-	const group = groupPhotos.content.length == 0 ?
-		'https://via.placeholder.com/480x360' :
-		`https://drive.google.com/uc?export=view&id=${groupPhotos.content[0].trim()}`
-
+const AboutPage: NextPage<AboutPageProps> = ({ committees }) => {
 	return (
 		<div className="container mx-auto px-4 lg:px-20">
 			<Head>
@@ -78,30 +68,43 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees, sessionPhotos, groupP
 				<p className="font-light text-4xl text-center mb-2">Activities</p>
 				<hr />
 				<div className="grid lg:grid-cols-2 lg:gap-x-6 gap-y-4 place-items-center mt-12">
-					<div>
-						<Image src={sess} alt="Tutor Sessions" width={480} height={360} />
+					<div className="w-full">
+						<Image src="/tutor-sessions.png" alt="Tutor Sessions" width={640} height={401} layout="responsive" />
 					</div>
 					<div>
 						<p className="text-xl font-medium mb-4">Tutoring Sessions</p>
 						<p className="w-max-prose">
-							Peer Tutors Society (PTS) has been providing tutorial services each term and
-							publicizing them through its Facebook page and Twitter account where students
-							who are in need of academic assistance can request for a peer tutor. Tutor requests
-							can either be for whole-term tutoring or for one-session tutoring, and can either be
-							One-on-One sessions or Group sessions to accomodate the needs of all students.
+							PTS provides tutorial services where students in need of academic assistance can request
+							for a peer tutor throughout the term. Tutorial sessions can be for one session or
+							for the whole term, and can be conducted one-on-one or in groups to cater to the
+							needs of all Lasallians.
 						</p>
 					</div>
-					<div>
-						<Image src={group} alt="Group Study" width={480} height={360} />
+					<div className="w-full">
+						<Image src="/mds-fgs.png" alt="Group Study" width={1295} height={649} layout="responsive" />
 					</div>
 					<div>
 						<p className="text-xl font-medium mb-4">Midterms and Finals Group Study</p>
 						<p className="w-max-prose">
-							Peer Tutors Society (PTS) conducts its termly Midterms and Finals Group Study sessions together
-							with La Salle Computer Society (LSCS) during the week before Midterms and Finals Week. These group
-							studies will not only focus on reviewing the lectures and problem sets needed by the students to ace
-							their exams, but also share useful tips on how to better understand different concepts and theories to
-							better prepare these students for their upcoming Midterms and Finals Exams.
+							PTS conducts its midterms and finals group study sessions every term together with
+							La Salle Computer Society (LSCS) during the weeks before the midterms and finals weeks,
+							respectively. Through a combination of asynchronous and synchronous sessions, students
+							can review with their peers and consult with available tutors to better prepare for their exams.
+						</p>
+					</div>
+					<div className="w-full">
+						<Image src="/tutorial-videos.png" alt="Tutorial Videos" width={640} height={351} layout="responsive" />
+					</div>
+					<div>
+						<p className="text-xl font-medium mb-4">Student Tutorial Videos</p>
+						<p className="w-max-prose mb-3">
+							In collaboration with LSCS, PTS prepares student tutorial videos in which tutors discuss
+							first-year and second-year topics related to math and computer studies. Previous tutorial video
+							topics include conditional statements, structures, and integration by parts, among others.
+						</p>
+						<p className="max-w-prose">
+							The full playlist of available student tutorial videos can be accessed
+							through this <a href="https://tinyurl.com/StudentTutorialsPlaylist" className="text-blue-600 font-bold hover:underline">link</a>.
 						</p>
 					</div>
 				</div>
@@ -123,8 +126,6 @@ export const getStaticProps: GetStaticProps = async () => {
 		Committee.find({}, '-_id -__v')
 			.populate({ path: 'officers', populate: { path: 'user', select: 'firstName lastName' } }).lean().exec(),
 		Library.findById('Committees').lean('-_id content').exec(),
-		Library.findById('Tutoring Sessions Photos', '-__v').lean().exec(),
-		Library.findById('Group Studies Photos', '-__v').lean().exec(),
 	])
 
 	// arrange committees based on order in library
@@ -144,9 +145,7 @@ export const getStaticProps: GetStaticProps = async () => {
 
 	return {
 		props: {
-			committees: arranged,
-			sessionPhotos: data[2],
-			groupPhotos: data[3],
+			committees: arranged
 		}
 	}
 }

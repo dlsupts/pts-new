@@ -23,8 +23,8 @@ const Home: NextPage = () => {
 						<span className="text-blue-100 xl:inline">Grow.</span>
 					</h1>
 					<p className="mt-3 text-gray-300 sm:mt-5 sm:text-lg max-w-prose sm:mx-auto md:mt-5 md:text-xl">
-						Are you in control of your grades, or are your grades controlling you?
-						Don&apos;t worry. the <b>Peer Tutor Society</b> is here to help you take back your control over you academics!
+						Have a challenging subject or two this term? Don&apos;t worry, {' '}
+						<span className="font-bold">Peer Tutors Society</span> is here to help you with your academic needs!
 					</p>
 					<div className="mt-5 sm:mt-8 sm:flex sm:justify-center">
 						<div className="rounded-md shadow">
@@ -53,7 +53,7 @@ const Home: NextPage = () => {
 						</p>
 						<p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
 							Just send us a <Link href={'/request'} passHref><a className="underline text-blue-700 hover:text-blue-800">tutor request</a></Link>
-							, and we will try our best to match you with our available tutors as features as we can!
+							, and we will match you with an available tutor as soon as we can.
 						</p>
 					</div>
 
@@ -83,8 +83,8 @@ const Home: NextPage = () => {
 							Want to join us?
 						</p>
 						<p className="mt-4 max-w-2xl text-xl text-gray-100 lg:mx-auto">
-							Feeling the fire to volunteer and teach? Well, we need all the help we can get!
-							Send us <Link href={'/apply'}><a className="underline text-gray-100 hover:text-white">your application</a></Link> now.
+							Feeling the fire to volunteer and teach?
+							Send us <Link href={'/apply'}><a className="underline text-gray-100 hover:text-white">your application</a></Link> now!
 						</p>
 					</div>
 
