@@ -56,6 +56,8 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				}
 
 				const blob = await zip.generateAsync({ type: 'base64' })
+				logger.info(`ADMIN [${session.user._id}] EXPORTED the database`)
+				
 				res.send(blob)
 				break
 			}

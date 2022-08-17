@@ -1,8 +1,8 @@
 import logger from '@lib/logger'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
-import dbConnect from '../../../lib/db'
-import Application from '../../../models/application'
+import dbConnect from '@lib/db'
+import Application from '@models/application'
 
 const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
@@ -13,7 +13,12 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				// DELETE operation only for admin
 				const session = await getSession({ req })
 				if (session?.user.type != 'ADMIN') return res.status(403)
-				await Application.deleteOne({ _id: req.query.id })
+
+				const applicant = await Application.findOneAndDelete({ _id: req.query.id }, {
+					projection: '-_id firstName lastName'
+				})
+
+				logger.info(`ADMIN [${session.user._id}] deleted applicant "${applicant?.firstName} ${applicant?.lastName}"`)
 				break
 			}
 

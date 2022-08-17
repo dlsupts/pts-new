@@ -47,6 +47,8 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					Committee.getVPEmail('Activities')
 				])
 
+				logger.info(`New application received from ${body.firstName} ${body.lastName}`)
+
 				await Promise.all([
 					sendEmail(body.email, '[PTS] Tutor Application', ApplicationEmailToApplicant()),
 					sendEmail(email, '[PTS] Tutor Application', ApplicationEmailToOfficer({ applicant: body })),

@@ -3,6 +3,7 @@ import { getSession } from 'next-auth/react'
 import { MongoError } from 'mongodb'
 import dbConnect from '@lib/db'
 import Library from '@models/library'
+import logger from '@lib/logger'
 
 const libraryHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
@@ -20,6 +21,7 @@ const libraryHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 			case 'POST': {
 				const library = await Library.create(req.body)
+				logger.info(`ADMIN [${session.user._id}] DELETED ${library?._id} library`)
 				res.send(library)
 				break
 			}
@@ -32,6 +34,7 @@ const libraryHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 		if ((err as MongoError).code == 11000) {
 			res.status(403).send('You have entered a duplicate key!')
 		}
+		logger.error(err)
 		res.status(500).send('A server-side error has occured. Please try again later.')
 	} finally {
 		res.end()

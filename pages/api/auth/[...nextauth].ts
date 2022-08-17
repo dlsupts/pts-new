@@ -36,6 +36,7 @@ export default NextAuth({
 					throw new Error("Account has already revoked its membership.")
 				}
 
+				logger.info(`User [${temp._id}] logged in.`)
 				return true
 			}
 

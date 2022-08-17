@@ -17,6 +17,7 @@ const officerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					{ _id: req.query.committeeId },
 					{ $push: { officers: req.body } },
 				)
+				logger.info(`ADMIN [${session.user._id}] ADDED officer [${req.body.user}]`)
 				await res.revalidate('/about')
 				break
 			}

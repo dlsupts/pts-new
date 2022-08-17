@@ -5,6 +5,7 @@ import { getSession } from 'next-auth/react'
 import Session from '@models/session'
 import Tutee from '@models/tutee'
 import Schedule, { ISchedule } from '@models/schedule'
+import logger from '@lib/logger'
 
 const maintenanceHandler = async (req: NextApiRequest, res: NextApiResponse<boolean>) => {
 	const { body, method } = req
@@ -22,8 +23,10 @@ const maintenanceHandler = async (req: NextApiRequest, res: NextApiResponse<bool
 			case 'PUT': {
 				const session = await getSession({ req })
 				if (session?.user.type != 'ADMIN') return res.status(403)
-				
+
 				await User.updateOne({ email: process.env.NEXT_PUBLIC_ADMIN_EMAIL }, { reset: body.reset })
+				logger.info(`ADMIN [${session.user._id}] UPDATED maintenance status to ${body.reset}`)
+
 				res.send(body.reset)
 				break
 			}
@@ -45,6 +48,8 @@ const maintenanceHandler = async (req: NextApiRequest, res: NextApiResponse<bool
 					} as Partial<IUser>),
 					Schedule.updateMany({ M: [], T: [], W: [], H: [], F: [], S: [] } as ISchedule)
 				])
+				logger.info(`ADMIN [${session.user._id}] RESET the database`)
+
 				break
 			}
 
@@ -53,7 +58,7 @@ const maintenanceHandler = async (req: NextApiRequest, res: NextApiResponse<bool
 				res.status(405).end(`Method ${method} Not Allowed`)
 		}
 	} catch (err) {
-		console.error(err)
+		logger.error(err)
 		res.status(500)
 	} finally {
 		res.end()

@@ -77,6 +77,7 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					projection: '-_id -__v'
 				}).lean()
 				if (!applicant) return res.status(406).send('Applicant not found!')
+				logger.info(`ADMIN [${session.user._id}] DELETED ${applicant.firstName} ${applicant.lastName}'s application for promotion`)
 
 				const schedule = await Schedule.create({})
 
@@ -84,6 +85,8 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					...applicant,
 					schedule: schedule._id
 				})
+				logger.info(`ADMIN [${session.user._id}] PROMOTED applicant ${applicant.firstName} ${applicant.lastName} to TUTOR`)
+
 				await sendEmail(applicant.email, '[PTS] Welcome to PTS!', AcceptanceEmail())
 
 				break

@@ -10,6 +10,7 @@ import { RequestStore } from '@stores/request-store'
 import sendEmail from '@lib/sendEmail'
 import Committee from '@models/committee'
 import RequestEmail from '@components/mail/request'
+import logger from '@lib/logger'
 
 export type TuteePostAPIBody = Pick<RequestStore, 'tutee' | 'request' | 'selectedSubjects'>
 
@@ -58,6 +59,7 @@ const tuteeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					})(),
 					Committee.getVPEmail('Internal Affairs')
 				])
+				logger.info(`Tutor request submitted by ${body.tutee.firstName} ${body.tutee.lastName}`)
 
 				await Promise.all([
 					sendEmail(body.tutee.email, '[PTS] New Tutor Request', RequestEmail({ toTutee: true, ...body })),
@@ -71,7 +73,7 @@ const tuteeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				res.status(405).end(`Method ${method} Not Allowed`)
 		}
 	} catch (err) {
-		console.error(err)
+		logger.error(err)
 		res.status(500)
 	} finally {
 		res.end()

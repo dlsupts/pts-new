@@ -49,6 +49,8 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 						{ $push: { content: req.body.name } }
 					)
 				])
+				logger.info(`ADMIN [${session.user._id}] CREATED committee ${req.body.name}`)
+
 				await res.revalidate('/about')
 				break
 			}

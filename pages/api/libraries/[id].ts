@@ -22,6 +22,7 @@ const libraryHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 			case 'DELETE': {
 				const lib = await Library.findOneAndDelete({ _id: req.query.id }).lean()
+				logger.info(`ADMIN [${session.user._id}] DELETED ${lib?._id} library`)
 				if (lib?.revalidatePaths) {
 					Promise.all(lib.revalidatePaths.map(path => res.revalidate(path)))
 				}

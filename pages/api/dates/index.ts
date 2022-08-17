@@ -7,9 +7,6 @@ import logger from '@lib/logger'
 
 const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
-		const session = await getSession({ req })
-		if (session?.user.type != 'ADMIN') return res.status(403)
-
 		await dbConnect()
 
 		switch (req.method) {
@@ -20,11 +17,15 @@ const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 			}
 
 			case 'POST': {
+				const session = await getSession({ req })
+				if (session?.user.type != 'ADMIN') return res.status(403)
+
 				const date = await Dates.create({
 					_id: req.body._id,
 					start: new Date(req.body.start),
 					end: new Date(req.body.end)
 				})
+				logger.info(`ADMIN [${session.user._id}] CREATED ${req.query.id} dates`)
 				res.send(date)
 				break
 			}

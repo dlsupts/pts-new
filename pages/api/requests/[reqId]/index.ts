@@ -42,6 +42,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 					])
 
 					const tutee = await Tutee.findById(request?.tutee, '-_id -schedule -__v').lean()
+					logger.info(`ADMIN [${session.user._id}] ASSIGNED request ${query.reqId}`)
 
 					if (tutor?.email && request && tutee) {
 						await sendEmail(tutor.email, '[PTS] New Tutee', AssignmentEmail({
@@ -62,12 +63,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 						Session.updateMany({ request: query.reqId }, { tutor: null }),
 						User.updateMany({ _id: { $in: tutors } }, { $inc: { tuteeCount: -1 } })
 					])
+					logger.info(`ADMIN [${session.user._id}] UNASSIGNED request ${query.reqId}`)
 				}
 				break
 			}
 
 			case 'DELETE': {
-				await Promise.all([
+				const [tutee] = await Promise.all([
+					// delete request and tutee
+					(async () => {
+						const request = await Request.findByIdAndDelete(query.reqId).lean()
+						return await Tutee.findOneAndDelete({ _id: request?.tutee }, {
+							projection: '-_id firstName lastName'
+						})
+					})(),
+
 					// update all tutee count of tutors related to the request and removes all the sessions
 					(async () => {
 						const tutors: Types.ObjectId[] = await Session.find({ request: query.reqId }).distinct('tutor')
@@ -77,14 +87,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 							User.updateMany({ _id: { $in: tutors } }, { $inc: { tuteeCount: -1 } })
 						])
 					})(),
-
-					// delete request and tutee
-					(async () => {
-						const request = await Request.findByIdAndDelete(query.reqId).lean()
-						await Tutee.deleteOne({ _id: request?.tutee })
-					})()
 				])
-
+				logger.info(`ADMIN [${session.user._id}] DELETED request ${query.reqId} by ${tutee?.firstName} ${tutee?.lastName}`)
 				break
 			}
 

@@ -24,8 +24,10 @@ const officerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 						if (session.user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
 							await User.updateOne({ _id: req.query.id }, { userType: req.body.userType })
 						}
+						logger.info(`USER [${req.query.id}] was promoted to ADMIN`)
 					})()
 				])
+				logger.info(`ADMIN [${session.user._id}] PATCHED officer [${req.query.id}]`)
 
 				await res.revalidate('/about')
 				break
@@ -36,6 +38,8 @@ const officerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					{ _id: req.query.committeeId },
 					{ $pull: { officers: { user: req.query.id } } },
 				)
+				logger.info(`ADMIN [${session.user._id}] DELETED officer [${req.query.id}]`)
+
 				await res.revalidate('/about')
 				break
 			}

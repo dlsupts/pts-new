@@ -23,6 +23,7 @@ const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					start: new Date(req.body.start),
 					end: new Date(req.body.end)
 				})
+				logger.info(`ADMIN [${session.user._id}] UPDATED ${req.query.id} dates`)
 				break
 			}
 
@@ -31,6 +32,7 @@ const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				if (session?.user.type != 'ADMIN') return res.status(403)
 
 				await Dates.deleteOne({ _id: req.query.id })
+				logger.info(`ADMIN [${session.user._id}] DELETED ${req.query.id} dates`)
 				break
 			}
 
