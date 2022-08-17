@@ -16,7 +16,7 @@ export const requests = [
 		icon: GlobeAltIcon,
 	},
 	{
-		name: 'Lean from peers',
+		name: 'Learn from peers',
 		description: 'Find lectures a little intimidating? With PTS, our tutors conduct sessions as fellow CCS students.',
 		icon: AcademicCapIcon,
 	},

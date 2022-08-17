@@ -3,6 +3,7 @@ import dbConnect from '@lib/db'
 import Committee from '@models/committee'
 import Library from '@models/library'
 import { getSession } from 'next-auth/react'
+import logger from '@lib/logger'
 
 const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { method } = req
@@ -57,7 +58,7 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				res.status(405).end(`Method ${method} Not Allowed`)
 		}
 	} catch (err) {
-		console.log(err)
+		logger.error(err)
 		res.status(500)
 	} finally {
 		res.end()

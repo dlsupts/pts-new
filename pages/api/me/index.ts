@@ -3,6 +3,7 @@ import { getSession } from 'next-auth/react'
 import dbConnect from '@lib/db'
 import User, { IUser } from '@models/user'
 import Dates from '@models/date'
+import logger from '@lib/logger'
 
 const meHandler = async (req: NextApiRequest, res: NextApiResponse<IUser>) => {
 	const session = await getSession({ req })
@@ -42,7 +43,7 @@ const meHandler = async (req: NextApiRequest, res: NextApiResponse<IUser>) => {
 				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {
-		console.log(err)
+		logger.error(err)
 		res.status(500)
 	} finally {
 		res.end()

@@ -4,6 +4,7 @@ import { getSession } from 'next-auth/react'
 import Request, { IRequest } from '@models/request'
 import { ISession } from '@models/session'
 import { Types } from 'mongoose'
+import logger from '@lib/logger'
 
 export type BareSession = Omit<ISession, 'request'>
 
@@ -45,7 +46,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<IReqSession[]>)
 				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {
-		console.log(err)
+		logger.error(err)
 		res.status(500)
 	} finally {
 		res.end()

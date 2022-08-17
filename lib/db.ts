@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import { MongooseConnection } from '../global'
+import logger from './logger'
 
 const MONGODB_URI = process.env.MONGODB_URI
 
@@ -32,7 +33,7 @@ async function dbConnect() {
 	}
 
 	cached.conn = await cached.promise
-	console.log('ESTABLISHED CONNECTION')
+	logger.debug('ESTABLISHED CONNECTION')
 	return cached.conn
 }
 

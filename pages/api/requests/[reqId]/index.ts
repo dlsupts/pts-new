@@ -9,6 +9,7 @@ import { Types } from 'mongoose'
 import sendEmail from '@lib/sendEmail'
 import tutorialTypes from '@lib/tutorial-types'
 import AssignmentEmail from '@components/mail/assignment'
+import logger from '@lib/logger'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { method, body } = req
@@ -92,7 +93,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {
-		console.log(err)
+		logger.error(err)
 		res.status(500)
 	} finally {
 		res.end()

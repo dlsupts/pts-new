@@ -3,6 +3,7 @@ import GoogleProvider from "next-auth/providers/google"
 import User from '@models/user'
 import dbConnect from '@lib/db'
 import { Schema } from 'mongoose'
+import logger from '@lib/logger'
 
 export default NextAuth({
 	providers: [
@@ -23,7 +24,7 @@ export default NextAuth({
 					await dbConnect()
 					temp = await User.findOne({ email: profile.email }).lean().exec()
 				} catch (err) {
-					console.log(err)
+					logger.error(err)
 					throw new Error("A server side-error has occured!")
 				}
 
@@ -49,7 +50,7 @@ export default NextAuth({
 					token.type = temp?.userType
 					token.schedule = temp?.schedule as Schema.Types.ObjectId
 				} catch (err) {
-					console.log(err)
+					logger.error(err)
 					throw new Error("A server side-error has occured!")
 				}
 			}

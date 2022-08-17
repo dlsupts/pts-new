@@ -7,6 +7,7 @@ import { parse } from 'json2csv'
 import Tutee from '@models/tutee'
 import Dates from '@models/date'
 import Session from '@models/session'
+import logger from '@lib/logger'
 
 const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { method } = req
@@ -64,7 +65,7 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				res.status(405).end(`Method ${method} Not Allowed`)
 		}
 	} catch (err) {
-		console.log(err)
+		logger.error(err)
 		res.status(500)
 	} finally {
 		res.end()

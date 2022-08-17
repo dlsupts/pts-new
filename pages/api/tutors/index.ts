@@ -7,6 +7,7 @@ import '@models/schedule'
 import Schedule from '@models/schedule'
 import sendEmail from '@lib/sendEmail'
 import AcceptanceEmail from '@components/mail/acceptance'
+import logger from '@lib/logger'
 
 const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const {
@@ -93,7 +94,7 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				res.status(405).end(`Method ${method} Not Allowed`)
 		}
 	} catch (err) {
-		console.log(err)
+		logger.error(err)
 		res.status(500)
 	} finally {
 		res.end()

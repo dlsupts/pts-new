@@ -1,3 +1,4 @@
+import logger from '@lib/logger'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import dbConnect from '../../../lib/db'
@@ -38,7 +39,7 @@ const scheduleHandler = async (req: NextApiRequest, res: NextApiResponse<ISchedu
 		}
 
 	} catch (err) {
-		console.log(err)
+		logger.error(err)
 		res.status(500)
 	} finally {
 		res.end()

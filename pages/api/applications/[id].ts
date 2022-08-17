@@ -1,3 +1,4 @@
+import logger from '@lib/logger'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import dbConnect from '../../../lib/db'
@@ -21,7 +22,7 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {
-		console.log(err)
+		logger.error(err)
 		res.status(500).send('A server-side error has occured. Please try again later.')
 	} finally {
 		res.end()

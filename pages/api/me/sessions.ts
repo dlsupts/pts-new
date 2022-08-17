@@ -5,6 +5,7 @@ import { Types } from 'mongoose'
 import dbConnect from '@lib/db'
 import { ITutee } from '@models/tutee'
 import { IRequest } from '@models/request'
+import logger from '@lib/logger'
 
 export interface IReqSesssion extends Pick<IRequest, 'duration' | 'tutorialType'> {
 	_id: Types.ObjectId
@@ -78,7 +79,7 @@ const mySessionsHandler = async (req: NextApiRequest, res: NextApiResponse<IReqS
 				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {
-		console.log(err)
+		logger.error(err)
 		res.status(500)
 	} finally {
 		res.end()

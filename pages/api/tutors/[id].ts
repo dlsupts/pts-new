@@ -3,6 +3,7 @@ import dbConnect from '../../../lib/db'
 import User from '../../../models/user'
 import { getSession } from 'next-auth/react'
 import '../../../models/schedule'
+import logger from '@lib/logger'
 
 const tutorHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { method, query } = req
@@ -25,7 +26,7 @@ const tutorHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				res.status(405).end(`Method ${method} Not Allowed`)
 		}
 	} catch (err) {
-		console.log(err)
+		logger.error(err)
 		res.status(500)
 	} finally {
 		res.end()

@@ -12,11 +12,12 @@ declare global {
 
 	namespace NodeJS {
 		interface ProcessEnv {
-			MONGODB_URI?: string;
-			GOOGLE_CLIENT_ID: string;
-			GOOGLE_CLIENT_SECRET: string;
-			NEXT_PUBLIC_ADMIN_EMAIL: string;
+			MONGODB_URI: string
+			GOOGLE_CLIENT_ID: string
+			GOOGLE_CLIENT_SECRET: string
+			NEXT_PUBLIC_ADMIN_EMAIL: string
 			MAIL_PASS: string
+			LOG_LEVEL?: string
 		}
 	}
 }

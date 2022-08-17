@@ -8,6 +8,7 @@ import { FormSchema } from '@pages/apply'
 import Committee from '@models/committee'
 import ApplicationEmailToApplicant from '@components/mail/application/applicant'
 import ApplicationEmailToOfficer from '@components/mail/application/officer'
+import logger from '@lib/logger'
 
 const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
@@ -58,7 +59,7 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {
-		console.log(err)
+		logger.error(err)
 		res.status(500).send('A server-side error has occured. Please try again later.')
 	} finally {
 		res.end()
