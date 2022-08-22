@@ -27,8 +27,6 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 						.find({
 							email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL },
 							membership: true,
-							tutoringService: { $ne: ['None'] },
-							$expr: { $lt: ['$tuteeCount', '$maxTuteeCount'] }
 						}, 'firstName lastName topics')
 						.sort('firstName').lean().exec()
 					return res.json(tutors)
