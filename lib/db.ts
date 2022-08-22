@@ -22,7 +22,7 @@ async function dbConnect() {
 
 	if (!cached.promise) {
 		const opts = {
-			bufferCommands: false,
+			bufferCommands: true,
 		}
 
 		if (!MONGODB_URI) {
