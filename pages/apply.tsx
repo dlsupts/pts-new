@@ -22,6 +22,9 @@ interface RequestProps {
 	courses: string[]
 }
 
+const META_DESCRIPTION = `${siteTitle} | Apply`
+const PAGE_TITLE = 'Feeling the fire to volunteer and teach? Send us your application now!'
+
 export type FormSchema = Omit<IUserInfo, '_id'>
 
 const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
@@ -63,7 +66,13 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	return (
 		<div className="main-height flex flex-col justify-center px-4 mt-10 md:mt-0">
 			<Head>
-				<title>{siteTitle} | Apply</title>
+				<title>{PAGE_TITLE}</title>
+				<meta name="description" content={META_DESCRIPTION} />
+				<meta name="og:title" content={PAGE_TITLE} />
+				<meta name="og:description" content={META_DESCRIPTION} />
+				<meta name="og:url" content={`${process.env.NEXT_PUBLIC_VERCEL_URL}/apply`} />
+				<meta name="twitter:title" content={PAGE_TITLE} />
+				<meta name="twitter:description" content={META_DESCRIPTION} />
 			</Head>
 			<div className="grid place-items-center lg:grid-cols-2 grid-cols-auto mx-auto min-h-[20rem] container gap-y-8">
 				{showForm ?

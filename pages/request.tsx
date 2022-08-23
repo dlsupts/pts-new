@@ -27,6 +27,8 @@ interface RequestProps {
 	dataPrivacy: string[]
 }
 
+const PAGE_TITLE = `${siteTitle} | Request`
+const META_DESCRIPTION = 'Need help? Just send us a tutor request, and we will match you with an available tutor as soon as we can.'
 const steps = ['Tutorial Service', 'Personal Info', 'Schedule (Free Time)']
 
 const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, colleges, degreePrograms, campuses, dataPrivacy }) => {
@@ -100,7 +102,13 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 	return (
 		<div className="main-height flex flex-col justify-center px-4 mt-6 lg:mt-0">
 			<Head>
-				<title>{siteTitle} | Request</title>
+				<title>{PAGE_TITLE}</title>
+				<meta name="description" content={META_DESCRIPTION} />
+				<meta name="og:title" content={PAGE_TITLE} />
+				<meta name="og:description" content={META_DESCRIPTION} />
+				<meta name="og:url" content={`${process.env.NEXT_PUBLIC_VERCEL_URL}/request`} />
+				<meta name="twitter:title" content={PAGE_TITLE} />
+				<meta name="twitter:description" content={META_DESCRIPTION} />
 			</Head>
 			<div className="grid place-items-center lg:grid-cols-2 mx-auto container min-h-[20rem] gap-y-8">
 				<div className="flex flex-col items-center py-16">

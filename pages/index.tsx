@@ -41,7 +41,6 @@ const Home: NextPage = () => {
 						</div>
 					</div>
 				</div>
-				<a href="https://www.pexels.com/@cottonbro" className="text-sm absolute right-2 bottom-2 text-gray-500">Photo by <b>cottonbro</b> from <b>Pexels</b></a>
 			</div>
 
 			<div className="py-20 bg-white" id="tutor-requests">

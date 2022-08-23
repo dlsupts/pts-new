@@ -2,6 +2,7 @@ import { FC } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import LoadingSpinner from './loading-spinner'
+import Head from 'next/head'
 
 
 const AdminLayout: FC = ({ children }) => {
@@ -23,6 +24,9 @@ const AdminLayout: FC = ({ children }) => {
 
 	return (
 		<div className="container mx-auto pt-4 sm:pt-8 px-6 md:px-8 lg:px-10 pb-16">
+			<Head>
+				<meta name="robots" content="none" />
+			</Head>
 			{children}
 		</div>
 	)
