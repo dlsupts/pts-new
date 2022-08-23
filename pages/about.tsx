@@ -11,11 +11,20 @@ interface AboutPageProps {
 	committees: ICommittee[]
 }
 
+const META_DESCRIPTION = 'About page containing the organization\'s description, vision and mission, projects, activities, and officers.'
+const PAGE_TITLE = `${siteTitle} | About`
+
 const AboutPage: NextPage<AboutPageProps> = ({ committees }) => {
 	return (
 		<div className="container mx-auto px-4 lg:px-20">
 			<Head>
-				<title>{siteTitle} | About</title>
+				<title>{PAGE_TITLE}</title>
+				<meta name="description" content={META_DESCRIPTION} />
+				<meta name="og:title" content={PAGE_TITLE} />
+				<meta name="og:description" content={META_DESCRIPTION} />
+				<meta name="og:url" content={`${process.env.NEXT_PUBLIC_VERCEL_URL}/about`} />
+				<meta name="twitter:title" content={PAGE_TITLE} />
+				<meta name="twitter:description" content={META_DESCRIPTION} />
 			</Head>
 			<div className="my-14">
 				<p className="font-light text-5xl text-center">About Us</p>

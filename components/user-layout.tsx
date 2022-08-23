@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import LoadingSpinner from './loading-spinner'
 import cn from 'classnames'
+import Head from 'next/head'
 
 interface NavItemProp {
 	text: string
@@ -55,6 +56,9 @@ const UserLayout: FC = ({ children }) => {
 
 	return (
 		<div className="container mx-auto grid lg:grid-cols-9 xl:grid-cols-7 pt-12 px-6 md:px-8 lg:px-10 pb-16">
+			<Head>
+				<meta name="robots" content="none" />
+			</Head>
 			<div className="lg:col-span-2 xl:col-span-1 md:mb-6">
 				{navItems.map(item => <NavItem key={item.path} text={item.text} path={item.path} />)}
 				{data?.user?.type === 'ADMIN' && <NavItem text='Admin Console' path='/admin' />}

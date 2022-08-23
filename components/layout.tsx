@@ -7,6 +7,7 @@ import Header from './header'
 import ScrollToTop from './scroll-to-top'
 
 export const siteTitle = 'Peer Tutors Society'
+const META_DESCRIPTION = 'A society of volunteer students who are willing to serve as tutors to students who need academic assistance.'
 
 const Layout: FC = ({ children }) => {
 	const { data: session } = useSession()
@@ -15,21 +16,13 @@ const Layout: FC = ({ children }) => {
 	return (
 		<>
 			<Head>
-				<link rel="icon" href="/favicon.ico" />
 				<title>{siteTitle}</title>
-				<meta
-					name="description"
-					content="A society of volunteer students who are willing to serve as tutors to students who need academic assistance."
-				/>
-				<meta
-					property="og:image"
-					content={`https://og-image.vercel.app/${encodeURI(
-						siteTitle
-					)}.png?theme=light&md=0&fontSize=75px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-black-logo.svg`}
-				/>
-				<meta name="theme-color" content="#0370be" />
+				<meta name="description" content={META_DESCRIPTION} />
 				<meta name="og:title" content={siteTitle} />
-				<meta name="twitter:card" content="summary_large_image" />
+				<meta name="og:description" content={META_DESCRIPTION} />
+				<meta name="og:url" content={`${process.env.NEXT_PUBLIC_VERCEL_URL}`} />
+				<meta name="twitter:title" content={siteTitle} />
+				<meta name="twitter:description" content={META_DESCRIPTION} />
 			</Head>
 			{session?.user.type === 'ADMIN' && pathname.startsWith('/admin') ? <AdminHeader /> : <Header />}
 			<main className="main-height">
