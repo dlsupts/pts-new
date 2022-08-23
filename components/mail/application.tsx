@@ -1,13 +1,21 @@
 import { FormSchema } from '@pages/apply'
 
-type ApplicationEmailToOfficerProps = {
+type ApplicationEmail = {
 	applicant: FormSchema
+	isApplicant: boolean
 }
 
-export default function ApplicationEmailToOfficer({ applicant }: ApplicationEmailToOfficerProps) {
+export default function ApplicationEmail({ applicant, isApplicant }: ApplicationEmail) {
 	return (
 		<>
-			<p>New tutor application has been submitted.</p>
+			{isApplicant ?
+				<>
+					<p><strong>Thank you for applying to become a tutor in PTS!</strong></p>
+					<p>We have received your application. Please wait to be contacted by the Activities Committee for further instructions.</p>
+				</>
+				:
+				<p>New tutor application has been submitted.</p>
+			}
 
 			<p>
 				<strong>Applicant Details</strong><br />
