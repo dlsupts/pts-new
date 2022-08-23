@@ -17,6 +17,7 @@ import SubjectList from '@components/subject-list/list'
 import SchedulePicker from '@components/schedule-picker'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
+import LoadingButton from '@components/loading-button'
 
 interface TutorDetailsProps {
 	types: string[]
@@ -51,17 +52,19 @@ function handleServiceSelect(selectedList: string[], selectedItem: string) {
 }
 
 const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }) => {
-	const { user, isLoading, isError, mutate } = useUser()
+	const { user, isLoading: isUserLoading, isError, mutate } = useUser()
 	const serviceSelection = useRef<Multiselect>(null)
 	const typeSelection = useRef<Multiselect>(null)
 	const { sched, isSchedLoading, isSchedError, schedMutate } = useSchedule()
 	const [isOpen, setIsOpen] = useState(false)	// for add subject modal
 	const [selectedSubjects, setSelectedSubjects] = useState<string[][]>([])
+	const [isLoading, setIsLoading] = useState(false)
 
 	useEffect(() => { if (user) { setSelectedSubjects(user.topics) } }, [user])
 
 	const handleSubmit: FormEventHandler = async e => {
 		e.preventDefault()
+		setIsLoading(true)
 		const values = Object.fromEntries(new FormData(e.target as HTMLFormElement)) as unknown as ITutorInfo
 		if (selectedSubjects) values.topics = selectedSubjects
 		if (serviceSelection.current) values.tutoringService = serviceSelection.current.getSelectedItems()
@@ -81,9 +84,10 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 		} catch {
 			toast.error('A server error has occured. Please try again.', toastErrorConfig)
 		}
+		setIsLoading(false)
 	}
 
-	if (isLoading || isSchedLoading) {
+	if (isUserLoading || isSchedLoading) {
 		return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
 	} else if (isError || isSchedError) {
 		return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
@@ -167,7 +171,9 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 							</div>
 						</div>
 						<div className="px-4 py-3 bg-gray-50 text-right sm:px-6 mt-12">
-							<input type="submit" value="Save" className="btn blue py-2 px-4 rounded-md" />
+							<LoadingButton type="submit" className="btn blue py-2 px-4 rounded-md" isLoading={isLoading}>
+								Save
+							</LoadingButton>
 						</div>
 					</div>
 				</form>

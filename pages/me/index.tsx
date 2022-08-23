@@ -10,26 +10,29 @@ import Library from '@models/library'
 import { IUserInfo, IUser, userInfoSchema } from '@models/user'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Modal from '@components/modal'
 import styles from '@styles/Modal.module.css'
 import { Dialog } from '@headlessui/react'
 import { signOut } from 'next-auth/react'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
+import LoadingButton from '@components/loading-button'
 
 type FormSchema = Omit<IUserInfo, '_id'>
 
 const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
-	const { user, isLoading, isError, mutate } = useUser()
+	const { user, isLoading: isUserLoading, isError, mutate } = useUser()
 	const { register, handleSubmit, formState: { errors }, reset } = useForm<Omit<FormSchema, '_id'>>({
 		resolver: yupResolver(userInfoSchema),
 	})
+	const [isLoading, setIsLoading] = useState(false)
 
 	// set default values once user has loaded
 	useEffect(() => reset(user), [reset, user])
 
 	async function onSubmit(data: FormSchema) {
+		setIsLoading(true)
 		try {
 			await mutate(app.patch<IUser>('/api/me', data).then(res => res.data), {
 				optimisticData: { ...user, ...data } as IUser
@@ -38,6 +41,7 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 		} catch {
 			toast.error('A server error has occured. Please try again.', toastErrorConfig)
 		}
+		setIsLoading(false)
 	}
 
 	async function updateMembership(membership: boolean) {
@@ -45,7 +49,7 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 		if (!membership) signOut()
 	}
 
-	if (isLoading) return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
+	if (isUserLoading) return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
 
 	if (isError) return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
 
@@ -127,8 +131,14 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 						</div>
 					</div>
 					<div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-						<input type="reset" className="btn gray py-2 px-4 rounded-md mr-4" onClick={e => { e.preventDefault(); reset() }} />
-						<input type="submit" value="Save" className="btn blue py-2 px-4 rounded-md" />
+						<input type="reset" className="btn gray py-2 px-4 rounded-md mr-4" onClick={e => { e.preventDefault(); reset() }} disabled={isLoading} />
+						<LoadingButton
+							type="submit"
+							className="btn blue py-2 px-4 rounded-md"
+							isLoading={isLoading}
+						>
+							Save
+						</LoadingButton>
 					</div>
 				</div>
 			</form>

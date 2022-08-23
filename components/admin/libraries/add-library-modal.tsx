@@ -5,6 +5,7 @@ import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
 import styles from '@styles/Modal.module.css'
 import { Dialog } from '@headlessui/react'
+import LoadingButton from '@components/loading-button'
 
 const addLibrarySchema = yup.object({
 	_id: yup.string().required('Committee name is required!'),
@@ -24,6 +25,7 @@ const AddLibraryModal: FC<AddLibraryModalProps> = ({ isOpen, onClose, onSubmit }
 		defaultValues: { _id: '', isKeyed: false },
 		resolver: yupResolver(addLibrarySchema),
 	})
+	const [isLoading, setIsLoading] = useState(false)
 
 	const handleClose = useCallback(() => {
 		onClose()
@@ -31,9 +33,13 @@ const AddLibraryModal: FC<AddLibraryModalProps> = ({ isOpen, onClose, onSubmit }
 		setIsKeyed(false)
 	}, [reset, onClose])
 
-	function getSubmission(data: AddLibrarySchema) {
+	async function getSubmission(data: AddLibrarySchema) {
+		setIsLoading(true)
 		data.isKeyed = isKeyed
-		onSubmit(data).then(() => { reset(); setIsKeyed(false) })
+		await onSubmit(data)
+		reset()
+		setIsKeyed(false)
+		setIsLoading(false)
 	}
 
 	return (
@@ -50,8 +56,8 @@ const AddLibraryModal: FC<AddLibraryModalProps> = ({ isOpen, onClose, onSubmit }
 					</form>
 				</div>
 				<div className={styles.footer}>
-					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={handleClose}>Cancel</button>
-					<button form="add-library" className={styles.btn + ' btn blue'}>Add</button>
+					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={handleClose} disabled={isLoading}>Cancel</button>
+					<LoadingButton form="add-library" className={styles.btn + ' btn blue'} isLoading={isLoading}>Add</LoadingButton>
 				</div>
 			</div>
 		</Modal>

@@ -59,8 +59,8 @@ const LibraryPage: NextPage = () => {
 		closeModal()
 	}
 
-	function deleteLibrary() {
-		mutateLibraries(async () => {
+	async function deleteLibrary() {
+		await mutateLibraries(async () => {
 			await app.delete(`/api/libraries/${libraries?.[libIdx]._id}`)
 			closeModal()
 			libraries?.splice(libIdx, 1)

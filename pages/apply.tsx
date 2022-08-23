@@ -15,6 +15,7 @@ import { useRetriever } from '@lib/useRetriever'
 import { IDate } from '@models/date'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
+import LoadingButton from '@components/loading-button'
 
 interface RequestProps {
 	faqs: string[][]
@@ -32,6 +33,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	})
 	const { data: date } = useRetriever<IDate>('/api/dates/Tutor Recruitment')
 	const { data: isMaintenance } = useRetriever<boolean>('/api/maintenance')
+	const [isLoading, setIsLoading] = useState(false)
 
 	useEffect(() => {
 		if (date == undefined || isMaintenance == undefined) return
@@ -44,6 +46,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	}, [isMaintenance, date])
 
 	const onSubmit = async (values: FormSchema) => {
+		setIsLoading(true)
 		try {
 			await app.post('/api/applications', values)
 			toast.success('Application was sent! Please wait for us to contact you.', toastSuccessConfig)
@@ -54,6 +57,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 				toast.error(e?.response?.data, toastErrorConfig)
 			}
 		}
+		setIsLoading(false)
 	}
 
 	return (
@@ -99,7 +103,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 						</div>
 						<div className="col-span-full sm:col-span-2">
 							<label htmlFor="terms">Remaining Terms<span className='text-red-500'>*</span></label>
-							<input type="number" {...register('terms')} id="terms" min={0} required />
+							<input type="number" {...register('terms')} id="terms" min={1} required />
 							<p className="form-err-msg text-sm">{(errors.terms?.type === 'typeError' && 'Remaining terms is required.') || errors.terms?.message}</p>
 						</div>
 						<div className="col-span-full sm:col-span-2">
@@ -113,8 +117,11 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 							<p className="form-err-msg text-sm">{errors.url?.message}</p>
 						</div>
 
-						<div className="col-span-full flex justify-end">
-							<input type="submit" className="btn blue px-4 py-2 font-medium rounded-md mt-2" />
+						<div className="col-span-full flex justify-end mt-2 space-x-2">
+							<input type="reset" className="btn gray px-4 py-2 font-medium rounded-md" disabled={isLoading} />
+							<LoadingButton type="submit" className="btn blue px-4 py-2 font-medium rounded-md" isLoading={isLoading}>
+								Submit
+							</LoadingButton>
 						</div>
 					</form>
 					:

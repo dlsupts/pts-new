@@ -13,6 +13,7 @@ import { DownloadIcon } from '@heroicons/react/outline'
 import app from '@lib/axios-config'
 import { interpolateCool } from 'd3-scale-chromatic'
 import interpolateColors from '@lib/color-generator'
+import LoadingButton from '@components/loading-button'
 
 const scale = interpolateCool
 const legend = <Legend verticalAlign="bottom" height={36} iconType="square" />
@@ -65,10 +66,14 @@ const AdminPage: NextPage = () => {
 				<title>{siteTitle} | Dashboard</title>
 			</Head>
 			<div className="flex justify-end mb-2">
-				<button className="btn blue px-4 py-2 rounded-md flex items-center space-x-2" disabled={isWaiting} onClick={handleDownloadClick}>
+				<LoadingButton
+					className={"btn blue px-4 py-2 rounded-md flex items-center space-x-2"}
+					isLoading={isWaiting}
+					onClick={handleDownloadClick}
+				>
 					<DownloadIcon className="w-5" />
 					<span>Download Reports</span>
-				</button>
+				</LoadingButton>
 			</div>
 			<div className="space-y-4">
 				<section className={styles.section}>

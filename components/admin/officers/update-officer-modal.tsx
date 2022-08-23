@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react'
 import LoadingSpinner from '@components/loading-spinner'
 import MySwitch from '@components/switch'
 import cn from 'classnames'
+import LoadingButton from '@components/loading-button'
 
 const updateOfficerSchema = yup.object({
 	image: yup.string().required('Image ID is required!'),
@@ -31,6 +32,7 @@ const UpdateOfficerModal: FC<UpdateOfficerModalProps> = ({ isOpen, onClose, onSu
 	})
 	const { data, status } = useSession()
 	const [isAdmin, setIsAdmin] = useState(officer?.userType == 'ADMIN')
+	const [isLoading, setIsLoading] = useState(false)
 
 	function handleClose() {
 		onClose()
@@ -44,7 +46,11 @@ const UpdateOfficerModal: FC<UpdateOfficerModalProps> = ({ isOpen, onClose, onSu
 		}
 	}, [reset, officer, isOpen])
 
-	const getSubmission = (data: UpdateOfficerSchema) => onSubmit(data, isAdmin ? 'ADMIN' : 'TUTOR')
+	async function getSubmission(data: UpdateOfficerSchema) {
+		setIsLoading(true)
+		await onSubmit(data, isAdmin ? 'ADMIN' : 'TUTOR')
+		setIsLoading(false)
+	}
 
 	if (status == 'loading') {
 		<LoadingSpinner className="w-20 aspect-square" />
@@ -80,8 +86,8 @@ const UpdateOfficerModal: FC<UpdateOfficerModalProps> = ({ isOpen, onClose, onSu
 						</Switch.Group>
 					}
 					<div className="flex space-x-4">
-						<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose}>Cancel</button>
-						<button form="update" className={styles.btn + ' btn blue'}>Update</button>
+						<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose} disabled={isLoading}>Cancel</button>
+						<LoadingButton form="update" className={styles.btn + ' btn blue'} isLoading={isLoading}>Update</LoadingButton>
 					</div>
 				</div>
 			</div>

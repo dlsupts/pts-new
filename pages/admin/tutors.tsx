@@ -18,6 +18,7 @@ import { createColumnHelper } from '@tanstack/react-table'
 import Table from '@components/table'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
+import ConfirmationModal from '@components/modal/confirmation-modal'
 
 interface ITableProps extends IUser {
 	status?: string
@@ -39,7 +40,7 @@ const AdminPage: NextPage = () => {
 	const [isOpen, setIsOpen] = useState(false) // for tutor info modal
 	const [isDelOpen, setIsDelOpen] = useState(false)
 	const [tutor, setTutor] = useState<IUser>()
-	const cancelButton = useRef<HTMLButtonElement>(null)
+	const button = useRef<HTMLButtonElement>(null)
 
 	const onRowClick = useCallback((id: string) => {
 		setIsOpen(true)
@@ -84,12 +85,18 @@ const AdminPage: NextPage = () => {
 			<Head>
 				<title>{siteTitle} | Tutors</title>
 			</Head>
-			<Modal isOpen={isOpen} close={() => setIsOpen(false)}>
+			<Modal isOpen={isOpen} close={() => setIsOpen(false)} initialFocus={button}>
 				<div className={modalStyles.panel}>
 					<div className={cn(styles['data-display'], '!border-0')}>
 						<div className={cn(styles.header, 'flex justify-between')}>
 							<h3>{tutor?.firstName} {tutor?.lastName}</h3>
-							<button className={modalStyles['delete-btn'] + ' btn red'} onClick={() => { setIsDelOpen(true); setIsOpen(false) }}>Delete</button>
+							<button
+								className={modalStyles['delete-btn'] + ' btn red'}
+								onClick={() => { setIsDelOpen(true); setIsOpen(false) }}
+								ref={button}
+							>
+								Delete
+							</button>
 						</div>
 						<div className={styles.content}>
 							<div>
@@ -155,18 +162,12 @@ const AdminPage: NextPage = () => {
 					</div>
 				</div>
 			</Modal>
-			<Modal isOpen={isDelOpen} close={handleDelClose} initialFocus={cancelButton}>
-				<div className={modalStyles.panel}>
-					<div className={modalStyles['confirmation-body']}>
-						<p className="text-xl">Remove <span className="font-medium">{tutor?.firstName}</span>?</p>
-						<div className={modalStyles['btn-group']}>
-							<button type="button" className={modalStyles.btn + ' btn gray'} ref={cancelButton} onClick={handleDelClose}>Cancel</button>
-							<button type="button" className={modalStyles.btn + ' btn red'} onClick={handleDeleteRecord}>Confirm</button>
-						</div>
-					</div>
-				</div>
-			</Modal>
-
+			<ConfirmationModal
+				isOpen={isDelOpen}
+				onClose={handleDelClose}
+				onActionClick={handleDeleteRecord}
+				message={`Remove ${tutor?.firstName}?`}
+			/>
 			<div className="flex justify-end sm:px-6 lg:px-8">
 				<Link href="applicants">
 					<a className="btn blue px-4 py-2 rounded-md">View Applicants</a>

@@ -1,10 +1,11 @@
 import Modal, { IModalProps } from '@components/modal'
-import { FC, useRef } from 'react'
+import { FC, useRef, useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
 import styles from '@styles/Modal.module.css'
 import { Dialog } from '@headlessui/react'
+import LoadingButton from '@components/loading-button'
 
 const addCommitteeSchema = yup.object({
 	name: yup.string().required('Committee name is required!')
@@ -21,9 +22,13 @@ const AddCommitteeModal: FC<AddCommitteeModalProps> = ({ isOpen, onClose, onSubm
 	const { register, handleSubmit, formState: { errors }, reset } = useForm<AddCommitteeSchema>({
 		resolver: yupResolver(addCommitteeSchema),
 	})
+	const [isLoading, setIsLoading] = useState(false)
 
-	function getSubmission(data: AddCommitteeSchema) {
-		onSubmit(data).then(() => reset())
+	async function getSubmission(data: AddCommitteeSchema) {
+		setIsLoading(true)
+		await onSubmit(data)
+		reset()
+		setIsLoading(false)
 	}
 
 	return (
@@ -38,8 +43,8 @@ const AddCommitteeModal: FC<AddCommitteeModalProps> = ({ isOpen, onClose, onSubm
 					</form>
 				</div>
 				<div className={styles.footer}>
-					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose}>Cancel</button>
-					<button form="update" className={styles.btn + ' btn blue'}>Add</button>
+					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose} disabled={isLoading}>Cancel</button>
+					<LoadingButton form="update" className={styles.btn + ' btn blue'} isLoading={isLoading}>Add</LoadingButton>
 				</div>
 			</div>
 		</Modal>
