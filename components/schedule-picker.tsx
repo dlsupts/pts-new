@@ -39,11 +39,11 @@ const SchedulePicker: FC<SchedulePickerProps> = ({ sched, setSched }) => {
 						closeIcon="cancel"
 						onSelect={s => {
 							handleScheduleSelect(s, day.key, sched)
-							if (setSched) setSched(sched)
+							setSched?.(sched)
 						}}
-						onRemove={s => { 
+						onRemove={s => {
 							handleScheduleRemove(s, day.key, sched)
-							if (setSched) setSched(sched) 
+							setSched?.(sched)
 						}}
 						onKeyPressFn={blockEnterKeyPress}
 					/>

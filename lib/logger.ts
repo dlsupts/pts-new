@@ -1,32 +1,27 @@
-import { createLogger, transports, format } from 'winston'
-import 'winston-mongodb'
+import Log, { LOG_LEVEL, LOG_LEVELS } from '@models/log'
+import dbConnect from './db'
 
-const level = process.env.LOG_LEVEL || 'info'
+const THRESHOLD = LOG_LEVELS[process.env.LOG_LEVEL || 'info']
 
-const logger = createLogger({
-	level,
-	transports: [
-		new transports.Console({
-			level: process.env.NODE_ENV == 'production' ? 'error' : level,
-			format: format.combine(format.prettyPrint(), format.colorize())
-		}),
-		new transports.MongoDB({
-			db: process.env.MONGODB_URI,
-			collection: 'logs',
-			options: { useUnifiedTopology: true },
-			level: 'info',
-			tryReconnect: true,
-		})
-	],
-	exceptionHandlers: [
-		new transports.MongoDB({
-			db: process.env.MONGODB_URI,
-			collection: 'exceptions',
-			options: { useUnifiedTopology: true },
-			tryReconnect: true,
-		})
-	],
-	format: format.combine(format.timestamp(), format.json()),
-})
+async function addLog(level: LOG_LEVEL, message: string | unknown) {
+	if (LOG_LEVELS[level] <= THRESHOLD) {
+		await dbConnect()
+		await Log.create({ level, message })
+
+		if (process.env.NODE_ENV != 'production' || level == 'error') {
+			console.log(message)
+		}
+	}
+}
+
+const logger = {
+	error: (data: string | unknown) => addLog('error', data),
+	warn: (data: string | unknown) => addLog('warn', data),
+	info: (data: string | unknown) => addLog('info', data),
+	http: (data: string | unknown) => addLog('http', data),
+	verbose: (data: string | unknown) => addLog('verbose', data),
+	debug: (data: string | unknown) => addLog('debug', data),
+	silly: (data: string | unknown) => addLog('silly', data),
+}
 
 export default logger

@@ -21,6 +21,7 @@ import { ObjectId } from 'mongoose'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
 import sorter from '@lib/sorter'
+import LoadingButton from '@components/loading-button'
 
 export type Tutor = Omit<ITutorInfo, 'membership'> & Pick<IUserInfo, 'firstName' | 'lastName' | '_id'>
 
@@ -60,6 +61,7 @@ const RequestPage: NextPage = () => {
 		}
 		return sorter(Array.from(tutors.values()), request, tutee, requestMode ? sessions : [request.session])
 	}, [tutors, request, requestMode, sessions, tutees])
+	const [isLoading, setIsLoading] = useState(false)
 
 	useEffect(() => {
 		// clear tutor selection every time modal closes
@@ -99,12 +101,16 @@ const RequestPage: NextPage = () => {
 	}
 
 	async function handleAssign() {
+		setIsLoading(true)
 		const tutor = tutorArray[Number(Object.keys(rowSelection)[0])]._id
 		await updateAssignment(tutor)
+		setIsLoading(false)
 	}
 
 	async function handleUnassign() {
+		setIsLoading(true)
 		await updateAssignment(null)
+		setIsLoading(false)
 	}
 
 	async function updateAssignment(tutor: ObjectId | null) {
@@ -123,6 +129,7 @@ const RequestPage: NextPage = () => {
 	}
 
 	async function handleDeleteRecord() {
+		setIsLoading(true)
 		try {
 			if (requestMode) {
 				await app.delete(`/api/requests/${request?._id}`)
@@ -135,6 +142,7 @@ const RequestPage: NextPage = () => {
 		} catch (err) {
 			toastAxiosError(err)
 		}
+		setIsLoading(false)
 	}
 
 	const tableInstance = RequestTable({ data: requests, onRowClick: onRequestRowClick, tutors, tutees })
@@ -183,15 +191,28 @@ const RequestPage: NextPage = () => {
 						</div>
 					</div>
 					<div className={cn(styles.footer, '!justify-between')}>
-						<button className={cn(styles.btn, 'btn gray')} onClick={() => setModal('delete')}>
+						<button className={cn(styles.btn, 'btn gray')} onClick={() => setModal('delete')} disabled={isLoading}>
 							Delete
 						</button>
 						<div className="space-x-2">
-							<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={() => setModal('')}>Close</button>
+							<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={() => setModal('')} disabled={isLoading}>Close</button>
 							{(requestMode && unassignedSessionsCount || !request?.session.tutor) ?
-								<button className={styles.btn + ' btn blue'} disabled={Object.keys(rowSelection).length == 0} onClick={handleAssign}>Assign tutor</button>
+								<LoadingButton
+									className={styles.btn + ' btn blue'}
+									disabled={Object.keys(rowSelection).length == 0}
+									onClick={handleAssign}
+									isLoading={isLoading}
+								>
+									Assign tutor
+								</LoadingButton>
 								:
-								<button className={styles.btn + ' btn red'} onClick={handleUnassign}>Unmatch Tutor{requestMode && 's'}</button>
+								<LoadingButton
+									className={styles.btn + ' btn red'}
+									onClick={handleUnassign}
+									isLoading={isLoading}
+								>
+									Unmatch Tutor{requestMode && 's'}
+								</LoadingButton>
 							}
 						</div>
 					</div>
@@ -206,8 +227,10 @@ const RequestPage: NextPage = () => {
 								{' '}{tutees.get(request?.tutee as string)?.firstName}&apos;s{' '}
 							</span>{requestMode ? 'request' : 'session'}?</p>
 						<div className={styles['btn-group']}>
-							<button type="button" className={styles.btn + ' btn gray'} ref={cancelButton} onClick={() => setModal('request')}>Cancel</button>
-							<button type="button" className={styles.btn + ' btn red'} onClick={handleDeleteRecord}>Confirm</button>
+							<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={() => setModal('request')} disabled={isLoading}>Cancel</button>
+							<LoadingButton className={styles.btn + ' btn red'} onClick={handleDeleteRecord} isLoading={isLoading}>
+								Confirm
+							</LoadingButton>
 						</div>
 					</div>
 				</div>

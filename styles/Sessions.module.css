@@ -1,5 +1,9 @@
 .data-display {
-	@apply shadow-sm rounded-md mb-4 border border-gray-200
+	@apply shadow-sm rounded-md border border-gray-200
+}
+
+.data-display + div {
+	@apply mt-4
 }
 
 .data-display>div {

@@ -7,6 +7,8 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { IDate } from '@models/date'
 import cn from 'classnames'
+import { useState } from 'react'
+import LoadingButton from '@components/loading-button'
 
 const dateModalSchema = yup.object({
 	_id: yup.string().required('Title is required.'),
@@ -27,6 +29,7 @@ const DateModal: FC<DateModalProps> = ({ isOpen, onClose, onSubmit, date, onDele
 	const { register, handleSubmit, formState: { errors }, reset, watch } = useForm<DateModalSchema>({
 		resolver: yupResolver(dateModalSchema)
 	})
+	const [isLoading, setIsLoading] = useState(false)
 
 	const startDate = watch('start') // to set minimum end date
 
@@ -36,6 +39,12 @@ const DateModal: FC<DateModalProps> = ({ isOpen, onClose, onSubmit, date, onDele
 			start: (date?.start ? new Date(date?.start) : new Date()).toLocaleDateString('en-CA'),
 			end: (date?.end ? new Date(date?.end) : new Date()).toLocaleDateString('en-CA')
 		})
+	}
+
+	async function getSubmission(data: DateModalSchema) {
+		setIsLoading(true)
+		await onSubmit(data)
+		setIsLoading(false)
 	}
 
 	useEffect(resetForm, [date, reset, isOpen])
@@ -48,7 +57,7 @@ const DateModal: FC<DateModalProps> = ({ isOpen, onClose, onSubmit, date, onDele
 						<Dialog.Title as="h3" className={styles.title}>{date?._id ?? 'New Date'}</Dialog.Title>
 						<button className={styles['delete-btn'] + ' btn red'} onClick={onDelete}>Delete</button>
 					</div>
-					<form id="add-date" onSubmit={handleSubmit(onSubmit)} className="grid gap-y-1">
+					<form id="add-date" onSubmit={handleSubmit(getSubmission)} className="grid gap-y-1">
 						<div className={cn({ 'hidden': date })}>
 							<label htmlFor="title">Title</label>
 							<input type="text" {...register('_id')} id="title" />
@@ -67,8 +76,8 @@ const DateModal: FC<DateModalProps> = ({ isOpen, onClose, onSubmit, date, onDele
 					</form>
 				</div>
 				<div className={styles.footer}>
-					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose}>Cancel</button>
-					<button form="add-date" className={styles.btn + ' btn blue'}>{date ? 'Update' : 'Add'}</button>
+					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose} disabled={isLoading}>Cancel</button>
+					<LoadingButton form="add-date" className={styles.btn + ' btn blue'} isLoading={isLoading}>{date ? 'Update' : 'Add'}</LoadingButton>
 				</div>
 			</div>
 		</Modal>

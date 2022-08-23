@@ -1,11 +1,12 @@
 import Modal, { IModalProps } from '@components/modal'
 import { IUser } from '@models/user'
-import { FC, useCallback, useRef } from 'react'
+import { FC, useCallback, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import styles from '@styles/Modal.module.css'
 import { Dialog } from '@headlessui/react'
+import LoadingButton from '@components/loading-button'
 
 const addSchema = yup.object({
 	user: yup.string().required('User is required'),
@@ -25,14 +26,17 @@ const AddOfficerModal: FC<AddModalProps> = ({ isOpen, onClose, onSubmit, users }
 		resolver: yupResolver(addSchema)
 	})
 	const cancelButton = useRef<HTMLButtonElement>(null)
-
+	const [isLoading, setIsLoading] = useState(false)
 	const handleClose = useCallback(() => {
 		onClose()
 		reset()
 	}, [reset, onClose])
 
 	const getSubmission = useCallback(async (data: AddOfficerSchema) => {
-		onSubmit(data).then(() => reset())
+		setIsLoading(true)
+		await onSubmit(data)
+		reset()
+		setIsLoading(false)
 	}, [reset, onSubmit])
 
 	return (
@@ -63,8 +67,8 @@ const AddOfficerModal: FC<AddModalProps> = ({ isOpen, onClose, onSubmit, users }
 					</form>
 				</div>
 				<div className={styles.footer}>
-					<button className={styles.btn + ' btn gray'}ref={cancelButton} onClick={handleClose}>Cancel</button>
-					<button form="add-officer" className={styles.btn + ' btn blue'}>Add</button>
+					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={handleClose} disabled={isLoading}>Cancel</button>
+					<LoadingButton form="add-officer" className={styles.btn + ' btn blue'} isLoading={isLoading}>Add</LoadingButton>
 				</div>
 			</div>
 		</Modal>

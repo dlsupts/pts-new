@@ -10,6 +10,7 @@ import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautif
 import { MenuIcon, PlusIcon, TrashIcon } from '@heroicons/react/outline'
 import cn from 'classnames'
 import { parseContent } from '@lib/utils'
+import LoadingButton from '@components/loading-button'
 
 const editLibrarySchema = yup.object({
 	code: yup.string().required().trim(),
@@ -21,7 +22,7 @@ export type EditLibrarySchema = yup.InferType<typeof editLibrarySchema>
 type LibraryModalProps = IModalProps & {
 	library?: ILib
 	onDelete: () => void
-	onUpdate: (item: string[]) => void
+	onUpdate: (item: string[]) => Promise<void>
 }
 
 type OrderItemProps = {
@@ -61,6 +62,7 @@ const LibraryModal: FC<LibraryModalProps> = ({ isOpen, onClose, library, onDelet
 		resolver: yupResolver(editLibrarySchema)
 	})
 	const [order, setOrder] = useState(library?.content ?? [])
+	const [isLoading, setIsLoading] = useState(false)
 
 	function onDragEnd(result: DropResult) {
 		if (result.source.index === result.destination?.index || !result.destination) return
@@ -80,6 +82,12 @@ const LibraryModal: FC<LibraryModalProps> = ({ isOpen, onClose, library, onDelet
 
 	// update state everytime the modal is opened: handles cases where an item is added but is not saved
 	useEffect(() => { if (library) setOrder(library?.content); reset() }, [isOpen, library, reset])
+
+	async function handleUpdate() {
+		setIsLoading(true)
+		await onUpdate(order)
+		setIsLoading(false)
+	}
 
 	return (
 		<Modal isOpen={isOpen} close={onClose} initialFocus={cancelButton}>
@@ -118,8 +126,8 @@ const LibraryModal: FC<LibraryModalProps> = ({ isOpen, onClose, library, onDelet
 					</DragDropContext>
 				</div>
 				<div className={styles.footer}>
-					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose}>Close</button>
-					<button className={styles.btn + ' btn blue'} onClick={() => onUpdate(order)}>Save</button>
+					<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose} disabled={isLoading}>Close</button>
+					<LoadingButton className={styles.btn + ' btn blue'} onClick={handleUpdate} isLoading={isLoading}>Save</LoadingButton>
 				</div>
 			</div>
 		</Modal>

@@ -1,14 +1,22 @@
 import Modal, { IModalProps } from '../modal'
-import { FC, useRef } from 'react'
+import { FC, useRef, useState } from 'react'
 import styles from '@styles/Modal.module.css'
+import LoadingButton from '@components/loading-button'
 
 type ConfimationModalProps = IModalProps & {
 	message: string
-	onActionClick: () => void
+	onActionClick: () => Promise<void>
 }
 
 const ConfirmationModal: FC<ConfimationModalProps> = ({ isOpen, onClose, onActionClick, message }) => {
 	const cancelButton = useRef<HTMLButtonElement>(null)
+	const [isLoading, setIsLoading] = useState(false)
+
+	async function handleActionClick() {
+		setIsLoading(true)
+		await onActionClick()
+		setIsLoading(false)
+	}
 
 	return (
 		<Modal isOpen={isOpen} close={onClose} initialFocus={cancelButton}>
@@ -16,8 +24,8 @@ const ConfirmationModal: FC<ConfimationModalProps> = ({ isOpen, onClose, onActio
 				<div className={styles['confirmation-body']}>
 					<p className="text-xl">{message}</p>
 					<div className={styles['btn-group']}>
-						<button type="button" className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose}>Cancel</button>
-						<button type="button" className={styles.btn + ' btn red'} onClick={onActionClick}>Confirm</button>
+						<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={onClose} disabled={isLoading}>Cancel</button>
+						<LoadingButton className={styles.btn + ' btn red'} onClick={handleActionClick} isLoading={isLoading}>Confirm</LoadingButton>
 					</div>
 				</div>
 			</div>

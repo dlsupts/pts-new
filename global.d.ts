@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import { LOG_LEVEL } from '@models/log'
 import mongoose from 'mongoose'
 
 export type MongooseConnection = {
@@ -17,7 +18,7 @@ declare global {
 			GOOGLE_CLIENT_SECRET: string
 			NEXT_PUBLIC_ADMIN_EMAIL: string
 			MAIL_PASS: string
-			LOG_LEVEL?: string
+			LOG_LEVEL?: LOG_LEVEL
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import { GetStaticProps, NextPage } from 'next'
-import { FormEventHandler, useRef, MouseEventHandler, useState, useEffect } from 'react'
+import { FormEventHandler, useRef, useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import LoadingSpinner from '@components/loading-spinner'
 import UserLayout from '@components/user-layout'
@@ -17,6 +17,7 @@ import SubjectList from '@components/subject-list/list'
 import SchedulePicker from '@components/schedule-picker'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
+import LoadingButton from '@components/loading-button'
 
 interface TutorDetailsProps {
 	types: string[]
@@ -51,22 +52,19 @@ function handleServiceSelect(selectedList: string[], selectedItem: string) {
 }
 
 const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }) => {
-	const { user, isLoading, isError, mutate } = useUser()
+	const { user, isLoading: isUserLoading, isError, mutate } = useUser()
 	const serviceSelection = useRef<Multiselect>(null)
 	const typeSelection = useRef<Multiselect>(null)
 	const { sched, isSchedLoading, isSchedError, schedMutate } = useSchedule()
 	const [isOpen, setIsOpen] = useState(false)	// for add subject modal
 	const [selectedSubjects, setSelectedSubjects] = useState<string[][]>([])
-
-	const handleAddClick: MouseEventHandler = e => {
-		e.preventDefault()
-		setIsOpen(true)
-	}
+	const [isLoading, setIsLoading] = useState(false)
 
 	useEffect(() => { if (user) { setSelectedSubjects(user.topics) } }, [user])
 
 	const handleSubmit: FormEventHandler = async e => {
 		e.preventDefault()
+		setIsLoading(true)
 		const values = Object.fromEntries(new FormData(e.target as HTMLFormElement)) as unknown as ITutorInfo
 		if (selectedSubjects) values.topics = selectedSubjects
 		if (serviceSelection.current) values.tutoringService = serviceSelection.current.getSelectedItems()
@@ -86,9 +84,10 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 		} catch {
 			toast.error('A server error has occured. Please try again.', toastErrorConfig)
 		}
+		setIsLoading(false)
 	}
 
-	if (isLoading || isSchedLoading) {
+	if (isUserLoading || isSchedLoading) {
 		return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
 	} else if (isError || isSchedError) {
 		return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
@@ -157,7 +156,7 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 										<p className="text-lg font-bold">Subject List</p>
 										<p className="text-gray-500 text-sm">Select the subjects that you want to teach</p>
 									</div>
-									<button title="Add subject" className="btn gray px-3 py-2 rounded-full" onClick={handleAddClick}>
+									<button type="button" title="Add subject" className="btn gray px-3 py-2 rounded-full" onClick={() => setIsOpen(true)}>
 										<i className="fa-solid fa-plus fa-lg text-white"></i>
 									</button>
 								</div>
@@ -172,8 +171,9 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 							</div>
 						</div>
 						<div className="px-4 py-3 bg-gray-50 text-right sm:px-6 mt-12">
-							<input type="reset" className="btn gray py-2 px-4 rounded-md mr-4" />
-							<input type="submit" value="Save" className="btn blue py-2 px-4 rounded-md" />
+							<LoadingButton type="submit" className="btn blue py-2 px-4 rounded-md" isLoading={isLoading}>
+								Save
+							</LoadingButton>
 						</div>
 					</div>
 				</form>

@@ -16,6 +16,8 @@ import { useRetriever } from '@lib/useRetriever'
 import { createColumnHelper } from '@tanstack/react-table'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
+import ConfirmationModal from '@components/modal/confirmation-modal'
+import LoadingButton from '@components/loading-button'
 
 const columnHelper = createColumnHelper<IUserInfo>()
 
@@ -29,11 +31,12 @@ const columns = [
 ]
 
 const ApplicantsPage: NextPage = () => {
-	const { data: applicants, mutate, isLoading } = useRetriever<IUserInfo[]>('/api/applications', [])
+	const { data: applicants, mutate, isLoading: isDataLoading } = useRetriever<IUserInfo[]>('/api/applications', [])
 	const [isOpen, setIsOpen] = useState(false) // for application info modal
 	const [applicant, setApplicant] = useState<IUserInfo>()
 	const [isDelOpen, setIsDelOpen] = useState<boolean>(false)
-	const cancelButton = useRef<HTMLButtonElement>(null)
+	const button = useRef<HTMLButtonElement>(null)
+	const [isLoading, setIsLoading] = useState(false)
 
 	function handleDelClose() {
 		setIsDelOpen(false)
@@ -52,6 +55,7 @@ const ApplicantsPage: NextPage = () => {
 	}
 
 	async function handleAcceptApplicant() {
+		setIsLoading(true)
 		try {
 			await app.post('/api/tutors', { _id: applicant?._id }) // also deletes tutor entry in the backend
 			await mutate()
@@ -60,6 +64,7 @@ const ApplicantsPage: NextPage = () => {
 		} catch {
 			toast.error('A server-side error has occured. Please try agian later.', toastErrorConfig)
 		}
+		setIsLoading(false)
 	}
 
 	const onRowClick = useCallback((id: string) => {
@@ -74,12 +79,18 @@ const ApplicantsPage: NextPage = () => {
 			<Head>
 				<title>{siteTitle} | Applicants</title>
 			</Head>
-			<Modal isOpen={isOpen} close={() => setIsOpen(false)}>
+			<Modal isOpen={isOpen} close={() => setIsOpen(false)} initialFocus={button}>
 				<div className={modalStyles.panel}>
 					<div className={cn(styles['data-display'], '!border-0')}>
 						<div className={cn(styles.header, 'flex justify-between')}>
 							<h3>{applicant?.firstName} {applicant?.lastName}</h3>
-							<button className="btn red px-4 py-1 rounded-md text-sm" onClick={() => { setIsDelOpen(true); setIsOpen(false) }}>Delete</button>
+							<button
+								className="btn red px-4 py-1 rounded-md text-sm"
+								onClick={() => { setIsDelOpen(true); setIsOpen(false) }}
+								disabled={isLoading}
+							>
+								Delete
+							</button>
 						</div>
 						<div className={styles.content}>
 							<div>
@@ -109,27 +120,25 @@ const ApplicantsPage: NextPage = () => {
 						</div>
 					</div>
 					<div className="flex items-center px-4 mb-4">
-						<button className="btn blue w-full rounded-md py-2" onClick={handleAcceptApplicant}>Accept Applicant</button>
+						<LoadingButton
+							className="btn blue w-full rounded-md py-2"
+							onClick={handleAcceptApplicant} ref={button}
+							isLoading={isLoading}
+						>
+							Accept Applicant
+						</LoadingButton>
 					</div>
 				</div>
 			</Modal>
-			<Modal isOpen={isDelOpen} close={handleDelClose} initialFocus={cancelButton}>
-				<div className={modalStyles.panel}>
-					<div className={modalStyles['confirmation-body']}>
-						<p className="text-xl">Remove <span className="font-medium">{applicant?.firstName}</span>?</p>
-						<div className={modalStyles['btn-group']}>
-							<button type="button" className={modalStyles.btn + ' btn gray'} ref={cancelButton} onClick={handleDelClose}>Cancel</button>
-							<button type="button" className={modalStyles.btn + ' btn red'} onClick={handleDeleteRecord}>Confirm</button>
-						</div>
-					</div>
-				</div>
-			</Modal>
-			{isLoading ? <LoadingSpinner /> :
-				!applicants.length ?
-					<p>No Applicants Yet. <Link href="tutors"><a className="underline text-blue-600">Go back.</a></Link></p> :
-					tableInstance
+			<ConfirmationModal isOpen={isDelOpen} onClose={handleDelClose} onActionClick={handleDeleteRecord}
+				message={`Remove ${applicant?.firstName}?`} />
+			{
+				isDataLoading ? <LoadingSpinner /> :
+					!applicants.length ?
+						<p>No Applicants Yet. <Link href="tutors"><a className="underline text-blue-600">Go back.</a></Link></p> :
+						tableInstance
 			}
-		</AdminLayout>
+		</AdminLayout >
 	)
 }
 
