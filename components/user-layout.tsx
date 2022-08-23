@@ -20,7 +20,7 @@ const NavItem: FC<NavItemProp> = ({ text, path }) => {
 	const { pathname } = useRouter()
 
 	const className = cn({
-		'border-blue-500 text-gray-900 bg-blue-50 text-blue-600': pathname == path,
+		'border-blue-500 bg-blue-50 text-blue-600': pathname == path,
 		'border-transparent text-gray-500 hover:text-gray-900': pathname != path
 	}, 'block cursor-pointer mb-2 px-2 py-1 border-l-4')
 
