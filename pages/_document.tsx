@@ -24,6 +24,7 @@ class MyDocument extends Document {
 					<meta property="twitter:site" content="@ptsdlsu" />
 					<meta property="twitter:creator" content="@ptsdlsu" />
 					<meta name="theme-color" content="#0370be" />
+					<meta name="keywords" content="dlsu,de la salle university,pts,peer tutor society,ccs,college of computer science,free,peer tutoring,student tutor"/>
 				</Head>
 				<body>
 					<Main />
