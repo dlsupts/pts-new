@@ -18,11 +18,14 @@ import { signOut } from 'next-auth/react'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
 import LoadingButton from '@components/loading-button'
+import { useRetriever } from '@lib/useRetriever'
+import { IDate } from '@models/date'
 
 type FormSchema = Omit<IUserInfo, '_id'>
 
 const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 	const { user, isLoading: isUserLoading, isError, mutate } = useUser()
+	const { data: date, isLoading: isDateLoading } = useRetriever<IDate>('/api/dates/ayterm')
 	const { register, handleSubmit, formState: { errors }, reset } = useForm<Omit<FormSchema, '_id'>>({
 		resolver: yupResolver(userInfoSchema),
 	})
@@ -49,11 +52,11 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 		if (!membership) signOut()
 	}
 
-	if (isUserLoading) return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
+	if (isUserLoading || isDateLoading) return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
 
 	if (isError) return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
 
-	if (user?.reset) return (
+	if (user?.reset && date) return (
 		<UserLayout>
 			{/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
 			<Modal isOpen={true} close={() => { }}>
