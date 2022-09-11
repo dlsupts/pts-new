@@ -10,6 +10,11 @@ const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 		switch (req.method) {
 			case 'GET': {
+				if (req.query.id == 'ayterm') {
+					const date = await Dates.getAYTerm()
+					return res.send(date)
+				}
+
 				const date = await Dates.findById(req.query.id)
 				res.send(date)
 				break
