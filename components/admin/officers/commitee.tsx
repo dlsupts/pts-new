@@ -22,7 +22,7 @@ const Officer: FC<OfficerProp> = ({ officer, onOfficerClick }) => {
 		>
 			<XIcon className="aspect-square w-4 absolute top-2 right-2 z-10 hover:bg-gray-500 hover:text-white rounded-full p-0.5 transition-colors" onClick={handleDelClick} />
 			<div>
-				<p className="font-medium">{officer?.name}</p>
+				<p className="font-medium">{officer?.name || 'Null'}</p>
 				<p>{officer.position}</p>
 			</div>
 			<div className="hidden sm:block">

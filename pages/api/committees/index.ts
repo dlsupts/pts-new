@@ -28,6 +28,9 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 				// parse names and id
 				arranged?.forEach(c => c?.officers.forEach(o => {
+					// this case wil happen if a user, who is also an officer, is deleted
+					if (o.user == null) return
+
 					if (typeof o.user != 'string' && 'firstName' in o.user) {
 						o.name = o.user.firstName + ' ' + o.user.lastName
 						o.userType = o.user.userType
