@@ -19,6 +19,7 @@ import Table from '@components/table'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
 import ConfirmationModal from '@components/modal/confirmation-modal'
+import { TrashIcon, RefreshIcon } from '@heroicons/react/solid'
 
 interface ITableProps extends IUser {
 	status?: string
@@ -62,6 +63,16 @@ const AdminPage: NextPage = () => {
 		}
 	}
 
+	async function resetTutorRecord() {
+		try {
+			await app.patch(`/api/tutors/${tutor?._id}`, { reset: true })
+			await mutateTutors()
+			toast.success('Tutor has been reset.')
+		} catch {
+			toast.error('A server-side error has occured. Please try agian later.', toastErrorConfig)
+		}
+	}
+
 	// pre-process data
 	const data = useMemo(() => {
 		tutors?.forEach(t => {
@@ -90,13 +101,20 @@ const AdminPage: NextPage = () => {
 					<div className={cn(styles['data-display'], '!border-0')}>
 						<div className={cn(styles.header, 'flex justify-between')}>
 							<h3>{tutor?.firstName} {tutor?.lastName}</h3>
-							<button
-								className={modalStyles['delete-btn'] + ' btn red'}
-								onClick={() => { setIsDelOpen(true); setIsOpen(false) }}
-								ref={button}
-							>
-								Delete
-							</button>
+							<div className="flex">
+								<button aria-labelledby="refresh-label" className="text-gray-600 hover:text-gray-700">
+									<RefreshIcon className="w-6 aspect-sqare"
+										onClick={resetTutorRecord}
+									/>
+									<span id="refresh-label" hidden>Refresh Tutor</span>
+								</button>
+								<button aria-labelledby="trash-label" className="text-red-600 hover:text-red-700">
+									<TrashIcon role="button" className="w-6 aspect-square"
+										onClick={() => { setIsDelOpen(true); setIsOpen(false) }}
+									/>
+									<span id="trash-label" hidden>Delete Tutor</span>
+								</button>
+							</div>
 						</div>
 						<div className={styles.content}>
 							<div>

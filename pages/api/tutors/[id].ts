@@ -9,14 +9,19 @@ const tutorHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { method, query } = req
 
 	try {
+		// operations only for ADMIN
+		const session = await getSession({ req })
+		if (session?.user.type != 'ADMIN') return res.status(403)
+
 		await dbConnect()
 
 		switch (method) {
-			case 'DELETE': {
-				// delete operation only for ADMIN
-				const session = await getSession({ req })
-				if (session?.user.type != 'ADMIN') return res.status(403)
+			case 'PATCH': {
+				await User.findOneAndUpdate({ _id: query.id }, req.body)
+				break
+			}
 
+			case 'DELETE': {
 				const user = await User.findOneAndDelete({ _id: query.id }, {
 					projection: '-_id firstName lastName'
 				}).lean().exec()
@@ -28,7 +33,7 @@ const tutorHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 			}
 
 			default:
-				res.setHeader('Allow', ['DELETE'])
+				res.setHeader('Allow', ['DELETE', 'PATCH'])
 				res.status(405).end(`Method ${method} Not Allowed`)
 		}
 	} catch (err) {

@@ -1,5 +1,5 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { FC } from 'react'
+import { FC, useMemo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -7,7 +7,8 @@ import { Disclosure, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import cn from 'classnames'
 import { useSession, signIn, signOut } from 'next-auth/react'
-import { matchPath } from '../lib/utils'
+import { matchPath } from '@lib/utils'
+import LoadingButton from './loading-button'
 
 interface NavItemProp {
 	text: string
@@ -61,14 +62,18 @@ const NavItem: FC<NavItemProp> = ({ text, path, isHome }) => {
 }
 
 const Header: FC = () => {
-	const { data: session } = useSession()
+	const { status } = useSession()
+	const isAuthenticated = useMemo(() => status == 'authenticated', [status])
+	const [isLoading, setIsLoading] = useState(false)
 
-	function handleAuthClick() {
-		if (session) {
-			signOut({ callbackUrl: '/' })
-		} else {
-			signIn('google', { callbackUrl: '/me' })
+	async function handleAuthClick() {
+		setIsLoading(true)
+		if (isAuthenticated) {
+			await signOut({ callbackUrl: '/' })
+		} else if (status == 'unauthenticated') {
+			await signIn('google', { callbackUrl: '/me' })
 		}
+		setIsLoading(false)
 	}
 
 	return (
@@ -93,12 +98,18 @@ const Header: FC = () => {
 									<div className="hidden md:block md:ml-6">
 										<div className="flex space-x-4 items-center h-full">
 											{navItems.map(nav => <NavItem key={nav.text} text={nav.text} path={nav.path} isHome={nav.isHome} />)}
-											{session && <NavItem text={'My Profile'} path={'/me'} />}
+											{isAuthenticated && <NavItem text={'My Profile'} path={'/me'} />}
 										</div>
 									</div>
 								</div>
 								<div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
-									<button type="button" className="blue btn font-medium px-4 py-2 rounded-md" onClick={handleAuthClick}>{session ? 'Logout' : 'Tutor Login'}</button>
+									<LoadingButton
+										className="blue btn font-medium px-4 py-2 rounded-md"
+										onClick={handleAuthClick}
+										isLoading={status == 'loading' || isLoading}
+									>
+										{isAuthenticated ? 'Logout' : 'Tutor Login'}
+									</LoadingButton>
 								</div>
 							</div>
 						</div>
@@ -115,7 +126,7 @@ const Header: FC = () => {
 							<Disclosure.Panel className="md:hidden relative bg-white">
 								<div className="px-2 pt-2 pb-3 space-y-1">
 									{navItems.map(nav => <MobNavItem key={nav.text} text={nav.text} path={nav.path} isHome={nav.isHome} onClick={close} />)}
-									{session && <MobNavItem text={'My Profile'} path={'/me'} onClick={close} />}
+									{isAuthenticated && <MobNavItem text={'My Profile'} path={'/me'} onClick={close} />}
 								</div>
 							</Disclosure.Panel>
 						</Transition>
