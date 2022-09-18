@@ -30,6 +30,7 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 		resolver: yupResolver(userInfoSchema),
 	})
 	const [isLoading, setIsLoading] = useState(false)
+	const [phrase, setPhrase] = useState('')
 
 	// set default values once user has loaded
 	useEffect(() => reset(user), [reset, user])
@@ -48,8 +49,10 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 	}
 
 	async function updateMembership(membership: boolean) {
+		setIsLoading(true)
 		await mutate(app.patch('/api/me', { membership, reset: false }))
 		if (!membership) signOut()
+		setIsLoading(false)
 	}
 
 	if (isUserLoading || isDateLoading) return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
@@ -63,9 +66,25 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 				<div className={styles.panel}>
 					<div className={styles['confirmation-body']}>
 						<Dialog.Title className="text-xl text-center">Do you wish to retain your membership at Peer Tutors Society?</Dialog.Title>
+						<div className="w-full px-8">
+							<label htmlFor="verify" className="text-xs">If not, enter the phrase &ldquo;leave Peer Tutors Society&rdquo; before the No button enables.</label>
+							<input id="verify" type="text" value={phrase} onChange={e => setPhrase(e.target.value)} />
+						</div>
 						<div className={styles['btn-group']}>
-							<button type="button" className={styles.btn + ' btn gray'} onClick={() => updateMembership(false)}>No</button>
-							<button type="button" className={styles.btn + ' btn blue'} onClick={() => updateMembership(true)}>Yes</button>
+							<LoadingButton className={styles.btn + ' btn gray'}
+								onClick={() => updateMembership(false)}
+								disabled={phrase != 'leave Peer Tutors Society'}
+								isLoading={isLoading}
+							>
+								No
+							</LoadingButton>
+							<LoadingButton
+								className={styles.btn + ' btn blue'}
+								onClick={() => updateMembership(true)}
+								isLoading={isLoading}
+							>
+								Yes
+							</LoadingButton>
 						</div>
 					</div>
 				</div>
