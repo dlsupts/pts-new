@@ -22,8 +22,8 @@ interface RequestProps {
 	courses: string[]
 }
 
-const META_DESCRIPTION = `${siteTitle} | Apply`
-const PAGE_TITLE = 'Feeling the fire to volunteer and teach? Send us your application now!'
+const PAGE_TITLE = `${siteTitle} | Apply`
+const META_DESCRIPTION = 'Feeling the fire to volunteer and teach? Send us your application now!'
 
 export type FormSchema = Omit<IUserInfo, '_id'>
 
