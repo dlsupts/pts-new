@@ -33,6 +33,10 @@
 		@apply block text-sm font-medium text-gray-700
 	}
 
+	label.required::after {
+		@apply content-['_*'] text-red-500
+	}
+
 	td {
 		@apply overflow-x-hidden text-ellipsis max-w-md
 	}
