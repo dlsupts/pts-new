@@ -7,7 +7,6 @@ import Tutee from '@models/tutee'
 import User from '@models/user'
 import { Types } from 'mongoose'
 import sendEmail from '@lib/sendEmail'
-import tutorialTypes from '@lib/tutorial-types'
 import AssignmentEmail from '@components/mail/assignment'
 import logger from '@lib/logger'
 
@@ -46,13 +45,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 					if (tutor?.email && request && tutee) {
 						await sendEmail(tutor.email, '[PTS] New Tutee', AssignmentEmail({
-							request: {
-								...request,
-								tutorialType: request.duration == 'One Session' ?
-									tutorialTypes['One Session'].find(({ value }) => value == request.tutorialType)?.text || ''
-									:
-									request.tutorialType
-							},
+							request,
 							subjects,
 							tutee,
 						}))

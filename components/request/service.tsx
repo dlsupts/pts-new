@@ -33,13 +33,8 @@ const serviceSchema = yup.object({
 	duration: yup.string().required('Duration is required.'),
 	tutorialType: yup.string().required('Type is required.'),
 	preferred: yup.string().notRequired(),
-	friend1: yup.string().when('tutorialType', {
-		is: 'Group Study',
-		then: schema => schema.required('First friend is required.')
-	}),
-	friend2: yup.string().notRequired(),
 	friends: yup.string().when('tutorialType', {
-		is: 'Group',
+		is: 'Group Study',
 		then: schema => schema.required('This field is required.')
 	})
 }).required()
@@ -70,10 +65,6 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 		})
 
 		if (values.tutorialType === 'Group Study') {
-			const friends: string[] = [values.friend1 || '']
-			if (values.friend2) friends.push(values.friend2)
-			setTutee({ friends })
-		} else if (values.tutorialType === 'Group') {
 			setTutee({ friends: values.friends?.split(',').map(f => f.trim()) })
 		}
 
@@ -103,7 +94,7 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 				<div>
 					<label htmlFor="type" className="required">Tutorial Type</label>
 					<select id="type" {...register('tutorialType')}>
-						{tutorialTypes[duration].map(t => <option key={t.value} value={t.value}>{t.text}</option>)}
+						{Object.entries(tutorialTypes[duration]).map(t => <option key={t[0]} value={t[0]}>{t[1]}</option>)}
 					</select>
 				</div>
 				<div className="col-span-full">
@@ -117,19 +108,6 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 					</select>
 				</div>
 				{tutorialType === 'Group Study' &&
-					<>
-						<div>
-							<label htmlFor="friend-1">Friend 1<span className="text-red-500">*</span></label>
-							<input type="text" {...register('friend1')} id="friend-1" placeholder="Ex. John Velasco" defaultValue={tutee.friends?.[0]} />
-							<p className="form-err-msg text-sm">{errors.friend1?.message}</p>
-						</div>
-						<div>
-							<label htmlFor="friend-2">Friend 2</label>
-							<input type="text" {...register('friend2')} id="friend-2" placeholder="Ex. Carla Reyes" defaultValue={tutee.friends?.[1]} />
-						</div>
-					</>
-				}
-				{tutorialType === 'Group' &&
 					<div className="col-span-full">
 						<label htmlFor="friends">Friends<span className="text-red-500">*</span></label>
 						<input type="text" {...register('friends')} id="friends" placeholder="Ex. John Velasco, Carla Reyes, etc." defaultValue={tutee.friends?.join(', ')} />

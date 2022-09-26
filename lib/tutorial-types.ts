@@ -1,13 +1,13 @@
 const tutorialTypes = {
-	'One Session': [
-		{ value: 'One', text: 'One-on-one' },
-		{ value: 'Group', text: 'Group Study' },
-	],
-	'Whole Term': [
-		{ value: 'One-on-one', text: 'I prefer strictly one-on-one tutorials' },
-		{ value: 'Small Group (2 - 3)', text: `I'm fine having a tutorial with other students (max. 2)` },
-		{ value: 'Group Study', text: 'I have some friends I want to have the tutorial with (max. 2)' },
-	]
+	'One Session': {
+		'One-on-one': 'One-on-one',
+		'Group Study': 'Group study with friends'
+	},
+	'Whole Term': {
+		'One-on-one': 'I prefer strictly one-on-one tutorials',
+		'Small Group (2 - 3)': 'I\'m fine having a tutorial with other students (max. 2)',
+		'Group Study': 'I have some friends that will join me'
+	}
 } as const
 
 export default tutorialTypes
