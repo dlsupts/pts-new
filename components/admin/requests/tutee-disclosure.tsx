@@ -4,7 +4,6 @@ import { ITutee } from '@models/tutee'
 import cn from 'classnames'
 import styles from '@styles/Sessions.module.css'
 import { BareSession, IReqSession } from '@pages/api/requests'
-import tutorialTypes from '@lib/tutorial-types'
 import ScheduleDisplay from '@components/schedule-display'
 import { Tutor } from '@pages/admin/requests'
 import { useCallback } from 'react'
@@ -98,8 +97,7 @@ const TuteeDisclosure = ({ tutee, request, sessions, tutors }: TuteeDisclosurePr
 					</div>
 					<div>
 						<p className={styles.label}>Tutorial Type</p>
-						<p className={styles.data}>{request?.duration == 'One Session' ?
-							tutorialTypes['One Session'].find(t => t.value == request?.tutorialType)?.text : request?.tutorialType}</p>
+						<p className={styles.data}>{request?.tutorialType}</p>
 					</div>
 					{request?.preferred &&
 						<div>

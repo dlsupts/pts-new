@@ -4,7 +4,6 @@ import LoadingSpinner from '@components/loading-spinner'
 import { Disclosure, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import cn from 'classnames'
-import tutorialTypes from '@lib/tutorial-types'
 import styles from '@styles/Sessions.module.css'
 import { useRetriever } from '@lib/useRetriever'
 import { IReqSesssion } from '@pages/api/me/sessions'
@@ -52,7 +51,6 @@ const TutorSessions: NextPage = () => {
 								leaveFrom="transform scale-100 opacity-100"
 								leaveTo="transform scale-95 opacity-0"
 							>
-
 								<Disclosure.Panel className="sm:px-4 pb-2 text-gray-900">
 									<div className={styles['data-display']}>
 										<div className={styles.header}>
@@ -65,8 +63,7 @@ const TutorSessions: NextPage = () => {
 											</div>
 											<div>
 												<p className={styles.label}>Tutorial Type</p>
-												<p className={styles.data}>{duration == 'One Session' ?
-													tutorialTypes['One Session'].find(t => t.value == tutorialType)?.text : tutorialType}</p>
+												<p className={styles.data}>{tutorialType}</p>
 											</div>
 											<div>
 												<p className={styles.label}>Subjects - Specific Topics</p>

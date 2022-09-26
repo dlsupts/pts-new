@@ -6,7 +6,6 @@ import Session from '@models/session'
 import Tutee from '@models/tutee'
 import User from '@models/user'
 import sendEmail from '@lib/sendEmail'
-import tutorialTypes from '@lib/tutorial-types'
 import AssignmentEmail from '@components/mail/assignment'
 import logger from '@lib/logger'
 
@@ -27,7 +26,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 					const wasMatched = await Session.exists({ request: query.reqId, tutor: body.tutor }) as unknown as boolean
 
 					const [tutor, request, sess] = await Promise.all([
-						User.findById(body.tutor, '-_id email').lean(),
+						User.findById(body.tutor, '_id email').lean(),
 						Request.findById(query.reqId, '-_id tutee duration tutorialType').lean(),
 						Session.findByIdAndUpdate(query.sessId, { tutor: body.tutor, status: 'matched' }, {
 							projection: '-_id subject topics'
@@ -44,13 +43,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 					if (tutor?.email && request && sess && tutee) {
 						await sendEmail(tutor.email, '[PTS] New Tutee', AssignmentEmail({
-							request: {
-								...request,
-								tutorialType: request.duration == 'One Session' ?
-									tutorialTypes['One Session'].find(({ value }) => value == request.tutorialType)?.text || ''
-									:
-									request.tutorialType
-							},
+							request,
 							subjects: [sess],
 							tutee,
 						}))

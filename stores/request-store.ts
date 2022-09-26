@@ -32,7 +32,7 @@ const useRequestStore = create<RequestStore>(set => ({
 	},
 	request: {
 		duration: 'One Session',
-		tutorialType: 'One',
+		tutorialType: 'One-on-one',
 		preferred: '',
 	},
 	selectedSubjects: [],
