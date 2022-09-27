@@ -20,6 +20,7 @@ import Head from 'next/head'
 import { siteTitle } from '@components/layout'
 import ConfirmationModal from '@components/modal/confirmation-modal'
 import { TrashIcon, RefreshIcon } from '@heroicons/react/solid'
+import { Dialog } from '@headlessui/react'
 
 interface ITableProps extends IUser {
 	status?: string
@@ -100,7 +101,9 @@ const AdminPage: NextPage = () => {
 				<div className={modalStyles.panel}>
 					<div className={cn(styles['data-display'], '!border-0')}>
 						<div className={cn(styles.header, 'flex justify-between')}>
-							<h3>{tutor?.firstName} {tutor?.lastName}</h3>
+							<Dialog.Title as="h3">
+								{tutor?.firstName} {tutor?.lastName}<span className="font-semibold text-gray-500"> (Inactive User)</span>
+							</Dialog.Title>
 							<div className="flex">
 								<button aria-labelledby="refresh-label" className="text-gray-600 hover:text-gray-700">
 									<RefreshIcon className="w-6 aspect-sqare"
@@ -141,41 +144,49 @@ const AdminPage: NextPage = () => {
 								<p className={styles.label}>Facebook URL</p>
 								<a href={tutor?.url} className={cn(styles.data, 'underline')}>{tutor?.url}</a>
 							</div>
-							<div className="col-span-full">
-								<p className={styles.label}>Schedule</p>
-								<table className="w-full shadow-sm">
-									<tbody>
-										{tutor && days.map((day, index) => (
-											<tr key={day.key} className={cn({ 'bg-gray-100': index % 2 })}>
-												<td className="font-medium pl-2 py-2 sm:pl-6 w-32 sm:w-36">{day.text}</td>
-												<td className="py-2" dangerouslySetInnerHTML={{ __html: (tutor.schedule as ISchedule)[day.key].join('<br>') }} />
-											</tr>
-										))
-										}
-									</tbody>
-								</table>
+							<div>
+								<p className={styles.label}>Last Active Term</p>
+								<p className={styles.data}>{tutor?.lastActive || 'N/A'}</p>
 							</div>
-							<div className="col-span-full">
-								<p className={styles.label}>Tutoring Services</p>
-								<p className={styles.data}>{tutor?.tutoringService.join(', ')}</p>
-							</div>
-							<div className="col-span-full">
-								<p className={styles.label}>Tutoring Types</p>
-								<p className={styles.data}>{tutor?.tutorialType?.join(', ')}</p>
-							</div>
-							<div className="col-span-full">
-								<p className={styles.label}>Tutee Count</p>
-								<p className={styles.data}>{tutor?.tuteeCount} out of {tutor?.maxTuteeCount}</p>
-							</div>
-							<div className="col-span-full">
-								<p className={styles.label}>Topics</p>
-								{tutor?.topics.map(t => (
-									<div key={t[0]} className="my-2">
-										<p className='font-medium'>{t[0]}</p>
-										<p className="text-sm text-gray-500">Specific Topics: {t[1] || 'None'}</p>
+							{tutor && !tutor.reset &&
+								<>
+									<div className="col-span-full">
+										<p className={styles.label}>Schedule</p>
+										<table className="w-full shadow-sm">
+											<tbody>
+												{tutor && days.map((day, index) => (
+													<tr key={day.key} className={cn({ 'bg-gray-100': index % 2 })}>
+														<td className="font-medium pl-2 py-2 sm:pl-6 w-32 sm:w-36">{day.text}</td>
+														<td className="py-2" dangerouslySetInnerHTML={{ __html: (tutor.schedule as ISchedule)[day.key].join('<br>') }} />
+													</tr>
+												))
+												}
+											</tbody>
+										</table>
 									</div>
-								))}
-							</div>
+									<div className="col-span-full">
+										<p className={styles.label}>Tutoring Services</p>
+										<p className={styles.data}>{tutor?.tutoringService.join(', ')}</p>
+									</div>
+									<div className="col-span-full">
+										<p className={styles.label}>Tutoring Types</p>
+										<p className={styles.data}>{tutor?.tutorialType?.join(', ')}</p>
+									</div>
+									<div className="col-span-full">
+										<p className={styles.label}>Tutee Count</p>
+										<p className={styles.data}>{tutor?.tuteeCount} out of {tutor?.maxTuteeCount}</p>
+									</div>
+									<div className="col-span-full">
+										<p className={styles.label}>Topics</p>
+										{tutor?.topics.map(t => (
+											<div key={t[0]} className="my-2">
+												<p className='font-medium'>{t[0]}</p>
+												<p className="text-sm text-gray-500">Specific Topics: {t[1] || 'None'}</p>
+											</div>
+										))}
+									</div>
+								</>
+							}
 						</div>
 					</div>
 				</div>
