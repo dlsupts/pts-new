@@ -43,6 +43,7 @@ const AdminPage: NextPage = () => {
 	const [isDelOpen, setIsDelOpen] = useState(false)
 	const [tutor, setTutor] = useState<IUser>()
 	const button = useRef<HTMLButtonElement>(null)
+	const isActive = tutor && !tutor.reset
 
 	const onRowClick = useCallback((id: string) => {
 		setIsOpen(true)
@@ -102,7 +103,8 @@ const AdminPage: NextPage = () => {
 					<div className={cn(styles['data-display'], '!border-0')}>
 						<div className={cn(styles.header, 'flex justify-between')}>
 							<Dialog.Title as="h3">
-								{tutor?.firstName} {tutor?.lastName}<span className="font-semibold text-gray-500"> (Inactive User)</span>
+								{tutor?.firstName} {tutor?.lastName}
+								{!isActive && <span className="font-semibold text-gray-500"> (Inactive User)</span>}
 							</Dialog.Title>
 							<div className="flex">
 								<button aria-labelledby="refresh-label" className="text-gray-600 hover:text-gray-700">
@@ -148,7 +150,7 @@ const AdminPage: NextPage = () => {
 								<p className={styles.label}>Last Active Term</p>
 								<p className={styles.data}>{tutor?.lastActive || 'N/A'}</p>
 							</div>
-							{tutor && !tutor.reset &&
+							{isActive &&
 								<>
 									<div className="col-span-full">
 										<p className={styles.label}>Schedule</p>
