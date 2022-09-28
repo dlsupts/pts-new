@@ -18,6 +18,7 @@ import axios from 'axios'
 import MySwitch from '@components/switch'
 import { siteTitle } from '@components/layout'
 import Head from 'next/head'
+import LoadingButton from '@components/loading-button'
 
 type button = {
 	text: string
@@ -29,6 +30,7 @@ const LibraryPage: NextPage = () => {
 	const { data: libraries, mutate: mutateLibraries } = useRetriever<ILib[]>('/api/libraries')
 	const { data: dates, mutate: mutateDates } = useRetriever<IDate[]>('/api/dates')
 	const { data: isInMaintenance, mutate: mutateIsInMaintenance } = useRetriever<boolean>('/api/maintenance', true)
+	const [isLoading, setIsLoading] = useState(false)
 	const [libIdx, setLibIdx] = useState(0)
 	const [date, setDate] = useState<IDate>()
 	const [modal, setModal] = useState('')
@@ -36,6 +38,7 @@ const LibraryPage: NextPage = () => {
 	function closeModal() { setModal('') }
 
 	async function handleReset() {
+		setIsLoading(true)
 		try {
 			await app.delete('/api/maintenance')
 			toast.success('Term data has been reset!', toastSuccessConfig)
@@ -43,6 +46,7 @@ const LibraryPage: NextPage = () => {
 		} catch (err) {
 			toastAxiosError(err)
 		}
+		setIsLoading(false)
 	}
 
 	async function addLibrary(details: AddLibrarySchema) {
@@ -112,6 +116,7 @@ const LibraryPage: NextPage = () => {
 			text: 'Export Database',
 			tooltip: 'Download data in JSON and CSV format',
 			async onClick() {
+				setIsLoading(true)
 				const { data } = await app.get<string>('/api/export')
 
 				const filePath = 'data:application/zip;base64,' + data
@@ -121,6 +126,7 @@ const LibraryPage: NextPage = () => {
 				document.body.appendChild(a)
 				a.click()
 				document.body.removeChild(a)
+				setIsLoading(false)
 			}
 		},
 		{
@@ -197,10 +203,10 @@ const LibraryPage: NextPage = () => {
 					</div>
 					<div className={styles['button-group']}>
 						{panelButtons.map(b =>
-							<div key={b.text} role="button" className="btn blue group" onClick={b.onClick}>
+							<LoadingButton key={b.text} role="button" className="btn blue group" onClick={b.onClick} isLoading={isLoading}>
 								<p>{b.text}</p>
 								<span className="group-hover:scale-100">{b.tooltip}</span>
-							</div>
+							</LoadingButton>
 						)}
 					</div>
 				</section>
