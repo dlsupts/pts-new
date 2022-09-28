@@ -3,19 +3,12 @@ import { useEffect, useState } from 'react'
 import dbConnect from '../lib/db'
 import Library from '../models/library'
 import cn from 'classnames'
-import { IUserInfo, userInfoSchema } from '../models/user'
-import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import app from '../lib/axios-config'
-import { toast } from 'react-toastify'
-import { toastSuccessConfig, toastErrorConfig } from '../lib/toast-defaults'
-import axios from 'axios'
 import { parseContent } from '@lib/utils'
 import { useRetriever } from '@lib/useRetriever'
 import { IDate } from '@models/date'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
-import LoadingButton from '@components/loading-button'
+import dynamic from 'next/dynamic'
 
 interface RequestProps {
 	faqs: string[][]
@@ -25,18 +18,15 @@ interface RequestProps {
 const PAGE_TITLE = `${siteTitle} | Apply`
 const META_DESCRIPTION = 'Feeling the fire to volunteer and teach? Send us your application now!'
 
-export type FormSchema = Omit<IUserInfo, '_id'>
+const ApplicationForm = dynamic(() => import('@components/application-form'))
 
 const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 	const [help, setHelp] = useState(faqs[0][1])
 	const [showForm, setShowForm] = useState(false)
 	const [applyError, setApplyError] = useState('Checking availability...')
-	const { register, handleSubmit, formState: { errors }, reset } = useForm<FormSchema>({
-		resolver: yupResolver(userInfoSchema)
-	})
+
 	const { data: date } = useRetriever<IDate>('/api/dates/Tutor Recruitment')
 	const { data: isMaintenance } = useRetriever<boolean>('/api/maintenance')
-	const [isLoading, setIsLoading] = useState(false)
 
 	useEffect(() => {
 		if (date == undefined || isMaintenance == undefined) return
@@ -47,21 +37,6 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 		if (today > new Date(date.end).getTime()) return setApplyError('Application period has passed!')
 		setApplyError('')
 	}, [isMaintenance, date])
-
-	const onSubmit = async (values: FormSchema) => {
-		setIsLoading(true)
-		try {
-			await app.post('/api/applications', values)
-			toast.success('Application was sent! Please wait for us to contact you.', toastSuccessConfig)
-			setShowForm(false)
-			reset()
-		} catch (e) {
-			if (axios.isAxiosError(e)) {
-				toast.error(e?.response?.data, toastErrorConfig)
-			}
-		}
-		setIsLoading(false)
-	}
 
 	return (
 		<div className="main-height flex flex-col justify-center px-4 mt-10 md:mt-0">
@@ -76,63 +51,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 			</Head>
 			<div className="grid place-items-center lg:grid-cols-2 grid-cols-auto mx-auto min-h-[20rem] container gap-y-8">
 				{showForm ?
-					<form className="grid grid-cols-4 gap-4 w-full px-10 py-8 my-0 sm:my-8 border shadow-sm rounded-md" onSubmit={handleSubmit(onSubmit)}>
-						<h1 className="font-bold text-2xl col-span-full">Application Form</h1>
-						<div className="col-span-full sm:col-span-2">
-							<label htmlFor="id-number">ID number<span className='text-red-500'>*</span></label>
-							<input type="number" {...register('idNumber')} id="id-number" autoComplete="id-number" required />
-							<p className="form-err-msg text-sm">{(errors.idNumber?.type === 'typeError' && 'ID number is required.') || errors.idNumber?.message}</p>
-						</div>
-						<div className="col-span-full sm:col-span-2">
-							<label htmlFor="email">DLSU Email<span className='text-red-500'>*</span></label>
-							<input type="email" {...register('email')} id="email" autoComplete="email" required />
-							<p className="form-err-msg text-sm">{errors.email?.message}</p>
-						</div>
-						<div className="col-span-full">
-							<label htmlFor="first-name">First name<span className='text-red-500'>*</span></label>
-							<input type="text" {...register('firstName')} id="first-name" required />
-							<p className="form-err-msg text-sm">{errors.firstName?.message}</p>
-						</div>
-						<div className="col-span-full">
-							<label htmlFor="middle-name">Middle name</label>
-							<input type="text" {...register('middleName')} id="middle-name" autoComplete="middle-name" />
-							<p className="form-err-msg text-sm">{errors.middleName?.message}</p>
-						</div>
-						<div className="col-span-full">
-							<label htmlFor="last-name">Last name<span className='text-red-500'>*</span></label>
-							<input type="text" {...register('lastName')} id="last-name" autoComplete="family-name" required />
-							<p className="form-err-msg text-sm">{errors.lastName?.message}</p>
-						</div>
-						<div className="col-span-full sm:col-span-2">
-							<label htmlFor="course">Degree Program<span className='text-red-500'>*</span></label>
-							<select {...register('course')} id="course" autoComplete="course" required>
-								{courses.map(c => <option key={c}>{c}</option>)}
-							</select>
-							<p className="form-err-msg text-sm">{errors.course?.message}</p>
-						</div>
-						<div className="col-span-full sm:col-span-2">
-							<label htmlFor="terms">Remaining Terms<span className='text-red-500'>*</span></label>
-							<input type="number" {...register('terms')} id="terms" min={1} required />
-							<p className="form-err-msg text-sm">{(errors.terms?.type === 'typeError' && 'Remaining terms is required.') || errors.terms?.message}</p>
-						</div>
-						<div className="col-span-full sm:col-span-2">
-							<label htmlFor="contact">Contact Number<span className='text-red-500'>*</span></label>
-							<input type="tel" {...register('contact')} id="contact" autoComplete="contact-number" required />
-							<p className="form-err-msg text-sm">{errors.contact?.message}</p>
-						</div>
-						<div className="col-span-full sm:col-span-2">
-							<label htmlFor="url">Facebook Profile URL<span className='text-red-500'>*</span></label>
-							<input type="text" {...register('url')} id="url" placeholder="https://facebook.com/pts.dlsu" required />
-							<p className="form-err-msg text-sm">{errors.url?.message}</p>
-						</div>
-
-						<div className="col-span-full flex justify-end mt-2 space-x-2">
-							<input type="reset" className="btn gray px-4 py-2 font-medium rounded-md" disabled={isLoading} />
-							<LoadingButton type="submit" className="btn blue px-4 py-2 font-medium rounded-md" isLoading={isLoading}>
-								Submit
-							</LoadingButton>
-						</div>
-					</form>
+					<ApplicationForm courses={courses} onSubmit={() => setShowForm(false)} />
 					:
 					<div className="flex flex-col items-center py-16">
 						<div className="mb-6">
