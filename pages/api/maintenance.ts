@@ -16,7 +16,7 @@ const maintenanceHandler = async (req: NextApiRequest, res: NextApiResponse<bool
 		switch (method) {
 			case 'GET': {
 				const user = await User.findOne({ email: process.env.NEXT_PUBLIC_ADMIN_EMAIL }).lean()
-				res.send(user?.reset || false)
+				res.send(user?.reset ?? false)
 				break
 			}
 
@@ -45,6 +45,7 @@ const maintenanceHandler = async (req: NextApiRequest, res: NextApiResponse<bool
 						tuteeCount: 0,
 						maxTuteeCount: 0,
 						reset: true,
+						storedLastActive: '$lastActive'
 					} as Partial<IUser>),
 					Schedule.updateMany({ M: [], T: [], W: [], H: [], F: [], S: [] } as ISchedule)
 				])

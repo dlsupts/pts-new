@@ -28,7 +28,7 @@ const CommiteeDiv: FC<Omit<ICommittee, '_id'>> = ({ name, officers }) => {
 				{officers.map((o, i) => (
 					<>
 						<OfficerTile
-							key={o.user.toString()}
+							key={i}
 							user={o.user}
 							name={o.name}
 							position={o.position}

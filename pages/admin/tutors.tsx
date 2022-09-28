@@ -148,7 +148,7 @@ const AdminPage: NextPage = () => {
 							</div>
 							<div>
 								<p className={styles.label}>Last Active Term</p>
-								<p className={styles.data}>{tutor?.lastActive || 'N/A'}</p>
+								<p className={styles.data}>{tutor?.lastActive ?? tutor?.storedLastActive ?? 'N/A'}</p>
 							</div>
 							{isActive &&
 								<>

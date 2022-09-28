@@ -1,4 +1,4 @@
-import { FormSchema } from '@pages/apply'
+import { FormSchema } from '@components/application-form'
 
 type ApplicationEmail = {
 	applicant: FormSchema

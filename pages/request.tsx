@@ -1,11 +1,8 @@
 import { GetStaticProps, NextPage } from 'next'
 import { useEffect, useState } from 'react'
-import Service from '@components/request/service'
 import dbConnect from '@lib/db'
 import Library from '@models/library'
 import cn from 'classnames'
-import Information from '@components/request/information'
-import Schedule from '@components/request/schedule'
 import useStore from '@stores/request-store'
 import app from '@lib/axios-config'
 import { toast } from 'react-toastify'
@@ -16,6 +13,7 @@ import { useRetriever } from '@lib/useRetriever'
 import { IDate } from '@models/date'
 import { siteTitle } from '@components/layout'
 import Head from 'next/head'
+import dynamic from 'next/dynamic'
 
 interface RequestProps {
 	faqs: string[][]
@@ -30,6 +28,10 @@ interface RequestProps {
 const PAGE_TITLE = `${siteTitle} | Request`
 const META_DESCRIPTION = 'Need help? Just send us a tutor request, and we will match you with an available tutor as soon as we can.'
 const steps = ['Tutorial Service', 'Personal Info', 'Schedule (Free Time)']
+
+const Service = dynamic(() => import('@components/request/service'), { loading: () => <LoadingSpinner /> })
+const Information = dynamic(() => import('@components/request/information'), { loading: () => <LoadingSpinner /> })
+const Schedule = dynamic(() => import('@components/request/schedule'), { loading: () => <LoadingSpinner /> })
 
 const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, colleges, degreePrograms, campuses, dataPrivacy }) => {
 	const [help, setHelp] = useState(faqs[0][1])

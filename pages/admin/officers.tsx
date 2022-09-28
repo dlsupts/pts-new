@@ -6,17 +6,22 @@ import Committee from '@components/admin/officers/commitee'
 import LoadingSpinner from '@components/loading-spinner'
 import app from '@lib/axios-config'
 import { ICommittee } from '@models/committee'
-import AddOfficerModal, { AddOfficerSchema } from '@components/admin/officers/add-officer-modal'
+import { AddOfficerSchema } from '@components/admin/officers/add-officer-modal'
 import { IUser } from '@models/user'
-import UpdateOfficerModal, { UpdateOfficerSchema } from '@components/admin/officers/update-officer-modal'
-import AddCommitteeModal, { AddCommitteeSchema } from '@components/admin/officers/add-committee-modal'
-import ChangeOrderModal from '@components/admin/officers/change-order-modal'
+import { UpdateOfficerSchema } from '@components/admin/officers/update-officer-modal'
+import { AddCommitteeSchema } from '@components/admin/officers/add-committee-modal'
 import { useRetriever } from '@lib/useRetriever'
-import ConfirmationModal from '@components/modal/confirmation-modal'
 import { toast } from 'react-toastify'
 import { toastSuccessConfig } from '@lib/toast-defaults'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
+import dynamic from 'next/dynamic'
+
+const AddOfficerModal = dynamic(() => import('@components/admin/officers/add-officer-modal'))
+const UpdateOfficerModal = dynamic(() => import('@components/admin/officers/update-officer-modal'))
+const AddCommitteeModal = dynamic(() => import('@components/admin/officers/add-committee-modal'))
+const ChangeOrderModal = dynamic(() => import('@components/admin/officers/change-order-modal'))
+const ConfirmationModal = dynamic(() => import('@components/modal/confirmation-modal'))
 
 const OfficerPage: NextPage = () => {
 	const { data: committees, isLoading, mutate } = useRetriever<ICommittee[]>('/api/committees')

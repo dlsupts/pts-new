@@ -5,6 +5,10 @@ import { useRouter } from 'next/router'
 import LoadingSpinner from './loading-spinner'
 import cn from 'classnames'
 import Head from 'next/head'
+import useUser from '@lib/useUser'
+import { useRetriever } from '@lib/useRetriever'
+import { IDate } from '@models/date'
+import dynamic from 'next/dynamic'
 
 interface NavItemProp {
 	text: string
@@ -16,6 +20,8 @@ const navItems: NavItemProp[] = [
 	{ text: 'Tutor Details', path: '/me/details' },
 	{ text: 'Tutorial Sessions', path: '/me/sessions' },
 ]
+
+const MembershipModal = dynamic(() => import('@components/modal/membership-modal'))
 
 const NavItem: FC<NavItemProp> = ({ text, path }) => {
 	const { pathname } = useRouter()
@@ -37,6 +43,9 @@ const NavItem: FC<NavItemProp> = ({ text, path }) => {
 const UserLayout: FC = ({ children }) => {
 	const router = useRouter()
 	const time = (new Date).getTime()
+	const { user, isLoading: isUserLoading, isError } = useUser()
+	const { data: date, isLoading: isDateLoading } = useRetriever<IDate>('/api/dates/ayterm')
+
 	const { status, data } = useSession({
 		required: true,
 		onUnauthenticated: () => {
@@ -45,7 +54,7 @@ const UserLayout: FC = ({ children }) => {
 		}
 	})
 
-	if (status == 'loading' || !data) {
+	if (status == 'loading' || !data || isDateLoading || isUserLoading) {
 		return <LoadingSpinner className="absolute h-screen w-screen top-0 left-0 bg-white" />
 	}
 
@@ -61,10 +70,15 @@ const UserLayout: FC = ({ children }) => {
 			</Head>
 			<div className="lg:col-span-2 xl:col-span-1 md:mb-6">
 				{navItems.map(item => <NavItem key={item.path} text={item.text} path={item.path} />)}
-				{data?.user?.type === 'ADMIN' && <NavItem text='Admin Console' path='/admin' />}
+				{data.user?.type === 'ADMIN' && <NavItem text='Admin Console' path='/admin' />}
 			</div>
 			<div className="lg:col-span-7 xl:col-span-6">
-				{children}
+				{
+					isError || !user ? <p>An error has occured. Please try again.</p> :
+					// modal will only show when there is a set term definition
+						date && user.reset ? <MembershipModal /> :
+							children
+				}
 			</div>
 		</div>
 	)
