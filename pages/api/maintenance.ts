@@ -45,6 +45,7 @@ const maintenanceHandler = async (req: NextApiRequest, res: NextApiResponse<bool
 						tuteeCount: 0,
 						maxTuteeCount: 0,
 						reset: true,
+						storedLastActive: '$lastActive'
 					} as Partial<IUser>),
 					Schedule.updateMany({ M: [], T: [], W: [], H: [], F: [], S: [] } as ISchedule)
 				])
