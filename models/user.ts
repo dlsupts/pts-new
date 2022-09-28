@@ -30,10 +30,14 @@ export interface ITutorInfo {
 	schedule: Schema.Types.ObjectId | ISchedule
 }
 
-export interface IUser extends IUserInfo, ITutorInfo {
+export interface IUser extends IUserInfo, ITutorInfo { 
 	userType: role
 	reset: boolean
 	lastActive: string
+	// takes the value of lastActive upon term reset. This serves as a backup value when lastActive is updated, but has to be reset
+	// use case: a user has set his max tutee > 0, so lastActive is set to the current term. However, he later changes it back to 0,
+	// so the value of lastActive will now be reset to the value stored in storedLastActive
+	storedLastActive: string
 }
 
 const userSchema = new Schema<IUser>({
