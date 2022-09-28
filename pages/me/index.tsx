@@ -1,6 +1,5 @@
 import { GetStaticProps, NextPage } from 'next'
 import { toast } from 'react-toastify'
-import LoadingSpinner from '@components/loading-spinner'
 import UserLayout from '@components/user-layout'
 import app from '@lib/axios-config'
 import dbConnect from '@lib/db'
@@ -11,26 +10,18 @@ import { IUserInfo, IUser, userInfoSchema } from '@models/user'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
-import Modal from '@components/modal'
-import styles from '@styles/Modal.module.css'
-import { Dialog } from '@headlessui/react'
-import { signOut } from 'next-auth/react'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
 import LoadingButton from '@components/loading-button'
-import { useRetriever } from '@lib/useRetriever'
-import { IDate } from '@models/date'
 
 type FormSchema = Omit<IUserInfo, '_id'>
 
 const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
-	const { user, isLoading: isUserLoading, isError, mutate } = useUser()
-	const { data: date, isLoading: isDateLoading } = useRetriever<IDate>('/api/dates/ayterm')
+	const { user, mutate } = useUser()
 	const { register, handleSubmit, formState: { errors }, reset } = useForm<Omit<FormSchema, '_id'>>({
 		resolver: yupResolver(userInfoSchema),
 	})
 	const [isLoading, setIsLoading] = useState(false)
-	const [phrase, setPhrase] = useState('')
 
 	// set default values once user has loaded
 	useEffect(() => reset(user), [reset, user])
@@ -47,50 +38,6 @@ const TutorPage: NextPage<{ courses: string[] }> = ({ courses }) => {
 		}
 		setIsLoading(false)
 	}
-
-	async function updateMembership(membership: boolean) {
-		setIsLoading(true)
-		await mutate(app.patch('/api/me', { membership, reset: false }))
-		if (!membership) signOut()
-		setIsLoading(false)
-	}
-
-	if (isUserLoading || isDateLoading) return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
-
-	if (isError) return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
-
-	if (user?.reset && date) return (
-		<UserLayout>
-			{/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
-			<Modal isOpen={true} close={() => { }}>
-				<div className={styles.panel}>
-					<div className={styles['confirmation-body']}>
-						<Dialog.Title className="text-xl text-center">Do you wish to retain your membership at Peer Tutors Society?</Dialog.Title>
-						<div className="w-full px-8">
-							<label htmlFor="verify" className="text-xs">If not, enter the phrase &ldquo;leave Peer Tutors Society&rdquo; before the No button enables.</label>
-							<input id="verify" type="text" value={phrase} onChange={e => setPhrase(e.target.value)} />
-						</div>
-						<div className={styles['btn-group']}>
-							<LoadingButton className={styles.btn + ' btn gray'}
-								onClick={() => updateMembership(false)}
-								disabled={phrase != 'leave Peer Tutors Society'}
-								isLoading={isLoading}
-							>
-								No
-							</LoadingButton>
-							<LoadingButton
-								className={styles.btn + ' btn blue'}
-								onClick={() => updateMembership(true)}
-								isLoading={isLoading}
-							>
-								Yes
-							</LoadingButton>
-						</div>
-					</div>
-				</div>
-			</Modal>
-		</UserLayout >
-	)
 
 	return (
 		<UserLayout>
