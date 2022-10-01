@@ -17,7 +17,7 @@ export default function Facebook() {
 							version: 'v15.0'
 						});
 						};
-					console.log('testing')
+
 					(function(d, s, id) {
 							var js, fjs = d.getElementsByTagName(s)[0];
 					if (d.getElementById(id)) return;
