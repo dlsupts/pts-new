@@ -1,4 +1,3 @@
-import Facebook from '@components/facebook'
 import Document, { Html, Head, Main, NextScript, DocumentContext, DocumentInitialProps } from 'next/document'
 import { resetServerContext } from 'react-beautiful-dnd'
 
@@ -28,7 +27,6 @@ class MyDocument extends Document {
 					<meta name="keywords" content="dlsu,de la salle university,pts,peer tutor society,ccs,college of computer science,free,peer tutoring,student tutor" />
 				</Head>
 				<body>
-					<Facebook />
 					<Main />
 					<NextScript />
 				</body>

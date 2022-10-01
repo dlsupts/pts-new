@@ -5,6 +5,7 @@ import Layout from '../components/layout'
 import { SessionProvider } from 'next-auth/react'
 import { ToastContainer } from 'react-toastify'
 import { Session } from 'next-auth'
+import Facebook from '@components/facebook'
 
 function MyApp({
 	Component,
@@ -14,6 +15,7 @@ function MyApp({
 }>) {
 	return (
 		<SessionProvider session={session}>
+			<Facebook />
 			<Layout>
 				<Component {...pageProps} />
 			</Layout>
