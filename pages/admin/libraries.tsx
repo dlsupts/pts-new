@@ -10,15 +10,18 @@ import { useCallback, useMemo, useState } from 'react'
 import app from '@lib/axios-config'
 import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import { toast } from 'react-toastify'
-import LibraryModal from '@components/admin/libraries/library-modal'
-import AddLibraryModal, { AddLibrarySchema } from '@components/admin/libraries/add-library-modal'
-import DateModal, { DateModalSchema } from '@components/admin/libraries/date-modal'
-import ConfirmationModal from '@components/modal/confirmation-modal'
-import axios from 'axios'
+import { AddLibrarySchema } from '@components/admin/libraries/add-library-modal'
+import { DateModalSchema } from '@components/admin/libraries/date-modal'
 import MySwitch from '@components/switch'
 import { siteTitle } from '@components/layout'
 import Head from 'next/head'
 import LoadingButton from '@components/loading-button'
+import dynamic from 'next/dynamic'
+
+const LibraryModal = dynamic(() => import('@components/admin/libraries/library-modal'))
+const AddLibraryModal = dynamic(() => import('@components/admin/libraries/add-library-modal'))
+const DateModal = dynamic(() => import('@components/admin/libraries/date-modal'))
+const ConfirmationModal = dynamic(() => import('@components/modal/confirmation-modal'))
 
 type button = {
 	text: string
@@ -56,9 +59,7 @@ const LibraryPage: NextPage = () => {
 				return libraries?.concat(data)
 			})
 		} catch (err) {
-			if (axios.isAxiosError(err)) {
-				toast.error(err.response?.data, toastErrorConfig)
-			}
+			toastAxiosError(err)
 		}
 		closeModal()
 	}
@@ -99,9 +100,7 @@ const LibraryPage: NextPage = () => {
 			closeModal()
 			toast.success('Dates updated!', toastSuccessConfig)
 		} catch (err) {
-			if (axios.isAxiosError(err)) {
-				toast.error(err.response?.data, toastErrorConfig)
-			}
+			toastAxiosError(err)
 		}
 	}
 

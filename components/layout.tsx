@@ -2,9 +2,11 @@ import { useSession } from 'next-auth/react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { FC } from 'react'
-import AdminHeader from './admin-header'
-import Header from './header'
-import ScrollToTop from './scroll-to-top'
+import dynamic from 'next/dynamic'
+
+const Header = dynamic(() => import('./header'))
+const AdminHeader = dynamic(() => import('./admin-header'))
+const ScrollToTop = dynamic(() => import('./scroll-to-top'))
 
 export const siteTitle = 'Peer Tutors Society'
 const META_DESCRIPTION = 'A society of volunteer students who are willing to serve as tutors to students who need academic assistance.'
