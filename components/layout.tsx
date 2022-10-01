@@ -4,9 +4,9 @@ import { useRouter } from 'next/router'
 import { FC } from 'react'
 import dynamic from 'next/dynamic'
 
+const Facebook = dynamic(() => import('@components/facebook'))
 const Header = dynamic(() => import('./header'))
 const AdminHeader = dynamic(() => import('./admin-header'))
-const ScrollToTop = dynamic(() => import('./scroll-to-top'))
 
 export const siteTitle = 'Peer Tutors Society'
 const META_DESCRIPTION = 'A society of volunteer students who are willing to serve as tutors to students who need academic assistance.'
@@ -17,6 +17,7 @@ const Layout: FC = ({ children }) => {
 
 	return (
 		<>
+			{!(pathname.startsWith('/me') || pathname.startsWith('/admin')) && <Facebook />}
 			<Head>
 				<title>{siteTitle}</title>
 				<meta name="description" content={META_DESCRIPTION} />
@@ -54,8 +55,6 @@ const Layout: FC = ({ children }) => {
 					</div>
 				</div>
 			</footer>
-
-			<ScrollToTop />
 		</>
 	)
 }
