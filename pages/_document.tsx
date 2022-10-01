@@ -1,3 +1,4 @@
+import Facebook from '@components/facebook'
 import Document, { Html, Head, Main, NextScript, DocumentContext, DocumentInitialProps } from 'next/document'
 import { resetServerContext } from 'react-beautiful-dnd'
 
@@ -24,9 +25,10 @@ class MyDocument extends Document {
 					<meta property="twitter:site" content="@ptsdlsu" />
 					<meta property="twitter:creator" content="@ptsdlsu" />
 					<meta name="theme-color" content="#0370be" />
-					<meta name="keywords" content="dlsu,de la salle university,pts,peer tutor society,ccs,college of computer science,free,peer tutoring,student tutor"/>
+					<meta name="keywords" content="dlsu,de la salle university,pts,peer tutor society,ccs,college of computer science,free,peer tutoring,student tutor" />
 				</Head>
 				<body>
+					<Facebook />
 					<Main />
 					<NextScript />
 				</body>
