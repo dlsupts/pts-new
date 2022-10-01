@@ -5,8 +5,9 @@ export default function Facebook() {
 		<>
 			<div id="fb-root" />
 			<div id="fb-customer-chat" className="fb-customerchat" />
-			<Script id="fb-chat" type="text/javascript" strategy="lazyOnload">
-				{`
+			{process.env.NODE_ENV === 'production' &&
+				<Script id="fb-chat" type="text/javascript" strategy="lazyOnload">
+					{`
 					var chatbox = document.getElementById('fb-customer-chat');
 					chatbox.setAttribute("page_id", "208440378090");
 					chatbox.setAttribute("attribution", "biz_inbox");
@@ -26,7 +27,8 @@ export default function Facebook() {
 					fjs.parentNode.insertBefore(js, fjs);
 						}(document, 'script', 'facebook-jssdk'));
 				`}
-			</Script>
+				</Script>
+			}
 		</>
 	)
 }
