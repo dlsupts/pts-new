@@ -2,7 +2,7 @@ import Script from 'next/script'
 
 export default function Facebook() {
 	return (
-		<>
+		<div className="contents">
 			<div id="fb-root" />
 			<div id="fb-customer-chat" className="fb-customerchat" />
 			{process.env.NODE_ENV === 'production' &&
@@ -29,6 +29,6 @@ export default function Facebook() {
 				`}
 				</Script>
 			}
-		</>
+		</div>
 	)
 }
