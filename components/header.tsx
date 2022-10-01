@@ -9,6 +9,7 @@ import cn from 'classnames'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { matchPath } from '@lib/utils'
 import LoadingButton from './loading-button'
+import Logo from '@public/header-logo.png'
 
 interface NavItemProp {
 	text: string
@@ -92,7 +93,7 @@ const Header: FC = () => {
 								<div className="flex-1 flex items-center h-full justify-center md:items-stretch md:justify-start">
 									<Link href="/" passHref>
 										<div className="flex-shrink-0 flex items-center cursor-pointer mr-6">
-											<Image className="block w-auto" src="/header-logo.png" alt="PTS Logo" width={96} height={50} />
+											<Image className="block w-auto" src={Logo} alt="PTS Logo" width={96} height={50} />
 										</div>
 									</Link>
 									<div className="hidden md:block md:ml-6">
