@@ -36,6 +36,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<IReqSession[]>)
 					.unwind({ path: '$session' })
 					.project({ duration: 1, tutorialType: 1, preferred: 1, tutee: 1, session: 1 })
 					.project({ 'session.request': 0, __v: 0, 'session.__v': 0 })
+					.sort({ _id: -1 })
 
 				res.send(requests as IReqSession[])
 				break

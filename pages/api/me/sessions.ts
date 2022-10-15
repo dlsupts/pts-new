@@ -69,6 +69,7 @@ const mySessionsHandler = async (req: NextApiRequest, res: NextApiResponse<IReqS
 					})
 					.unwind({ path: '$tutee' })
 					.project({ duration: 1, tutorialType: 1, tutee: 1, sessions: 1 })
+					.sort({ _id: 1 })
 
 				res.send(requests)
 				break
