@@ -31,7 +31,25 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					{ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL } },
 					'-_id -contact -url -membership -tutoringService -tutorialType -tuteeCount -topics -schedule -userType -reset -__v'
 				).lean()
-				const tutees = await Tutee.find({}, '-_id -idNumber -url -friends -schedule -contact -__v').lean()
+				const tutees = await Tutee.aggregate()
+					.lookup({ from: 'requests', localField: '_id', foreignField: 'tutee', as: 'request' })
+					.unwind('request')
+					.lookup({ from: 'sessions', localField: 'request._id', foreignField: 'request', as: 'sessions' })
+					// sets a new `serviced` field that is true when the number of sessions that have a tutor is non-zero
+					.addFields({
+						serviced: {
+							$toBool: {
+								$size: {
+									$filter: {
+										input: '$sessions',
+										as: 'sessions',
+										cond: '$$sessions.tutor'
+									}
+								}
+							}
+						}
+					})
+					.project({ _id: 0, idNumber: 0, url: 0, friends: 0, schedule: 0, contact: 0, __v: 0, sessions: 0, request: 0 })
 				const sessions = await Session.find({}, '-_id -request -tutor -__v').lean()
 
 				try {
@@ -57,7 +75,7 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 				const blob = await zip.generateAsync({ type: 'base64' })
 				logger.info(`ADMIN [${session.user._id}] EXPORTED the database`)
-				
+
 				res.send(blob)
 				break
 			}
