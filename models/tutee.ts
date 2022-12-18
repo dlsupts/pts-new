@@ -1,12 +1,13 @@
-import { Schema, models, model, Model, Document } from 'mongoose'
+// SUBDOCUMENT SCHEMA
+import { Schema } from 'mongoose'
 import { ISchedule } from './schedule'
 import { userInfoSchema, IUserInfo } from './user'
-import * as yup from 'yup'
-import Schedule from './schedule'
+import { string } from 'yup'
+import { ScheduleSchema } from './schedule'
 
 export const tuteeInfoSchema = userInfoSchema.shape({
-	campus: yup.string().required('Campus is required.'),
-	college: yup.string().required('College is required.'),
+	campus: string().required('Campus is required.'),
+	college: string().required('College is required.'),
 }).omit(['terms', 'middleName']).required()
 
 export interface ITutee extends Omit<IUserInfo, | 'terms' | 'middleName'> {
@@ -16,7 +17,7 @@ export interface ITutee extends Omit<IUserInfo, | 'terms' | 'middleName'> {
 	friends?: string[]
 }
 
-const tuteeSchema = new Schema<ITutee>({
+export const TuteeSchema = new Schema<ITutee>({
 	campus: { type: String, required: true },
 	firstName: { type: String, required: true },
 	lastName: { type: String, required: true },
@@ -27,14 +28,5 @@ const tuteeSchema = new Schema<ITutee>({
 	contact: { type: String, required: true },
 	url: { type: String, required: true },
 	friends: [String],
-	schedule: {
-		type: Schema.Types.ObjectId,
-		ref: 'Schedule',
-	}
-})
-
-tuteeSchema.post('remove', async function (doc: ITutee) {
-	await Schedule.deleteOne({ _id: doc.schedule })
-})
-
-export default models?.Tutee as Model<ITutee & Document> || model<ITutee>('Tutee', tuteeSchema, 'tutees')
+	schedule: { type: ScheduleSchema }
+}, { _id: false, versionKey: false })

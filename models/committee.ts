@@ -26,13 +26,13 @@ export interface ICommittee {
 
 interface CommitteModel extends Model<ICommittee> {
 	/**
-	 * Gets the email of the current VP of the given commitee
+	 * Gets the email of the current VP of the given committee
 	 * @param name - committee name
 	 * @return a promise that returns the email
 	 */
 	getVPEmail(name: string): Promise<string>
 	/**
-	 * Gets the email of the current VP of the given commitee
+	 * Gets the email of all the officers in a given committee
 	 * @param name - committee name
 	 * @return a promise that returns the email addresses of the VP and the AVPs
 	 */

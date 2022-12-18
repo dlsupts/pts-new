@@ -1,8 +1,9 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
-import { ITutee } from './tutee'
+import { ITutee, TuteeSchema } from './tutee'
 import { IUser } from './user'
 import './tutee'
 import tutorialTypes from '@lib/tutorial-types'
+import { ISession, SessionSchema } from './session'
 
 export interface IRequest {
 	timestamp: Date
@@ -10,7 +11,8 @@ export interface IRequest {
 	duration: keyof typeof tutorialTypes
 	tutorialType: string
 	preferred: Schema.Types.ObjectId | IUser | null
-	tutee: Schema.Types.ObjectId | ITutee
+	tutee: ITutee
+	sessions: ISession[]
 }
 
 const requestSchema = new Schema<IRequest>({
@@ -22,10 +24,8 @@ const requestSchema = new Schema<IRequest>({
 		type: Schema.Types.ObjectId,
 		ref: 'Account'
 	},
-	tutee: {
-		type: Schema.Types.ObjectId,
-		ref: 'Tutee'
-	},
+	tutee: { type: TuteeSchema, required: true },
+	sessions: { type: [SessionSchema], required: true, minlength: 1 }
 })
 
 export default models.Request as Model<IRequest & Document> || model<IRequest>('Request', requestSchema, 'requests')
