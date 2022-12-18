@@ -135,7 +135,7 @@ const ApplicantsPage: NextPage = () => {
 			{
 				isDataLoading ? <LoadingSpinner /> :
 					!applicants.length ?
-						<p>No Applicants Yet. <Link href="tutors"><a className="underline text-blue-600">Go back.</a></Link></p> :
+						<p>No Applicants Yet. <Link href="tutors" className="underline text-blue-600">Go back.</Link></p> :
 						tableInstance
 			}
 		</AdminLayout >

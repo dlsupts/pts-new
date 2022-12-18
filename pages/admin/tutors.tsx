@@ -200,8 +200,8 @@ const AdminPage: NextPage = () => {
 				message={`Remove ${tutor?.firstName}?`}
 			/>
 			<div className="flex justify-end sm:px-6 lg:px-8">
-				<Link href="applicants">
-					<a className="btn blue px-4 py-2 rounded-md">View Applicants</a>
+				<Link href="applicants" className="btn blue px-4 py-2 rounded-md">
+					View Applicants
 				</Link>
 			</div>
 			{isLoading ? <LoadingSpinner /> : tableInstance}
