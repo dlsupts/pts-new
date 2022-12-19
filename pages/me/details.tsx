@@ -4,14 +4,12 @@ import { toast } from 'react-toastify'
 import LoadingSpinner from '@components/loading-spinner'
 import UserLayout from '@components/user-layout'
 import app from '@lib/axios-config'
-import dbConnect from '../../lib/db'
+import dbConnect from '@lib/db'
 import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import useUser from '@lib/useUser'
 import Library from '@models/library'
 import { ITutorInfo, IUser } from '@models/user'
 import Multiselect from 'multiselect-react-dropdown'
-import useSWRImmutable from 'swr/immutable'
-import { ISchedule } from '@models/schedule'
 import AddSubjectModal from '@components/subject-list/modal'
 import SubjectList from '@components/subject-list/list'
 import SchedulePicker from '@components/schedule-picker'
@@ -27,16 +25,6 @@ interface TutorDetailsProps {
 
 function blockEnterKeyPress(e: KeyboardEvent) {
 	if (e.key == 'Enter') e.preventDefault()
-}
-
-function useSchedule() {
-	const { data, error, mutate } = useSWRImmutable('/api/me/schedule', url => app.get<ISchedule>(url).then(res => res.data))
-	return {
-		sched: data,
-		isSchedLoading: !data && !error,
-		isSchedError: !!error,
-		schedMutate: mutate
-	}
 }
 
 // no other options can accompany 'None'.
@@ -55,12 +43,17 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 	const { user, isLoading: isUserLoading, isError, mutate } = useUser()
 	const serviceSelection = useRef<Multiselect>(null)
 	const typeSelection = useRef<Multiselect>(null)
-	const { sched, isSchedLoading, isSchedError, schedMutate } = useSchedule()
 	const [isOpen, setIsOpen] = useState(false)	// for add subject modal
 	const [selectedSubjects, setSelectedSubjects] = useState<string[][]>([])
 	const [isLoading, setIsLoading] = useState(false)
 
 	useEffect(() => { if (user) { setSelectedSubjects(user.topics) } }, [user])
+
+	if (isUserLoading) {
+		return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
+	} else if (isError || !user) {
+		return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
+	}
 
 	const handleSubmit: FormEventHandler = async e => {
 		e.preventDefault()
@@ -69,30 +62,17 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 		if (selectedSubjects) values.topics = selectedSubjects
 		if (serviceSelection.current) values.tutoringService = serviceSelection.current.getSelectedItems()
 		if (typeSelection.current) values.tutorialType = typeSelection.current.getSelectedItems()
+		values.schedule = user.schedule
 
 		try {
-			const tasks = [
-				mutate(app.patch<IUser>('/api/me', values).then(res => res.data), {
-					optimisticData: { ...user, ...values } as IUser
-				}),
-				schedMutate(app.post<ISchedule>('/api/me/schedule', sched).then(res => res.data), {
-					optimisticData: sched
-				})
-			]
-			await Promise.all(tasks)
+			await mutate(app.patch<IUser>('/api/me', values).then(res => res.data), {
+				optimisticData: { ...user, ...values } as IUser
+			})
 			toast.success('Profile Updated!', toastSuccessConfig)
 		} catch {
 			toast.error('A server error has occured. Please try again.', toastErrorConfig)
 		}
 		setIsLoading(false)
-	}
-
-	if (isUserLoading || isSchedLoading) {
-		return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
-	} else if (isError || isSchedError) {
-		return <UserLayout><p>An error has occured. Please try again.</p></UserLayout>
-	} else if (!sched) {
-		return <></>
 	}
 
 	return (
@@ -118,14 +98,14 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 								</div>
 								<div className="col-span-6 sm:col-span-2">
 									<label htmlFor="max-tutee">Max Tutee Count</label>
-									<input type="number" min={0} name="maxTuteeCount" id="max-tutee" defaultValue={user?.maxTuteeCount} />
+									<input type="number" min={0} name="maxTuteeCount" id="max-tutee" defaultValue={user.maxTuteeCount} />
 								</div>
 								<div className="col-span-6 sm:col-span-4">
 									<label htmlFor="tutoring-service_input">Tutoring Services</label>
 									<Multiselect
 										ref={serviceSelection}
 										isObject={false}
-										selectedValues={user?.tutoringService}
+										selectedValues={user.tutoringService}
 										options={services}
 										closeOnSelect={false}
 										id="tutoring-service"
@@ -140,7 +120,7 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 									<label htmlFor="tutorial-types_input">Tutorial Types</label>
 									<Multiselect
 										isObject={false}
-										selectedValues={user?.tutorialType}
+										selectedValues={user.tutorialType}
 										options={types}
 										closeOnSelect={false}
 										id="tutorial-types"
@@ -167,7 +147,7 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 									<p className="text-lg font-bold">Availability</p>
 									<p className="text-gray-500 text-sm">Select the timeslots where you are available</p>
 								</div>
-								<SchedulePicker sched={sched} />
+								<SchedulePicker sched={user.schedule} />
 							</div>
 						</div>
 						<div className="px-4 py-3 bg-gray-50 text-right sm:px-6 mt-12">
@@ -186,10 +166,10 @@ export const getStaticProps: GetStaticProps = async () => {
 	await dbConnect()
 
 	const data = await Promise.all([
-		Library.findById('Tutorial Types', '-__v').lean(),
-		Library.findById('Tutoring Services', '-__v').lean(),
-		Library.findById('Subjects', '-__v').lean(),
-		Library.findById('Programming Languages', '-__v').lean(),
+		Library.findById('Tutorial Types').lean(),
+		Library.findById('Tutoring Services').lean(),
+		Library.findById('Subjects').lean(),
+		Library.findById('Programming Languages').lean(),
 	])
 
 	return {
