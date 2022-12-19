@@ -2,19 +2,22 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import dbConnect from '@lib/db'
 import { getSession } from 'next-auth/react'
 import Request, { IRequest } from '@models/request'
-import { ISession } from '@models/session'
 import { Types } from 'mongoose'
 import logger from '@lib/logger'
+import { RequestStore } from '@stores/request-store'
+import Dates from '@models/date'
+import sendEmail from '@lib/sendEmail'
+import Committee from '@models/committee'
+import RequestEmail from '@components/mail/request'
+import { tuteeInfoSchema } from '@models/tutee'
 
-export type BareSession = Omit<ISession, 'request'>
+export type TuteePostAPIBody = Pick<RequestStore, 'tutee' | 'request' | 'selectedSubjects'>
 
-export interface IReqSession extends Omit<IRequest, 'ayterm' | 'timestamp' | 'tutee'> {
+export interface IReq extends Omit<IRequest, 'ayterm' | 'timestamp'> {
 	_id: Types.ObjectId
-	tutee: string
-	session: BareSession
 }
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<IReqSession[]>) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse<IReq[]>) => {
 	const { method } = req
 
 	// operations only for admin
@@ -26,24 +29,30 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<IReqSession[]>)
 
 		switch (method) {
 			case 'GET': {
-				const requests = await Request.aggregate()
-					.lookup({
-						from: 'sessions',
-						localField: '_id',
-						foreignField: 'request',
-						as: 'session'
-					})
-					.unwind({ path: '$session' })
-					.project({ duration: 1, tutorialType: 1, preferred: 1, tutee: 1, session: 1 })
-					.project({ 'session.request': 0, __v: 0, 'session.__v': 0 })
-					.sort({ _id: -1 })
+				const requests = await Request.find({}, 'duration tutorialType preferred tutee sessions').sort({ _id: -1 })
+				res.send(requests as IReq[])
+				break
+			}
 
-				res.send(requests as IReqSession[])
+			case 'POST': {
+				const body = req.body as TuteePostAPIBody
+
+				const [email] = await Promise.all([
+					Committee.getVPEmail('Internal Affairs'),
+					createRequest(body),
+				])
+
+				logger.info(`Tutor request submitted by ${body.tutee.firstName} ${body.tutee.lastName}`)
+
+				await Promise.all([
+					sendEmail(body.tutee.email, '[PTS] New Tutor Request', RequestEmail({ toTutee: true, ...body })),
+					sendEmail(email, '[PTS] New Tutor Request', RequestEmail({ toTutee: false, ...body }))
+				])
 				break
 			}
 
 			default:
-				res.setHeader('Allow', ['GET'])
+				res.setHeader('Allow', ['GET', 'POST'])
 				res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {
@@ -55,3 +64,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<IReqSession[]>)
 }
 
 export default handler
+
+async function createRequest(body: TuteePostAPIBody) {
+	const timestamp = new Date()
+
+	const [{ _id: ayterm }, tutee] = await Promise.all([
+		Dates.getAYTerm(),
+		tuteeInfoSchema.validate(body.tutee)
+	])
+
+	await Request.create({
+		timestamp,
+		ayterm,
+		...body.request,
+		preferred: Types.ObjectId.isValid(body.request.preferred) ? body.request.preferred : null,
+		tutee,
+		sessions: body.selectedSubjects.map(([subject, topics]) => ({ subject, topics }))
+	})
+}
