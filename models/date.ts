@@ -21,7 +21,7 @@ const dateSchema = new Schema<IDate>({
 	_id: { type: String, required: true },
 	start: { type: Date, required: true },
 	end: { type: Date, required: true }
-})
+}, { versionKey: false })
 
 dateSchema.statics.getAYTerm = async function (timestamp = new Date(), allowFallback = false) {
 	const term: IDate | null = await this.findOne({

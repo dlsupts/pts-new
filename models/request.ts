@@ -26,6 +26,6 @@ const requestSchema = new Schema<IRequest>({
 	},
 	tutee: { type: TuteeSchema, required: true },
 	sessions: { type: [SessionSchema], required: true, minlength: 1 }
-})
+}, { versionKey: false })
 
 export default models.Request as Model<IRequest & Document> || model<IRequest>('Request', requestSchema, 'requests')

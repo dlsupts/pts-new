@@ -27,7 +27,7 @@ export interface ITutorInfo {
 	tuteeCount: number
 	maxTuteeCount: number
 	topics: string[][],
-	schedule: Schema.Types.ObjectId | ISchedule
+	schedule: ISchedule
 }
 
 export interface IUser extends IUserInfo, ITutorInfo { 
@@ -60,6 +60,6 @@ const userSchema = new Schema<IUser>({
 	userType: String, 	// [ADMIN, TUTOR]
 	reset: Boolean,
 	lastActive: String, // ayterm
-})
+}, { versionKey: false })
 
 export default models?.User as Model<IUser & Document> || model<IUser>('User', userSchema, 'users')

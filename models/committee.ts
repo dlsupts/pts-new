@@ -51,7 +51,7 @@ const committeeSchema = new Schema<ICommittee>({
 		position: { type: String, required: true },
 		image: { type: String, required: true },
 	}]
-})
+}, { versionKey: false })
 
 committeeSchema.statics.getVPEmail = async function (name: string) {
 	const [{ email }] = await this.aggregate()
