@@ -1,7 +1,7 @@
 import { Schema, models, model, Model, Document } from 'mongoose'
 import { role, service } from '../types'
 import * as yup from 'yup'
-import { ISchedule, ScheduleSchema } from './schedule'
+import { ISchedule, ScheduleSchema, Schedule } from './schedule'
 
 // this is extended by tutee schema, be careful of changes
 export const userInfoSchema = yup.object({
@@ -56,7 +56,7 @@ const userSchema = new Schema<IUser>({
 	tuteeCount: { type: Number, default: 0 },
 	maxTuteeCount: { type: Number, default: 0 },
 	topics: [[String]],
-	schedule: { type: ScheduleSchema, required: true },
+	schedule: { type: ScheduleSchema, required: true, default: new Schedule()},
 	userType: String, 	// [ADMIN, TUTOR]
 	reset: Boolean,
 	lastActive: String, // ayterm

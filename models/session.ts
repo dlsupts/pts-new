@@ -1,12 +1,9 @@
 // SUBDOCUMENT SCHEMA
 import { Schema } from 'mongoose'
 import { session_status } from '../types'
-import { IRequest } from './request'
 import { IUser } from './user'
 
 export interface ISession {
-	_id: Schema.Types.ObjectId
-	request: Schema.Types.ObjectId | IRequest
 	subject: string
 	topics: string
 	tutor?: Schema.Types.ObjectId | IUser

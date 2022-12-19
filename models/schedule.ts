@@ -1,5 +1,5 @@
 // SUBDOCUMENT SCHEMA
-import { Schema } from 'mongoose'
+import { Schema, model, models, Model } from 'mongoose'
 
 export interface ISchedule {
 	M: string[]
@@ -18,3 +18,5 @@ export const ScheduleSchema = new Schema<ISchedule>({
 	F: { type: [String], default: [] },
 	S: { type: [String], default: [] },
 }, { _id: false, versionKey: false })
+
+export const Schedule = models?.Schedule as Model<ISchedule> ?? model('Schedule', ScheduleSchema)
