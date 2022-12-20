@@ -1,23 +1,21 @@
 import { Disclosure, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/outline'
-import { ITutee } from '@models/tutee'
 import cn from 'classnames'
 import styles from '@styles/Sessions.module.css'
-import { BareSession, IReqSession } from '@pages/api/requests'
 import ScheduleDisplay from '@components/schedule-display'
-import { Tutor } from '@pages/admin/requests'
+import { Request, Tutor } from '@pages/admin/requests'
 import { useCallback } from 'react'
 import { Schema } from 'mongoose'
 import { IUser } from '@models/user'
+import { ISession } from '@models/session'
 
 type TuteeDisclosureProps = {
-	tutee?: ITutee
-	request?: IReqSession
-	sessions: BareSession[]
+	request: Request
+	sessions: ISession[]
 	tutors: Map<string, Tutor>
 }
 
-const TuteeDisclosure = ({ tutee, request, sessions, tutors }: TuteeDisclosureProps) => {
+const TuteeDisclosure = ({ request, sessions, tutors }: TuteeDisclosureProps) => {
 	const getTutorName = useCallback((id?: string | Schema.Types.ObjectId | IUser) => {
 		const tutor = tutors.get(id?.toString() || '')
 		return `${tutor?.firstName} ${tutor?.lastName}`
@@ -29,7 +27,7 @@ const TuteeDisclosure = ({ tutee, request, sessions, tutors }: TuteeDisclosurePr
 				{({ open }: { open: boolean }) => (
 					<>
 						<Disclosure.Button className="flex justify-between w-full px-4 py-2 mb-4 text-sm font-medium text-left text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 focus:outline-none focus-visible:ring focus-visible:ring-blue-500 focus-visible:ring-opacity-75">
-							<span className="text-base">{tutee?.firstName} {tutee?.lastName}</span>
+							<span className="text-base">{request.tutee.firstName} {request.tutee.lastName}</span>
 							<ChevronDownIcon className={cn({ 'transform rotate-180': open }, 'w-5 h-5 text-blue-500')} />
 						</Disclosure.Button>
 						<Transition
@@ -46,41 +44,41 @@ const TuteeDisclosure = ({ tutee, request, sessions, tutors }: TuteeDisclosurePr
 									<div className={styles.content}>
 										<div>
 											<p className={styles.label}>ID Number</p>
-											<p className={styles.data}>{tutee?.idNumber.toString().substring(0, 3)}</p>
+											<p className={styles.data}>{request.tutee.idNumber.toString().substring(0, 3)}</p>
 										</div>
 										<div>
 											<p className={styles.label}>College</p>
-											<p className={styles.data}>{tutee?.college}</p>
+											<p className={styles.data}>{request.tutee.college}</p>
 										</div>
 										<div>
 											<p className={styles.label}>Course</p>
-											<p className={styles.data}>{tutee?.course}</p>
+											<p className={styles.data}>{request.tutee.course}</p>
 										</div>
 										<div>
 											<p className={styles.label}>Campus</p>
-											<p className={styles.data}>{tutee?.campus}</p>
+											<p className={styles.data}>{request.tutee.campus}</p>
 										</div>
 										<div>
 											<p className={styles.label}>Email Address</p>
-											<p className={styles.data}>{tutee?.email}</p>
+											<p className={styles.data}>{request.tutee.email}</p>
 										</div>
 										<div>
 											<p className={styles.label}>Contact Number</p>
-											<p className={styles.data}>{tutee?.contact}</p>
+											<p className={styles.data}>{request.tutee.contact}</p>
 										</div>
 										<div className="col-span-full">
 											<p className={styles.label}>Facebook Profile</p>
-											<a href={tutee?.url} target="_blank" rel="noreferrer" className={cn(styles.data, 'underline')}>{tutee?.url}</a>
+											<a href={request.tutee.url} target="_blank" rel="noreferrer" className={cn(styles.data, 'underline')}>{request.tutee.url}</a>
 										</div>
-										{tutee?.friends?.length != 0 &&
+										{request.tutee.friends?.length != 0 &&
 											<div className="col-span-full">
 												<p className={styles.label}>Friends</p>
-												<p className={styles.data}>{tutee?.friends?.join(', ')}</p>
+												<p className={styles.data}>{request.tutee.friends?.join(', ')}</p>
 											</div>
 										}
 										<div className="col-span-full">
 											<p className={styles.label}>Schedule</p>
-											<ScheduleDisplay schedule={tutee?.schedule} />
+											<ScheduleDisplay schedule={request.tutee.schedule} />
 										</div>
 									</div>
 								</div>
@@ -93,13 +91,13 @@ const TuteeDisclosure = ({ tutee, request, sessions, tutors }: TuteeDisclosurePr
 				<div className={styles.content}>
 					<div>
 						<p className={styles.label}>Duration</p>
-						<p className={styles.data}>{request?.duration}</p>
+						<p className={styles.data}>{request.duration}</p>
 					</div>
 					<div>
 						<p className={styles.label}>Tutorial Type</p>
-						<p className={styles.data}>{request?.tutorialType}</p>
+						<p className={styles.data}>{request.tutorialType}</p>
 					</div>
-					{request?.preferred &&
+					{request.preferred &&
 						<div>
 							<p className={styles.label}>Preferred Tutor</p>
 							<p className={styles.data}>{getTutorName(request.preferred)}</p>
