@@ -3,8 +3,6 @@ import dbConnect from '@lib/db'
 import User from '@models/user'
 import { getSession } from 'next-auth/react'
 import Application from '@models/application'
-import '@models/schedule'
-import Schedule from '@models/schedule'
 import sendEmail from '@lib/sendEmail'
 import AcceptanceEmail from '@components/mail/acceptance'
 import logger from '@lib/logger'
@@ -59,8 +57,44 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					}
 
 					default: {
-						const tutors = await User.find({ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL }, })
-							.sort('lastName').populate('schedule').lean().exec()
+						const tutors = await User.aggregate()
+							.match({ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL } })
+							.lookup({
+								from: 'requests',
+								as: 'requests',
+								localField: '_id',
+								foreignField: 'sessions.tutor',
+								pipeline: [{
+									$project: { _id: 0, 'tutee.firstName': 1, 'tutee.lastName': 1, 'sessions.subject': 1, 'sessions.tutor': 1 }
+								}]
+							})
+							// parse requests to be of this shape: [{ tutee, subjects: [string]}]
+							.addFields({
+								requests: { 
+									$map: { // for each request
+										input: '$requests',
+										as: 'request',
+										in: {
+											tutee: '$$request.tutee',
+											subjects: {
+												$reduce: { // reduce sessions to become an array of subject strings
+													input: {
+														$filter: { // filter subset of the sessions that matched the tutor id
+															input: '$$request.sessions',
+															as: 'session',
+															cond: { $eq: ['$$session.tutor', '$_id'] }
+														}
+													},
+													initialValue: [],
+													in: { $concatArrays: ['$$value', ['$$this.subject']] }
+												}
+											}
+										}
+									}
+								}
+							})
+							.sort('lastName')
+
 						res.json(tutors)
 					}
 				}
@@ -73,22 +107,14 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				if (session?.user.type != 'ADMIN') return res.status(403)
 
 				// requires applicant record
-				const applicant = await Application.findOneAndDelete({ _id: body._id }, {
-					projection: '-_id -__v'
-				}).lean()
+				const applicant = await Application.findOneAndDelete({ _id: body._id }, { projection: '-_id' }).lean()
 				if (!applicant) return res.status(406).send('Applicant not found!')
 				logger.info(`ADMIN [${session.user._id}] DELETED ${applicant.firstName} ${applicant.lastName}'s application for promotion`)
 
-				const schedule = await Schedule.create({})
-
-				await User.create({
-					...applicant,
-					schedule: schedule._id
-				})
+				await User.create(applicant)
 				logger.info(`ADMIN [${session.user._id}] PROMOTED applicant ${applicant.firstName} ${applicant.lastName} to TUTOR`)
 
 				await sendEmail(applicant.email, '[PTS] Welcome to PTS!', AcceptanceEmail())
-
 				break
 			}
 

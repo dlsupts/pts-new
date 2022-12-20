@@ -21,9 +21,18 @@ import { siteTitle } from '@components/layout'
 import ConfirmationModal from '@components/modal/confirmation-modal'
 import { TrashIcon, RefreshIcon } from '@heroicons/react/solid'
 import { Dialog } from '@headlessui/react'
+import { ITutee } from '@models/tutee'
 
 interface ITableProps extends IUser {
 	status?: string
+}
+
+type TutorAPI = IUser & {
+	status?: string
+	requests: {
+		tutee: Pick<ITutee, 'firstName' | 'lastName'>
+		subjects: string[]
+	}[]
 }
 
 const columnHelper = createColumnHelper<ITableProps>()
@@ -38,10 +47,10 @@ const columns = [
 ]
 
 const AdminPage: NextPage = () => {
-	const { data: tutors, isLoading, isError, mutate: mutateTutors } = useRetriever<(IUser & { status?: string })[]>('/api/tutors')
+	const { data: tutors, isLoading, isError, mutate: mutateTutors } = useRetriever<TutorAPI[]>('/api/tutors')
 	const [isOpen, setIsOpen] = useState(false) // for tutor info modal
 	const [isDelOpen, setIsDelOpen] = useState(false)
-	const [tutor, setTutor] = useState<IUser>()
+	const [tutor, setTutor] = useState<TutorAPI>()
 	const button = useRef<HTMLButtonElement>(null)
 	const isActive = tutor && !tutor.reset
 
@@ -122,6 +131,18 @@ const AdminPage: NextPage = () => {
 							</div>
 						</div>
 						<div className={styles.content}>
+							{tutor?.requests.length != 0 &&
+								<div className="col-span-full">
+									<p className={styles.label}>Assigned Sessions</p>
+									{tutor?.requests.map(r => {
+										return r.subjects.map(subject =>
+											<p key={r.tutee.firstName + subject} className={styles.data}>
+												{subject} ({`${r.tutee.firstName} ${r.tutee.lastName}`})
+											</p>
+										)
+									})}
+								</div>
+							}
 							<div>
 								<p className={styles.label}>ID Number</p>
 								<p className={styles.data}>{tutor?.idNumber}</p>

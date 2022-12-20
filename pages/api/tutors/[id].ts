@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import dbConnect from '@lib/db'
 import User from '@models/user'
 import { getSession } from 'next-auth/react'
-import '@models/schedule'
 import logger from '@lib/logger'
 
 const tutorHandler = async (req: NextApiRequest, res: NextApiResponse) => {
