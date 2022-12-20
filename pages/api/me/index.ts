@@ -4,7 +4,7 @@ import dbConnect from '@lib/db'
 import User, { IUser } from '@models/user'
 import Dates from '@models/date'
 import logger from '@lib/logger'
-import Session from '@models/session'
+import Request from '@models/request'
 
 const meHandler = async (req: NextApiRequest, res: NextApiResponse<IUser>) => {
 	const session = await getSession({ req })
@@ -21,16 +21,16 @@ const meHandler = async (req: NextApiRequest, res: NextApiResponse<IUser>) => {
 		await dbConnect()
 
 		switch (req.method) {
-			case "GET": {
+			case 'GET': {
 				const user = await User.findById(_id).lean().exec()
 				if (user == null) throw new Error('User not found in registry!')
 				res.send(user)
 				break
 			}
 
-			case "PATCH": {
+			case 'PATCH': {
 				// if max tutee is set to non-zero or has tutees, set last active to current term
-				if (req.body.maxTuteeCount > 0 || (await Session.find({ tutor: session.user._id }).countDocuments() > 0)) {
+				if (req.body.maxTuteeCount > 0 || (await Request.find({ 'session.tutor': session.user._id }).countDocuments() > 0)) {
 					req.body.lastActive = (await Dates.getAYTerm())._id
 				} else {
 					req.body.lastActive = null

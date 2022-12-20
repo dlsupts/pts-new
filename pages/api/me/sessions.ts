@@ -1,19 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
-import Session, { ISession } from '@models/session'
 import { Types } from 'mongoose'
 import dbConnect from '@lib/db'
-import { ITutee } from '@models/tutee'
 import { IRequest } from '@models/request'
 import logger from '@lib/logger'
+import Request from '@models/request'
 
-export interface IReqSesssion extends Pick<IRequest, 'duration' | 'tutorialType'> {
-	_id: Types.ObjectId
-	sessions: Pick<ISession, 'subject' | 'topics'>[]
-	tutee: ITutee
-}
+export type SessionAPI = Pick<IRequest, 'duration' | 'tutorialType' | 'tutee' | 'sessions'>
 
-const mySessionsHandler = async (req: NextApiRequest, res: NextApiResponse<IReqSesssion[]>) => {
+const mySessionsHandler = async (req: NextApiRequest, res: NextApiResponse<SessionAPI[]>) => {
 	const session = await getSession({ req })
 
 	// no session found
@@ -29,47 +24,21 @@ const mySessionsHandler = async (req: NextApiRequest, res: NextApiResponse<IReqS
 
 		switch (req.method) {
 			case "GET": {
-				const requests = await Session.aggregate()
-					.match({ tutor: new Types.ObjectId(_id.toString()) })
-					.group({
-						_id: '$request',
+				const requests = await Request.find(
+					{ sessions: { $elemMatch: { tutor: _id } } },
+					{
 						sessions: {
-							$push: { topics: '$topics', subject: '$subject' }
-						}
-					})
-					.lookup({
-						from: 'requests',
-						localField: '_id',
-						foreignField: '_id',
-						as: 'request'
-					})
-					.lookup({
-						from: 'tutees',
-						localField: 'request.tutee',
-						foreignField: '_id',
-						as: 'tutee',
-						pipeline: [
-							{
-								$lookup: {
-									from: 'schedules',
-									localField: 'schedule',
-									foreignField: '_id',
-									as: 'schedule'
-								},
-							},
-							{ $set: { schedule: { $first: '$schedule' } } },
-							{ $project: { 'schedule.__v': 0, 'schedule._id': 0, __v: 0 } }
-						]
-					})
-					.replaceRoot({
-						$mergeObjects: [
-							{ $first: '$request' },
-							'$$ROOT'
-						]
-					})
-					.unwind({ path: '$tutee' })
-					.project({ duration: 1, tutorialType: 1, tutee: 1, sessions: 1 })
-					.sort({ _id: 1 })
+							$filter: {
+								input: '$sessions',
+								as: 'session',
+								cond: { $eq: ['$$session.tutor', new Types.ObjectId(_id)] }
+							}
+						},
+						tutee: 1,
+						duration: 1,
+						tutorialType: 1,
+					}
+				).sort({ _id: 1 })
 
 				res.send(requests)
 				break
