@@ -13,11 +13,9 @@ import { tuteeInfoSchema } from '@models/tutee'
 
 export type TuteePostAPIBody = Pick<RequestStore, 'tutee' | 'request' | 'selectedSubjects'>
 
-export interface IReq extends Omit<IRequest, 'ayterm' | 'timestamp'> {
-	_id: Types.ObjectId
-}
+export type RequestAPI = Omit<IRequest, 'timestamp' | 'ayterm'>
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<IReq[]>) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse<RequestAPI[]>) => {
 	const { method } = req
 
 	// operations only for admin
@@ -29,8 +27,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<IReq[]>) => {
 
 		switch (method) {
 			case 'GET': {
-				const requests = await Request.find({}, 'duration tutorialType preferred tutee sessions').sort({ _id: -1 })
-				res.send(requests as IReq[])
+				const requests = await Request.find({}, '-timestamp -ayterm').sort({ _id: -1 })
+				res.send(requests as RequestAPI[])
 				break
 			}
 
