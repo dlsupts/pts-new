@@ -96,4 +96,4 @@ committeeSchema.statics.getEmailAddresses = async function (name: string) {
 	return emails
 }
 
-export default models.Committee as unknown as CommitteModel || model<ICommittee, CommitteModel>('Committee', committeeSchema, 'committees')
+export default models?.Committee as unknown as CommitteModel || model<ICommittee, CommitteModel>('Committee', committeeSchema, 'committees')

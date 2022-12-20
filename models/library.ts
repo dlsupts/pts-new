@@ -29,4 +29,4 @@ libSchema.statics.getDegreeCodes = async function () {
 }
 
 
-export default models.Library as unknown as LibModel || model<ILib, LibModel>('Library', libSchema, 'libraries')
+export default models?.Library as unknown as LibModel || model<ILib, LibModel>('Library', libSchema, 'libraries')

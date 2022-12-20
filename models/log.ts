@@ -24,4 +24,4 @@ const logSchema = new Schema<ILog>({
 	message: { type: String, required: true },
 }, { versionKey: false })
 
-export default models.Log as Model<ILog> || model<ILog>('Log', logSchema, 'logs')
+export default models?.Log as Model<ILog> || model<ILog>('Log', logSchema, 'logs')

@@ -39,4 +39,4 @@ dateSchema.statics.getAYTerm = async function (timestamp = new Date(), allowFall
 	throw Error('No term definition found!')
 }
 
-export default models.Date as unknown as DateModel || model<IDate>('Date', dateSchema, 'dates')
+export default models?.Date as unknown as DateModel || model<IDate>('Date', dateSchema, 'dates')

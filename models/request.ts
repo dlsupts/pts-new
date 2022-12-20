@@ -1,18 +1,23 @@
-import { Schema, models, model, Model, Document } from 'mongoose'
+import { Schema, models, model, Model, ObjectId } from 'mongoose'
 import { ITutee, TuteeSchema } from './tutee'
 import { IUser } from './user'
-import './tutee'
 import tutorialTypes from '@lib/tutorial-types'
 import { ISession, SessionSchema } from './session'
+import { MongoID } from '@types'
 
 export interface IRequest {
+	_id: MongoID
 	timestamp: Date
 	ayterm: string
 	duration: keyof typeof tutorialTypes
 	tutorialType: string
-	preferred: Schema.Types.ObjectId | IUser | null
+	preferred: ObjectId | IUser | null
 	tutee: ITutee
 	sessions: ISession[]
+}
+
+export interface RequestModel extends Model<IRequest> {
+	isHandledByTutor(requestId: MongoID, tutorId: MongoID): Promise<boolean>
 }
 
 const requestSchema = new Schema<IRequest>({
@@ -28,4 +33,8 @@ const requestSchema = new Schema<IRequest>({
 	sessions: { type: [SessionSchema], required: true, minlength: 1 }
 }, { versionKey: false })
 
-export default models.Request as Model<IRequest & Document> || model<IRequest>('Request', requestSchema, 'requests')
+requestSchema.statics.isHandledByTutor = async function (requestId: MongoID, tutorId: MongoID): Promise<boolean> {
+	return await this.exists({ _id: requestId, 'sessions.tutor': tutorId }) != null
+}
+
+export default models?.Request as unknown as RequestModel || model<IRequest, RequestModel>('Request', requestSchema, 'requests')
