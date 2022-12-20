@@ -14,6 +14,8 @@ export interface IRequest {
 	preferred: ObjectId | IUser | null
 	tutee: ITutee
 	sessions: ISession[]
+	earliestDate?: Date
+	lastestDate?: Date
 }
 
 export interface RequestModel extends Model<IRequest> {
@@ -29,8 +31,10 @@ const requestSchema = new Schema<IRequest>({
 		type: Schema.Types.ObjectId,
 		ref: 'Account'
 	},
+	earliestDate: { type: Date },
+	lastestDate: { type: Date },
 	tutee: { type: TuteeSchema, required: true },
-	sessions: { type: [SessionSchema], required: true, minlength: 1 }
+	sessions: { type: [SessionSchema], required: true, minlength: 1 },
 }, { versionKey: false })
 
 requestSchema.statics.isHandledByTutor = async function (requestId: MongoID, tutorId: MongoID): Promise<boolean> {

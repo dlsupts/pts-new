@@ -36,7 +36,15 @@ const serviceSchema = yup.object({
 	friends: yup.string().when('tutorialType', {
 		is: 'Group Study',
 		then: schema => schema.required('This field is required.')
-	})
+	}),
+	earliestDate: yup.date().when('duration', {
+		is: 'One Session',
+		then: schema => schema.required('This field is required.').typeError('This field is required.')
+	}),
+	latestDate: yup.date().when('duration', {
+		is: 'One Session',
+		then: schema => schema.required('This field is required.').typeError('This field is required.')
+	}),
 }).required()
 
 type ServiceFormData = yup.InferType<typeof serviceSchema>
@@ -109,10 +117,24 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 				</div>
 				{tutorialType === 'Group Study' &&
 					<div className="col-span-full">
-						<label htmlFor="friends">Friends<span className="text-red-500">*</span></label>
+						<label htmlFor="friends" className="required">Friends</label>
 						<input type="text" {...register('friends')} id="friends" placeholder="Ex. John Velasco, Carla Reyes, etc." defaultValue={tutee.friends?.join(', ')} />
 						<p className="form-err-msg text-sm">{errors.friends?.message}</p>
 					</div>
+				}
+				{duration == 'One Session' &&
+					<>
+						<div>
+							<label htmlFor="earliest" className="required">Earliest Date</label>
+							<input type="date" {...register('earliestDate')} id="earliest" />
+							<p className="form-err-msg text-sm">{errors.earliestDate?.message}</p>
+						</div>
+						<div>
+							<label htmlFor="latest" className="required">Latest Date</label>
+							<input type="date" {...register('earliestDate')} id="latest" />
+							<p className="form-err-msg text-sm">{errors.latestDate?.message}</p>
+						</div>
+					</>
 				}
 				<div className="col-span-full mt-8 flex justify-between items-center">
 					<div>
