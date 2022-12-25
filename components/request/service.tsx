@@ -10,6 +10,7 @@ import { IUser } from '@models/user'
 import tutorialTypes from '@lib/tutorial-types'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { formatToISODate } from '@lib/utils'
 
 type ServiceProps = {
 	subjects: string[]
@@ -39,26 +40,42 @@ const serviceSchema = yup.object({
 	}),
 	earliestDate: yup.date().when('duration', {
 		is: 'One Session',
-		then: schema => schema.required('This field is required.').typeError('This field is required.')
+		then: schema => schema
+			.required('This field is required.')
+			.typeError('This field is required.')
+			.min(new Date(Date.now() + 86_400_000).toLocaleDateString('ph'), 'Please give us at least one day to look for a tutor')
 	}),
 	latestDate: yup.date().when('duration', {
 		is: 'One Session',
-		then: schema => schema.required('This field is required.').typeError('This field is required.')
-	}),
+		then: schema => schema
+			.required('This field is required.')
+			.typeError('This field is required.')
+	}).when('earliestDate',
+		(earliestDate, schema) => earliestDate && schema.min(earliestDate, 'Date must be on or after the earliest date')
+	),
 }).required()
 
-type ServiceFormData = yup.InferType<typeof serviceSchema>
+type ServiceFormData = Omit<yup.InferType<typeof serviceSchema>, 'earliestDate' | 'latestDate'> & {
+	earliestDate: Date | string
+	latestDate: Date | string
+}
 
 const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 	const { request, setRequest, selectedSubjects, setSelectedSubjects, tutee, setTutee } = useStore()
 	const { register, handleSubmit, watch, formState: { errors } } = useForm<ServiceFormData>({
 		resolver: yupResolver(serviceSchema),
-		defaultValues: request
+		defaultValues: {
+			...request,
+			earliestDate: formatToISODate(request.earliestDate),
+			latestDate: formatToISODate(request.latestDate)
+		}
 	})
 	const { tutors, isLoading } = useAvailableTutors()
 	const [isOpen, setIsOpen] = useState(false)	// for add subject modal
 	const duration = watch('duration') as keyof typeof tutorialTypes
 	const tutorialType = watch('tutorialType')
+	const earliestDate = watch('earliestDate')
+	const tomorrow = new Date(Date.now() + 86_400_000)
 
 	const handleAddClick: MouseEventHandler = e => {
 		e.preventDefault()
@@ -69,7 +86,9 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 		setRequest({
 			duration: values.duration as typeof duration,
 			tutorialType: values.tutorialType,
-			preferred: values.preferred ?? ''
+			preferred: values.preferred ?? '',
+			earliestDate: values.earliestDate as Date,
+			latestDate: values.latestDate as Date,
 		})
 
 		if (values.tutorialType === 'Group Study') {
@@ -126,12 +145,18 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 					<>
 						<div>
 							<label htmlFor="earliest" className="required">Earliest Date</label>
-							<input type="date" {...register('earliestDate')} id="earliest" />
+							<input type="date" {...register('earliestDate')}
+								id="earliest"
+								min={formatToISODate(tomorrow)}
+							/>
 							<p className="form-err-msg text-sm">{errors.earliestDate?.message}</p>
 						</div>
 						<div>
 							<label htmlFor="latest" className="required">Latest Date</label>
-							<input type="date" {...register('earliestDate')} id="latest" />
+							<input type="date" {...register('latestDate')}
+								id="latest" disabled={!earliestDate}
+								min={earliestDate?.toString()}
+							/>
 							<p className="form-err-msg text-sm">{errors.latestDate?.message}</p>
 						</div>
 					</>

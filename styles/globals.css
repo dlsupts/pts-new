@@ -23,6 +23,7 @@
 	[type="email"],
 	[type="date"] {
 		@apply mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md
+			disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed
 	}
 
 	[type="checkbox"] {

@@ -2,7 +2,7 @@ import create from 'zustand'
 import { IRequest } from '@models/request'
 import { ITutee } from '@models/tutee'
 
-export type RequestFormData = Pick<IRequest, 'duration' | 'tutorialType' | 'earliestDate' | 'lastestDate'> & {
+export type RequestFormData = Pick<IRequest, 'duration' | 'tutorialType' | 'earliestDate' | 'latestDate'> & {
 	preferred: string
 }
 
@@ -44,7 +44,7 @@ function getFreshStore(): Pick<RequestStore, 'tutee' | 'request' | 'selectedSubj
 			tutorialType: 'One-on-one',
 			preferred: '',
 			earliestDate: undefined,
-			lastestDate: undefined,
+			latestDate: undefined,
 		},
 		selectedSubjects: [],
 	}

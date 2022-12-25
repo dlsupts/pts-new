@@ -8,6 +8,7 @@ import { useCallback } from 'react'
 import { Schema } from 'mongoose'
 import { IUser } from '@models/user'
 import { ISession } from '@models/session'
+import { formatDate } from '@lib/utils'
 
 type TuteeDisclosureProps = {
 	request: Request
@@ -87,7 +88,7 @@ const TuteeDisclosure = ({ request, sessions, tutors }: TuteeDisclosureProps) =>
 					</>
 				)}
 			</Disclosure>
-			<div className={styles['data-display']}>
+			<section className={styles['data-display']}>
 				<div className={styles.content}>
 					<div>
 						<p className={styles.label}>Duration</p>
@@ -97,6 +98,19 @@ const TuteeDisclosure = ({ request, sessions, tutors }: TuteeDisclosureProps) =>
 						<p className={styles.label}>Tutorial Type</p>
 						<p className={styles.data}>{request.tutorialType}</p>
 					</div>
+					{request.duration == 'One Session' &&
+						<>
+							<div>
+								<p className={styles.label}>Earliest Date</p>
+								<p className={styles.data}>{request.earliestDate && formatDate(request.earliestDate)}</p>
+							</div>
+							<div>
+								<p className={styles.label}>Latest Date</p>
+								<p className={styles.data}>{request.latestDate && formatDate(request.latestDate)}</p>
+							</div>
+						</>
+					}
+
 					{request.preferred &&
 						<div>
 							<p className={styles.label}>Preferred Tutor</p>
@@ -110,7 +124,7 @@ const TuteeDisclosure = ({ request, sessions, tutors }: TuteeDisclosureProps) =>
 						))}
 					</div>
 				</div>
-			</div>
+			</section>
 		</>
 	)
 }

@@ -15,7 +15,7 @@ export interface IRequest {
 	tutee: ITutee
 	sessions: ISession[]
 	earliestDate?: Date
-	lastestDate?: Date
+	latestDate?: Date
 }
 
 export interface RequestModel extends Model<IRequest> {
@@ -32,7 +32,7 @@ const requestSchema = new Schema<IRequest>({
 		ref: 'Account'
 	},
 	earliestDate: { type: Date },
-	lastestDate: { type: Date },
+	latestDate: { type: Date },
 	tutee: { type: TuteeSchema, required: true },
 	sessions: { type: [SessionSchema], required: true, minlength: 1 },
 }, { versionKey: false })

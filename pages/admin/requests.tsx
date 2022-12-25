@@ -6,14 +6,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import RequestTable from '@components/admin/requests/request-table'
 import LoadingSpinner from '@components/loading-spinner'
 import { useRetriever } from '@lib/useRetriever'
-import Modal from '@components/modal'
 import styles from '@styles/Modal.module.css'
 import { Dialog, Switch } from '@headlessui/react'
-import TuteeDisclosure from '@components/admin/requests/tutee-disclosure'
 import MySwitch from '@components/switch'
-import TutorTable from '@components/admin/requests/tutor-table'
 import cn from 'classnames'
-import TutorModal from '@components/table/tutor-modal'
 import app from '@lib/axios-config'
 import { toastAxiosError } from '@lib/utils'
 import { ObjectId } from 'mongoose'
@@ -22,6 +18,12 @@ import { siteTitle } from '@components/layout'
 import sorter from '@lib/sorter'
 import LoadingButton from '@components/loading-button'
 import { ISession } from '@models/session'
+import dynamic from 'next/dynamic'
+
+const TutorTable = dynamic(() => import('@components/admin/requests/tutor-table'))
+const TutorModal = dynamic(() => import('@components/table/tutor-modal')) 
+const TuteeDisclosure = dynamic(() => import('@components/admin/requests/tutee-disclosure'))
+const Modal = dynamic(() => import('@components/modal'))
 
 export type Tutor = Omit<ITutorInfo, 'membership'> & Pick<IUserInfo, 'firstName' | 'lastName' | '_id'>
 
@@ -169,7 +171,6 @@ const RequestPage: NextPage = () => {
 								<Switch.Label className="select-none">Request mode</Switch.Label>
 								<MySwitch isChecked={requestMode} onChange={() => setRequestMode(!requestMode)} label="Set request mode" />
 							</Switch.Group>
-
 						</div>
 						<div>
 							{request &&
