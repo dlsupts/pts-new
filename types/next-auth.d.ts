@@ -17,7 +17,6 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
 	interface JWT {
 		_id: string
-		type?: role
-		schedule?: Schema.Types.ObjectId
+		type: role
 	}
 }

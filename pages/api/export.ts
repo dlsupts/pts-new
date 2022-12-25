@@ -4,10 +4,9 @@ import User from '@models/user'
 import { getSession } from 'next-auth/react'
 import JSZip from 'jszip'
 import { parse } from 'json2csv'
-import Tutee from '@models/tutee'
 import Dates from '@models/date'
-import Session from '@models/session'
 import logger from '@lib/logger'
+import Request from '@models/request'
 
 const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { method } = req
@@ -27,30 +26,35 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 				if (csv == null || json == null) throw Error('Error exporting database!')
 
-				const tutors = await User.find(
-					{ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL } },
-					'-_id -contact -url -membership -tutoringService -tutorialType -tuteeCount -topics -schedule -userType -reset -__v'
-				).lean()
-				const tutees = await Tutee.aggregate()
-					.lookup({ from: 'requests', localField: '_id', foreignField: 'tutee', as: 'request' })
-					.unwind('request')
-					.lookup({ from: 'sessions', localField: 'request._id', foreignField: 'request', as: 'sessions' })
-					// sets a new `serviced` field that is true when the number of sessions that have a tutor is non-zero
-					.addFields({
-						serviced: {
-							$toBool: {
-								$size: {
-									$filter: {
-										input: '$sessions',
-										as: 'sessions',
-										cond: '$$sessions.tutor'
+				const [tutors, tutees, sessions] = await Promise.all([
+					User.find(
+						{ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL } },
+						'-_id idNumber email course terms maxTuteeCount firstName lastName middleName lastActive'
+					).lean(),
+
+					Request.aggregate()
+						// sets a new `serviced` field that is true when the number of sessions that have a tutor is non-zero
+						.addFields({
+							serviced: {
+								$toBool: {
+									$size: {
+										$filter: {
+											input: '$sessions',
+											as: 'sessions',
+											cond: '$$sessions.tutor'
+										}
 									}
 								}
 							}
-						}
-					})
-					.project({ _id: 0, idNumber: 0, url: 0, friends: 0, schedule: 0, contact: 0, __v: 0, sessions: 0, request: 0 })
-				const sessions = await Session.find({}, '-_id -request -tutor -__v').lean()
+						})
+						.replaceRoot({ $mergeObjects: ['$tutee', { serviced: '$serviced' }] })
+						.project({ campus: 1, firstName: 1, lastName: 1, email: 1, college: 1, course: 1, serviced: 1 }),
+
+					Request.aggregate()
+						.unwind('sessions')
+						.replaceRoot('sessions')
+						.project({ tutor: 0 })
+				])
 
 				try {
 					csv.file(`${prefix} tutors.csv`, parse(tutors))
