@@ -8,7 +8,7 @@ export default function RequestEmail({ toTutee, request, selectedSubjects, tutee
 	return (
 		<>
 			<p>
-				{toTutee ? 'Your request has been received.Please wait for our tutors to contact you through Facebook.'
+				{toTutee ? 'Your request has been received. Please wait for our tutors to contact you through Facebook within three (3) days.'
 					: 'A new tutor request has been submitted.'}
 			</p>
 			<div>

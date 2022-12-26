@@ -3,6 +3,7 @@ import { Options } from 'nodemailer/lib/mailer'
 import { ReactElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import wrapInLayout from '../components/mail/layout'
+import logger from './logger'
 
 const transporter = nodemailer.createTransport({
 	service: 'gmail',
@@ -16,7 +17,7 @@ const transporter = nodemailer.createTransport({
 })
 
 /**
- * Utility function for sending emails
+ * Utility function for sending emails, but only logs a message when not in production
  * @param to - email receipient or a Mail.Options object
  * @param subject - email subject line
  * @param template - the component to statically render in the email
@@ -24,6 +25,10 @@ const transporter = nodemailer.createTransport({
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function sendEmail(to: string | Options, subject: string, template: ReactElement) {
+	if (process.env.NODE_ENV !== 'production') {
+		return logger.info(`Email with subject: ${subject} was sent to ${to}`)
+	}
+	
 	if (typeof to == 'string') {
 		return await transporter.sendMail({
 			from: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
