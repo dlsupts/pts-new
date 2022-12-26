@@ -6,13 +6,13 @@ import { ChevronDownIcon } from '@heroicons/react/solid'
 import cn from 'classnames'
 import styles from '@styles/Sessions.module.css'
 import { useRetriever } from '@lib/useRetriever'
-import { IReqSesssion } from '@pages/api/me/sessions'
+import { SessionAPI } from '@pages/api/me/sessions'
 import ScheduleDisplay from '@components/schedule-display'
 import Head from 'next/head'
 import { siteTitle } from '@components/layout'
 
 const TutorSessions: NextPage = () => {
-	const { data: sessions, isLoading, isError } = useRetriever<IReqSesssion[]>('/api/me/sessions')
+	const { data: sessions, isLoading, isError } = useRetriever<SessionAPI[]>('/api/me/sessions')
 
 	if (isLoading) {
 		return <UserLayout><LoadingSpinner className="h-96" /></UserLayout>
@@ -35,8 +35,8 @@ const TutorSessions: NextPage = () => {
 			<Head>
 				<title>{siteTitle} | Sessions</title>
 			</Head>
-			{sessions?.map(({ _id, sessions, tutee, duration, tutorialType }) => (
-				<Disclosure key={_id.toString()}>
+			{sessions?.map(({ sessions, tutee, duration, tutorialType }) => (
+				<Disclosure key={`${tutee.firstName}${tutee.lastName}`}>
 					{({ open }: { open: boolean }) => (
 						<>
 							<Disclosure.Button className="flex justify-between w-full px-4 py-2 mb-4 text-sm font-medium text-left text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 focus:outline-none focus-visible:ring focus-visible:ring-blue-500 focus-visible:ring-opacity-75">

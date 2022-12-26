@@ -1,4 +1,4 @@
-import { TuteePostAPIBody } from '@pages/api/tutees'
+import { TuteePostAPIBody } from '@pages/api/requests/index'
 
 type RequestEmailProps = TuteePostAPIBody & {
 	toTutee: boolean
