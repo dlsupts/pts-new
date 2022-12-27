@@ -36,7 +36,7 @@ const requestSchema = new Schema<IRequest>({
 	latestDate: { type: Date },
 	tutee: { type: TuteeSchema, required: true },
 	sessions: { type: [SessionSchema], required: true, minlength: 1 },
-	emailSent: { type: Boolean, required: true, deafult: false }
+	emailSent: { type: Boolean, required: true, default: false }
 }, { versionKey: false })
 
 requestSchema.statics.isHandledByTutor = async function (requestId: MongoID, tutorId: MongoID): Promise<boolean> {

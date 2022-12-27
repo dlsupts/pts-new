@@ -26,7 +26,7 @@ const transporter = nodemailer.createTransport({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function sendEmail(to: string | Options, subject: string, template: ReactElement) {
 	if (process.env.NODE_ENV !== 'production') {
-		return logger.info(`Email with subject: ${subject} was sent to ${to}`)
+		return await logger.info(`Email with subject: ${subject} was sent to ${to}`)
 	}
 	
 	if (typeof to == 'string') {

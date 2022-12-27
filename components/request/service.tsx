@@ -38,20 +38,20 @@ const serviceSchema = yup.object({
 		is: 'Group Study',
 		then: schema => schema.required('This field is required.')
 	}),
-	earliestDate: yup.date().when('duration', {
+	earliestDate: yup.date().transform((curr, orig) => orig == '' ? undefined : curr).when('duration', {
 		is: 'One Session',
 		then: schema => schema
 			.required('This field is required.')
 			.typeError('This field is required.')
 			.min(new Date(Date.now() + 86_400_000).toLocaleDateString('ph'), 'Please give us at least one day to look for a tutor')
 	}),
-	latestDate: yup.date().when('duration', {
+	latestDate: yup.date().transform((curr, orig) => orig == '' ? undefined : curr).when('duration', {
 		is: 'One Session',
 		then: schema => schema
 			.required('This field is required.')
 			.typeError('This field is required.')
 	}).when('earliestDate',
-		(earliestDate, schema) => earliestDate && schema.min(earliestDate, 'Date must be on or after the earliest date')
+		(earliestDate, schema) => earliestDate ? schema.min(earliestDate, 'Date must be on or after the earliest date') : schema,
 	),
 }).required()
 

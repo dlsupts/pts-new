@@ -17,16 +17,14 @@ export type RequestAPI = Omit<IRequest, 'timestamp' | 'ayterm'>
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<RequestAPI[]>) => {
 	const { method } = req
-
-	// operations only for admin
-	const session = await getSession({ req })
-	if (session?.user.type != 'ADMIN') return res.status(403)
-	await dbConnect()
-
+	
 	try {
-
+		await dbConnect()
 		switch (method) {
 			case 'GET': {
+				const session = await getSession({ req })
+				if (session?.user.type != 'ADMIN') return res.status(403)
+
 				const requests = await Request.find({}, '-timestamp -ayterm').sort({ _id: -1 })
 				res.send(requests as RequestAPI[])
 				break
