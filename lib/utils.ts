@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { toastErrorConfig } from './toast-defaults'
+import { IDate } from '@models/date'
 
 export function matchPath(pathname: string, route: string, isHome?: boolean) {
 	return isHome ? pathname === route : pathname.startsWith(route)
@@ -89,4 +90,14 @@ export function toastAxiosError(error: unknown) {
 	if (axios.isAxiosError(error)) {
 		toast.error(error.message, toastErrorConfig)
 	}
+}
+
+/**
+ * Checks to see if the current date is still 14 days before the set term request deadline.
+ * @param deadline the deadline for term requests
+ * @returns true if the whole term is still an avaiable option
+ */
+export function isWholeTermStillAvailable(deadline?: IDate['end']) {
+	if (!deadline) return true
+	return new Date(deadline).getTime() - new Date().getTime() >= 1_209_600_000 // 14 days in milliseconds
 }
