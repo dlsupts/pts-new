@@ -8,12 +8,13 @@ import app from '@lib/axios-config'
 import { toast } from 'react-toastify'
 import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import LoadingSpinner from '@components/loading-spinner'
-import { parseContent } from '@lib/utils'
+import { isWholeTermStillAvailable, parseContent } from '@lib/utils'
 import { siteTitle } from '@components/layout'
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
 import { FAQs } from '@components/faq'
 import { RequestButton } from '@components/request-button/request-button'
+import Dates from '@models/date'
 
 const PAGE_TITLE = `${siteTitle} | Request`
 const META_DESCRIPTION = 'Need help? Just send us a tutor request, and we will match you with an available tutor as soon as we can.'
@@ -120,18 +121,23 @@ export const getStaticProps = async () => {
 		Library.findById('Campuses', '-_id').lean(),
 		Library.findById('Programming Languages').lean(),
 		Library.findById('Data Privacy Consent', '-_id').lean(),
+		Dates.findById('Tutor Request', '-_id end').lean()
 	])
 
 	return {
 		props: {
 			faqs: data[0]?.content.map(f => parseContent(f)) ?? [],
-			services: data[1]?.content?.filter(c => c !== 'None') ?? [],
+			services: data[1]?.content?.filter(c => {
+				return c == 'One Session' ||
+					c == 'Whole Term' && isWholeTermStillAvailable(data[8]?.end)
+			}) ?? [],
 			subjects: data[2]?.content.concat(data[6]?.content ?? []) ?? [],
 			colleges: data[3]?.content?.map(c => c.split(':')[0]) ?? [],
 			degreePrograms: data[4],
 			campuses: data[5]?.content ?? [],
 			dataPrivacy: data[7]?.content ?? [],
 		},
+		revalidate: 86400 // revalidate every day
 	}
 }
 

@@ -10,14 +10,15 @@ import sendEmail from '@lib/sendEmail'
 import Committee from '@models/committee'
 import RequestEmail from '@components/mail/request'
 import { tuteeInfoSchema } from '@models/tutee'
+import { isWholeTermStillAvailable } from '@lib/utils'
 
 export type TuteePostAPIBody = Pick<RequestStore, 'tutee' | 'request' | 'selectedSubjects'>
 
 export type RequestAPI = Omit<IRequest, 'timestamp' | 'ayterm'>
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<RequestAPI[]>) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { method } = req
-	
+
 	try {
 		await dbConnect()
 		switch (method) {
@@ -25,8 +26,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<RequestAPI[]>) 
 				const session = await getSession({ req })
 				if (session?.user.type != 'ADMIN') return res.status(403)
 
-				const requests = await Request.find({}, '-timestamp -ayterm').sort({ _id: -1 })
-				res.send(requests as RequestAPI[])
+				try {
+					const requests = await Request.find({}, '-timestamp -ayterm').sort({ _id: -1 })
+					res.send(requests as RequestAPI[])
+				} catch (err) {
+					res.send(err)
+				}
+
 				break
 			}
 
@@ -64,10 +70,15 @@ export default handler
 async function createRequest(body: TuteePostAPIBody) {
 	const timestamp = new Date()
 
-	const [{ _id: ayterm }, tutee] = await Promise.all([
+	const [{ _id: ayterm }, tutee, date] = await Promise.all([
 		Dates.getAYTerm(),
-		tuteeInfoSchema.validate(body.tutee)
+		tuteeInfoSchema.validate(body.tutee),
+		Dates.findById('Tutor Request', '-_id end').lean()
 	])
+
+	if (body.request.duration == 'Whole Term' && !isWholeTermStillAvailable(date?.end)) {
+		throw Error('Whole-term sessions are no longer available! Please resubmit your request.')
+	}
 
 	await Request.create({
 		timestamp,

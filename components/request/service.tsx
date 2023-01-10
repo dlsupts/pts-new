@@ -1,4 +1,4 @@
-import { Dispatch, FC, MouseEventHandler, SetStateAction, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import useSWRImmutable from 'swr/immutable'
 import app from '@lib/axios-config'
@@ -76,11 +76,6 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 	const tutorialType = watch('tutorialType')
 	const earliestDate = watch('earliestDate')
 	const tomorrow = new Date(Date.now() + 86_400_000)
-
-	const handleAddClick: MouseEventHandler = e => {
-		e.preventDefault()
-		setIsOpen(true)
-	}
 
 	const onSubmit = (values: ServiceFormData) => {
 		setRequest({
@@ -166,7 +161,7 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 						<label className="text-lg font-bold required">Subject List</label>
 						<p className="text-gray-500 text-sm">Add subjects that you need help with</p>
 					</div>
-					<button title="Add subject" className="btn gray px-3 py-2 rounded-full" onClick={handleAddClick}>
+					<button type="button" title="Add subject" className="btn gray px-3 py-2 rounded-full" onClick={() => setIsOpen(true)}>
 						<i className="fa-solid fa-plus fa-lg text-white"></i>
 					</button>
 				</div>
