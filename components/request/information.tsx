@@ -18,7 +18,6 @@ const Information: FC<InformationProps> = ({ colleges, degreePrograms, campuses,
 	const [tutee, setTutee] = useStore(storeSelector, shallow)
 	type Tutee = Omit<typeof tutee, '_id'>
 	const { register, handleSubmit, formState: { errors }, watch } = useForm<Tutee>({
-		reValidateMode: 'onBlur',
 		resolver: yupResolver(tuteeInfoSchema),
 		defaultValues: tutee
 	})
@@ -65,7 +64,7 @@ const Information: FC<InformationProps> = ({ colleges, degreePrograms, campuses,
 				</div>
 				<div>
 					<label htmlFor="id-number" className="required">ID Number</label>
-					<input type="number" {...register('idNumber')} id="id-number" />
+					<input type="number" {...register('idNumber')} id="id-number" min={1} />
 					<p className="form-err-msg text-sm">{errors.idNumber?.message}</p>
 				</div>
 				<div>

@@ -26,16 +26,15 @@ const CommiteeDiv: FC<Omit<ICommittee, '_id'>> = ({ name, officers }) => {
 			<p className="text-center text-3xl mb-4">{name}</p>
 			<div className="flex items-start justify-around flex-wrap">
 				{officers.map((o, i) => (
-					<>
+					<div key={o.name} className="contents" >
 						<OfficerTile
-							key={i}
 							user={o.user}
 							name={o.name}
 							position={o.position}
 							image={o.image} />
 						{/* newline break the flex wrap for every 3 */}
 						{(i + 1) % 3 == 0 && <hr className="basis-full border-none lg:block hidden" />}
-					</>
+					</div>
 				))}
 			</div>
 		</div>

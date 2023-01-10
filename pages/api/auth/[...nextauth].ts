@@ -2,7 +2,6 @@ import NextAuth from 'next-auth'
 import GoogleProvider from "next-auth/providers/google"
 import User from '@models/user'
 import dbConnect from '@lib/db'
-import { Schema } from 'mongoose'
 import logger from '@lib/logger'
 
 export default NextAuth({
@@ -47,9 +46,10 @@ export default NextAuth({
 				try {
 					await dbConnect()
 					const temp = await User.findOne({ email: profile.email }, 'userType schedule').lean().exec()
-					token._id = temp?._id
+					if (!temp) throw Error('User not found! Unable to login.')
+
+					token._id = temp._id.toString()
 					token.type = temp?.userType
-					token.schedule = temp?.schedule as Schema.Types.ObjectId
 				} catch (err) {
 					logger.error(err)
 					throw new Error("A server side-error has occured!")
@@ -61,7 +61,6 @@ export default NextAuth({
 		async session({ token, session }) {
 			session.user._id = token._id
 			session.user.type = token.type
-			session.user.schedule = token.schedule
 			return session
 		}
 	},

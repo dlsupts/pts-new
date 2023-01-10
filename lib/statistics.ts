@@ -1,6 +1,5 @@
 import User from '@models/user'
-import Tutee from '@models/tutee'
-import Session from '@models/session'
+import Request from '@models/request'
 
 export type Aggregate = {
 	_id: string
@@ -34,35 +33,39 @@ export async function groupTutorsByCourse() {
 }
 
 export async function groupTuteesByIdNumber() {
-	return await Tutee.aggregate().group({
-		_id: { $substrCP: ['$idNumber', 0, 3] },
+	return await Request.aggregate().group({
+		_id: { $substrCP: ['$tutee.idNumber', 0, 3] },
 		count: { $sum: 1 }
 	})
 		.sort({ _id: 1 }) as Aggregate[]
 }
 
 export async function groupTuteesByCollege() {
-	return await Tutee.aggregate().group({
-		_id: '$college',
+	return await Request.aggregate().group({
+		_id: '$tutee.college',
 		count: { $sum: 1 }
 	})
 		.sort({ _id: 1 }) as Aggregate[]
 }
 
 export async function groupSessionsbySubjectAndStatus() {
-	return await Session.aggregate().group({
-		_id: {
-			subject: '$subject',
-			matched: {
-				$cond: {
-					if: '$tutor',
-					then: true,
-					else: false,
+	return await Request.aggregate()
+		.project({ sessions: 1 })
+		.unwind('sessions')
+		.replaceRoot('sessions')
+		.group({
+			_id: {
+				subject: '$subject',
+				matched: {
+					$cond: {
+						if: '$tutor',
+						then: true,
+						else: false,
+					}
 				}
-			}
-		},
-		count: { $sum: 1 }
-	})
+			},
+			count: { $sum: 1 }
+		})
 		.sort({ _id: 1 }) as ComplexAggregate[]
 }
 

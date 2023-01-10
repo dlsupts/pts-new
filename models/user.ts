@@ -1,7 +1,7 @@
-import { Schema, models, model, Model, Document } from 'mongoose'
-import { role, service } from '../types'
+import { Schema, models, model, Model, ObjectId } from 'mongoose'
+import { MongoID, role, service } from '../types'
 import * as yup from 'yup'
-import { ISchedule } from './schedule'
+import { ISchedule, ScheduleSchema, Schedule } from './schedule'
 
 // this is extended by tutee schema, be careful of changes
 export const userInfoSchema = yup.object({
@@ -17,7 +17,7 @@ export const userInfoSchema = yup.object({
 }).required()
 
 export interface IUserInfo extends yup.InferType<typeof userInfoSchema> {
-	_id: Schema.Types.ObjectId
+	_id: ObjectId
 }
 
 export interface ITutorInfo {
@@ -27,10 +27,10 @@ export interface ITutorInfo {
 	tuteeCount: number
 	maxTuteeCount: number
 	topics: string[][],
-	schedule: Schema.Types.ObjectId | ISchedule
+	schedule: ISchedule
 }
 
-export interface IUser extends IUserInfo, ITutorInfo { 
+export interface IUser extends IUserInfo, ITutorInfo {
 	userType: role
 	reset: boolean
 	lastActive: string
@@ -40,29 +40,69 @@ export interface IUser extends IUserInfo, ITutorInfo {
 	storedLastActive: string
 }
 
+interface UserModel extends Model<IUser> {
+	/**
+	 * Updates the tutee count of a tutor
+	 * @param shouldIncrement indicates if the update should be performed
+	 * @param _id the ObjectId of the user to update
+	 * @param value value to add to tuteeCount, defaults to 1
+	 */
+	incrementTuteeCount(shouldIncrement: boolean, _id: MongoID, value?: number): Promise<void>
+	
+	/**
+	 * Updates the tutee count of a tutor and returns the old document before the updating
+	 * @param shouldIncrement indicates if the update should be performed
+	 * @param _id the ObjectId of the user to update
+	 * @param value value to add to tuteeCount, defaults to 1
+	 * @param projection string to specify the keys to return from the document
+	 */
+	incrementTuteeCount(shouldIncrement: boolean, _id: MongoID, value: number, projection: string): Promise<IUser | null>
+
+	/**
+	 * Batch update the tutee count of tutors
+	 * @param ids array of ObjectIDs either in string or object format
+	 * @param value value to add to tuteeCount, defaults to 1
+	 */
+	batchIncrementTuteeCount(ids: MongoID[], value?: number): Promise<void>
+}
+
 const userSchema = new Schema<IUser>({
 	firstName: { type: String, default: '' },
 	middleName: { type: String },
 	lastName: { type: String, default: '' },
-	idNumber: { type: Number, required: true },
+	idNumber: { type: Number, required: true, min: 0 },
 	email: { type: String, required: true },
 	course: { type: String, default: '' },
 	contact: { type: String, default: '' },
 	url: { type: String, default: '' },
-	terms: { type: Number, default: 0 },
+	terms: { type: Number, default: 0, min: 0 },
 	membership: { type: Boolean, default: true },
 	tutoringService: [String], // [WHOLE TERM, ONE SESSION]
 	tutorialType: [String],
-	tuteeCount: { type: Number, default: 0 },
-	maxTuteeCount: { type: Number, default: 0 },
+	tuteeCount: { type: Number, default: 0, min: 0 },
+	maxTuteeCount: { type: Number, default: 0, min: 0 },
 	topics: [[String]],
-	schedule: {
-		type: Schema.Types.ObjectId,
-		ref: 'Schedule',
-	},
+	schedule: { type: ScheduleSchema, required: true, default: new Schedule() },
 	userType: String, 	// [ADMIN, TUTOR]
 	reset: Boolean,
 	lastActive: String, // ayterm
-})
+}, { versionKey: false })
 
-export default models?.User as Model<IUser & Document> || model<IUser>('User', userSchema, 'users')
+userSchema.statics.incrementTuteeCount = async function (shouldIncrement: boolean, _id: MongoID, value = 1, projection?: string): Promise<void> {
+	if (shouldIncrement) {
+		if (projection == undefined) {
+			return await this.updateOne({ _id }, { $inc: { 'tuteeCount': value } })
+		}
+		return await this.findOneAndUpdate({ _id }, { $inc: { 'tuteeCount': value } }, { projection }).lean()
+	}
+
+	if (projection != undefined) {
+		return await this.findById(_id, projection).lean()
+	}
+}
+
+userSchema.statics.batchIncrementTuteeCount = async function (ids: MongoID[], value = 1): Promise<void> {
+	await this.updateMany({ _id: { $in: ids } }, { $inc: { tuteeCount: value } })
+}
+
+export default models?.User as unknown as UserModel || model<IUser, UserModel>('User', userSchema, 'users')

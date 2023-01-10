@@ -76,13 +76,13 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees }) => {
 			<div className="mt-16">
 				<p className="font-light text-4xl text-center mb-2">Activities</p>
 				<hr />
-				<div className="grid lg:grid-cols-2 lg:gap-x-6 gap-y-4 place-items-center mt-12">
+				<div className="grid lg:grid-cols-2 lg:gap-x-6 gap-y-4 place-items-center mt-4 lg:mt-12">
 					<div className="w-full">
-						<Image src="/tutor-sessions.png" alt="Tutor Sessions" width={640} height={401} layout="responsive" />
+						<Image src="/tutor-sessions.png" alt="Tutor Sessions" width={640} height={401} className="w-full"  />
 					</div>
 					<div>
 						<p className="text-xl font-medium mb-4">Tutoring Sessions</p>
-						<p className="w-max-prose">
+						<p className="w-max-prose mb-6">
 							PTS provides tutorial services where students in need of academic assistance can request
 							for a peer tutor throughout the term. Tutorial sessions can be for one session or
 							for the whole term, and can be conducted one-on-one or in groups to cater to the
@@ -90,11 +90,11 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees }) => {
 						</p>
 					</div>
 					<div className="w-full">
-						<Image src="/mds-fgs.png" alt="Group Study" width={1295} height={649} layout="responsive" />
+						<Image src="/mds-fgs.png" alt="Group Study" width={1295} height={649} className="w-full"  />
 					</div>
 					<div>
 						<p className="text-xl font-medium mb-4">Midterms and Finals Group Study</p>
-						<p className="w-max-prose">
+						<p className="w-max-prose mb-6">
 							PTS conducts its midterms and finals group study sessions every term together with
 							La Salle Computer Society (LSCS) during the weeks before the midterms and finals weeks,
 							respectively. Through a combination of asynchronous and synchronous sessions, students
@@ -102,7 +102,7 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees }) => {
 						</p>
 					</div>
 					<div className="w-full">
-						<Image src="/tutorial-videos.png" alt="Tutorial Videos" width={640} height={351} layout="responsive" />
+						<Image src="/tutorial-videos.png" alt="Tutorial Videos" width={640} height={351} className="w-full" />
 					</div>
 					<div>
 						<p className="text-xl font-medium mb-4">Student Tutorial Videos</p>
@@ -111,7 +111,7 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees }) => {
 							first-year and second-year topics related to math and computer studies. Previous tutorial video
 							topics include conditional statements, structures, and integration by parts, among others.
 						</p>
-						<p className="max-w-prose">
+						<p className="max-w-prose mb-6">
 							The full playlist of available student tutorial videos can be accessed
 							through this <a href="https://tinyurl.com/StudentTutorialsPlaylist" className="text-blue-600 font-bold hover:underline">link</a>.
 						</p>

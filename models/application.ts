@@ -11,6 +11,6 @@ const userSchema = new Schema<IUserInfo>({
 	contact: { type: String, default: '' },
 	url: { type: String, default: '' },
 	terms: { type: Number, default: 0 },
-})
+}, { versionKey: false })
 
-export default models.Application as Model<IUserInfo & Document> || model<IUserInfo>('Application', userSchema, 'applications')
+export default models?.Application as Model<IUserInfo & Document> || model<IUserInfo>('Application', userSchema, 'applications')

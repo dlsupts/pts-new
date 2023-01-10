@@ -1,8 +1,8 @@
 import create from 'zustand'
-import { IRequest } from '../models/request'
-import { ITutee } from '../models/tutee'
+import { IRequest } from '@models/request'
+import { ITutee } from '@models/tutee'
 
-export type RequestFormData = Pick<IRequest, 'duration' | 'tutorialType'> & {
+export type RequestFormData = Pick<IRequest, 'duration' | 'tutorialType' | 'earliestDate' | 'latestDate'> & {
 	preferred: string
 }
 
@@ -17,29 +17,15 @@ export type RequestStore = {
 }
 
 const useRequestStore = create<RequestStore>(set => ({
-	tutee: {
-		campus: 'TAFT',
-		firstName: '',
-		lastName: '',
-		idNumber: 0,
-		email: '',
-		college: 'CCS',
-		course: '',
-		contact: '',
-		url: '',
-		friends: [],
-		schedule: { M: [], T: [], W: [], H: [], F: [], S: [] },
-	},
-	request: {
-		duration: 'One Session',
-		tutorialType: 'One-on-one',
-		preferred: '',
-	},
-	selectedSubjects: [],
+	...getFreshStore(),
 	setTutee: (tutee) => set(state => ({ tutee: { ...state.tutee, ...tutee } })),
 	setRequest: (request) => set({ request }),
 	setSelectedSubjects: (selectedSubjects) => set({ selectedSubjects }),
-	resetStore: () => set(() => ({
+	resetStore: () => set(() => getFreshStore())
+}))
+
+function getFreshStore(): Pick<RequestStore, 'tutee' | 'request' | 'selectedSubjects'> {
+	return {
 		tutee: {
 			campus: 'TAFT',
 			firstName: '',
@@ -55,11 +41,13 @@ const useRequestStore = create<RequestStore>(set => ({
 		},
 		request: {
 			duration: 'One Session',
-			tutorialType: 'One',
+			tutorialType: 'One-on-one',
 			preferred: '',
+			earliestDate: undefined,
+			latestDate: undefined,
 		},
 		selectedSubjects: [],
-	}))
-}))
+	}
+}
 
 export default useRequestStore

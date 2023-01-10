@@ -32,10 +32,8 @@ const NavItem: FC<NavItemProp> = ({ text, path }) => {
 	}, 'block cursor-pointer mb-2 px-2 py-1 border-l-4')
 
 	return (
-		<Link key={path} href={path} passHref>
-			<div className={className}>
-				{text}
-			</div>
+		<Link key={path} href={path} passHref className={className}>
+			{text}
 		</Link>
 	)
 }
@@ -75,7 +73,7 @@ const UserLayout: FC = ({ children }) => {
 			<div className="lg:col-span-7 xl:col-span-6">
 				{
 					isError || !user ? <p>An error has occured. Please try again.</p> :
-					// modal will only show when there is a set term definition
+						// modal will only show when there is a set term definition
 						date && user.reset ? <MembershipModal /> :
 							children
 				}

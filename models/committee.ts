@@ -26,13 +26,13 @@ export interface ICommittee {
 
 interface CommitteModel extends Model<ICommittee> {
 	/**
-	 * Gets the email of the current VP of the given commitee
+	 * Gets the email of the current VP of the given committee
 	 * @param name - committee name
 	 * @return a promise that returns the email
 	 */
 	getVPEmail(name: string): Promise<string>
 	/**
-	 * Gets the email of the current VP of the given commitee
+	 * Gets the email of all the officers in a given committee
 	 * @param name - committee name
 	 * @return a promise that returns the email addresses of the VP and the AVPs
 	 */
@@ -51,7 +51,7 @@ const committeeSchema = new Schema<ICommittee>({
 		position: { type: String, required: true },
 		image: { type: String, required: true },
 	}]
-})
+}, { versionKey: false })
 
 committeeSchema.statics.getVPEmail = async function (name: string) {
 	const [{ email }] = await this.aggregate()
@@ -96,4 +96,4 @@ committeeSchema.statics.getEmailAddresses = async function (name: string) {
 	return emails
 }
 
-export default models.Committee as unknown as CommitteModel || model<ICommittee, CommitteModel>('Committee', committeeSchema, 'committees')
+export default models?.Committee as unknown as CommitteModel || model<ICommittee, CommitteModel>('Committee', committeeSchema, 'committees')

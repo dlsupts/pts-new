@@ -1,9 +1,9 @@
 import { ISchedule } from "@models/schedule"
-import { ITutee } from "@models/tutee"
+import { ISession } from '@models/session'
 import { Tutor } from "@pages/admin/requests"
-import { BareSession, IReqSession } from "@pages/api/requests"
+import { IRequest } from "@models/request"
 
-export default function sorter(tutors: Tutor[], request: IReqSession, tutee: ITutee, sessions: BareSession[]) {
+export default function sorter(tutors: Tutor[], request: Pick<IRequest, 'preferred' | 'tutee'>, sessions: ISession[]) {
 	tutors.sort((a, b) => {
 		// check if preferred tutor
 		if (request.preferred === a._id) return -1
@@ -29,9 +29,10 @@ export default function sorter(tutors: Tutor[], request: IReqSession, tutee: ITu
 
 		// check schedule
 		let freeA = 0, freeB = 0
-		for (const day of Object.keys(tutee.schedule) as (keyof ISchedule)[]) {
-			for (const time of tutee.schedule[day]) {
-				for (const timeA of (a.schedule as ISchedule)[day]) {
+
+		for (const day of Object.keys(request.tutee.schedule) as (keyof ISchedule)[]) {
+			for (const time of request.tutee.schedule[day]) {
+				for (const timeA of a.schedule[day]) {
 					if (time === timeA) {
 						freeA++
 						break
@@ -39,9 +40,10 @@ export default function sorter(tutors: Tutor[], request: IReqSession, tutee: ITu
 				}
 			}
 		}
-		for (const day of Object.keys(tutee.schedule) as (keyof ISchedule)[]) {
-			for (const time of tutee.schedule[day]) {
-				for (const timeB of (b.schedule as ISchedule)[day]) {
+
+		for (const day of Object.keys(request.tutee.schedule) as (keyof ISchedule)[]) {
+			for (const time of request.tutee.schedule[day]) {
+				for (const timeB of b.schedule[day]) {
 					if (time === timeB) {
 						freeB++
 						break

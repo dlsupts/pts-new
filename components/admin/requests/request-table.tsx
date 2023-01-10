@@ -19,20 +19,17 @@ import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/outline'
 import { useMemo, useState, useEffect } from 'react'
 import DebouncedInput from '@components/table/debounced-input'
 import styles from '@styles/Table.module.css'
-import { IReqSession } from '@pages/api/requests'
-import { ITutee } from '@models/tutee'
-import { Tutor } from '@pages/admin/requests'
+import { Request, Tutor } from '@pages/admin/requests'
 
 type TableProps = {
-	data: IReqSession[]
-	onRowClick: (data: IReqSession, index: number) => void
+	data: Request[]
+	onRowClick: (data: Request, index: number) => void
 	tutors: Map<string, Tutor>
-	tutees: Map<string, ITutee>
 }
 
-const columnHelper = createColumnHelper<IReqSession>()
+const columnHelper = createColumnHelper<Request>()
 
-const RequestTable = ({ data, onRowClick, tutors, tutees }: TableProps) => {
+const RequestTable = ({ data, onRowClick, tutors }: TableProps) => {
 	const [globalFilter, setGlobalFilter] = useState('')
 	const [grouping, setGrouping] = useState<GroupingState>([])
 	const [expanded] = useState<ExpandedState>(true)
@@ -41,16 +38,9 @@ const RequestTable = ({ data, onRowClick, tutors, tutees }: TableProps) => {
 
 	const columns = useMemo(() => ([
 		//@ts-expect-error: Library limitation. Note that this may result in build error, so just copy paste this comment.
-		columnHelper.accessor(row => {
-			const tutee = tutees.get(row.tutee)
-			return `${tutee?.firstName} ${tutee?.lastName}:${row._id}`
-		}, {
-			id: '_id',
+		columnHelper.accessor('_id', {
 			header: 'Tutee',
-			cell: props => {
-				const tutee = tutees.get(props.row.original.tutee)
-				return `${tutee?.firstName} ${tutee?.lastName}`
-			}
+			cell: ({ row }) => `${row.original.tutee.firstName} ${row.original.tutee.lastName}`
 		}),
 		columnHelper.accessor('session.subject', { header: 'Subject', enableSorting: false }),
 		columnHelper.accessor(row => {
@@ -69,9 +59,9 @@ const RequestTable = ({ data, onRowClick, tutors, tutees }: TableProps) => {
 
 			return ''
 		}, { id: 'load', header: 'Tutor Load', enableSorting: false }),
-	]), [tutors, tutees])
+	]), [tutors])
 
-	const table = useReactTable<IReqSession>({
+	const table = useReactTable<Request>({
 		data,
 		columns,
 		filterFns: {

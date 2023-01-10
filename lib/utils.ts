@@ -61,6 +61,17 @@ export function formatDate(date: Date | string) {
 }
 
 /**
+ * Formats date objects to ISO format for use is HTML attributes
+ * @param date - a date object to format
+ * @returns a string equivalent of the date in the form 'YYYY-MM-DD'
+ */
+export function formatToISODate(date?: Date | string) {
+	if (!date) return ''
+	if (typeof date == 'string') return date
+	return date.toLocaleDateString('sv')
+}
+
+/**
  * Used to parse keyed library objects.
  * @param content - a string in the form "key: value"
  * @returns an array with the first element being the key and the second being the value.

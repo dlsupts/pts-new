@@ -69,8 +69,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 			case 4:
 				comp = <LoadingSpinner />
 
-				// when testing this functionality, turn off React's StrictMode. It causes this request to run twice only in development for some reason.
-				app.post('/api/tutees', { tutee, request, selectedSubjects })
+				app.post('/api/requests', { tutee, request, selectedSubjects })
 					.then(() => {
 						toast.success('You request has been sent.', toastSuccessConfig)
 						setStep(0)	// NOTE: important that this goes first before resetting store so as not to rerender and send another request

@@ -16,7 +16,7 @@ const libSchema = new Schema<ILib>({
 	isKeyed: { type: Boolean, required: true, default: false },
 	content: { type: [String], required: true, default: [] },
 	revalidatePaths: { type: [String], required: true, default: [] },
-})
+}, { versionKey: false })
 
 libSchema.statics.getDegreeCodes = async function () {
 	const { content }: ILib = await this.findById('Degree Programs', 'content').lean().exec()
@@ -29,4 +29,4 @@ libSchema.statics.getDegreeCodes = async function () {
 }
 
 
-export default models.Library as unknown as LibModel || model<ILib, LibModel>('Library', libSchema, 'libraries')
+export default models?.Library as unknown as LibModel || model<ILib, LibModel>('Library', libSchema, 'libraries')

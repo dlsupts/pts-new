@@ -38,8 +38,12 @@ const MobNavItem: FC<MobNavItemProp> = ({ text, path, isHome, onClick }) => {
 	}, 'border-l-4 block px-3 py-2 text-base font-medium cursor-pointer')
 
 	return (
-		<Link href={path}>
-			<a className={className} aria-current={pathname == path ? 'page' : undefined} onClick={onClick}>{text}</a>
+		<Link
+			href={path}
+			className={className}
+			aria-current={pathname == path ? 'page' : undefined}
+			onClick={onClick}>
+			{text}
 		</Link>
 	)
 }
@@ -54,10 +58,8 @@ const NavItem: FC<NavItemProp> = ({ text, path, isHome }) => {
 	}, 'h-full border-b-2 inline-flex justify-center items-center cursor-pointer')
 
 	return (
-		<Link href={path} passHref>
-			<a className={className}>
-				<p className="px-3 py-2 font-medium" aria-current={path == pathname ? 'page' : undefined}>{text}</p>
-			</a>
+		<Link href={path} passHref className={className}>
+			<p className="px-3 py-2 font-medium" aria-current={path == pathname ? 'page' : undefined}>{text}</p>
 		</Link>
 	)
 }
@@ -91,10 +93,8 @@ const Header: FC = () => {
 									</Disclosure.Button>
 								</div>
 								<div className="flex-1 flex items-center h-full justify-center md:items-stretch md:justify-start">
-									<Link href="/" passHref>
-										<div className="flex-shrink-0 flex items-center cursor-pointer mr-6">
-											<Image className="block w-auto" src={Logo} alt="PTS Logo" width={96} height={50} />
-										</div>
+									<Link href="/" passHref className="flex-shrink-0 flex items-center cursor-pointer mr-6">
+										<Image className="block w-auto" src={Logo} alt="PTS Logo" width={96} height={50} />
 									</Link>
 									<div className="hidden md:block md:ml-6">
 										<div className="flex space-x-4 items-center h-full">
