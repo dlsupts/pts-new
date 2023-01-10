@@ -1,5 +1,5 @@
-import { GetStaticProps, NextPage } from 'next'
-import { useEffect, useState } from 'react'
+import { InferGetStaticPropsType, NextPage } from 'next'
+import { useState } from 'react'
 import dbConnect from '@lib/db'
 import Library from '@models/library'
 import cn from 'classnames'
@@ -9,21 +9,11 @@ import { toast } from 'react-toastify'
 import { toastErrorConfig, toastSuccessConfig } from '@lib/toast-defaults'
 import LoadingSpinner from '@components/loading-spinner'
 import { parseContent } from '@lib/utils'
-import { useRetriever } from '@lib/useRetriever'
-import { IDate } from '@models/date'
 import { siteTitle } from '@components/layout'
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
-
-interface RequestProps {
-	faqs: string[][]
-	services: string[]
-	subjects: string[]
-	colleges: string[]
-	degreePrograms: string[]
-	campuses: string[]
-	dataPrivacy: string[]
-}
+import { FAQs } from '@components/faq'
+import { RequestButton } from '@components/request-button/request-button'
 
 const PAGE_TITLE = `${siteTitle} | Request`
 const META_DESCRIPTION = 'Need help? Just send us a tutor request, and we will match you with an available tutor as soon as we can.'
@@ -33,24 +23,9 @@ const Service = dynamic(() => import('@components/request/service'), { loading: 
 const Information = dynamic(() => import('@components/request/information'), { loading: () => <LoadingSpinner /> })
 const Schedule = dynamic(() => import('@components/request/schedule'), { loading: () => <LoadingSpinner /> })
 
-const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, colleges, degreePrograms, campuses, dataPrivacy }) => {
-	const [help, setHelp] = useState(faqs[0][1])
+const RequestPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ faqs, services, subjects, colleges, degreePrograms, campuses, dataPrivacy }) => {
 	const [step, setStep] = useState(0)
-	const [requestError, setRequestError] = useState('Checking availability...')
 	const { tutee, selectedSubjects, request, resetStore } = useStore()
-
-	const { data: date } = useRetriever<IDate>('/api/dates/Tutor Request')
-	const { data: isMaintenance } = useRetriever<boolean>('/api/maintenance')
-
-	useEffect(() => {
-		if (date == undefined || isMaintenance == undefined) return
-		if (isMaintenance) return setRequestError('System is in maintenance mode.')
-
-		const today = new Date().getTime()
-		if (today < new Date(date.start).getTime()) return setRequestError('Request period has not yet started!')
-		if (today > new Date(date.end).getTime()) return setRequestError('Request period has passed!')
-		setRequestError('')
-	}, [isMaintenance, date])
 
 	// when a step is active
 	if (step) {
@@ -118,26 +93,23 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, services, subjects, college
 					</div>
 					<p className="font-bold text-2xl text-center">Tutor Request</p>
 					<p className="text-gray-500 text-center mb-8 max-w-prose">Fastest and easiest access to academic assistance is within your reach.</p>
-					<button className="btn blue rounded-md px-4 py-2 font-medium" onClick={() => setStep(1)}
-						disabled={requestError !== ''}>{requestError == '' ? 'Request Now' : requestError}</button>
+					<RequestButton className="btn blue rounded-md px-4 py-2 font-medium" onClick={() => setStep(1)} />
 				</div>
 				<div className="flex flex-col justify-center items-center py-16 w-full lg:pl-8 border-gray-300 lg:border-l lg:border-t-0 border-t lg:h-full">
 					<div className="mb-6">
 						<i className="fa-solid fa-circle-question fa-4x"></i>
 					</div>
 					<p className="font-bold text-2xl text-center mb-2">Frequently Asked Questions</p>
-					<select onChange={e => setHelp(e.target.value)}
-						className="w-full max-w-prose border px-3 py-1.5 bg-clip-padding rounded transition ease-in-out cursor-pointer text-sm sm:text-base">
-						{faqs.map(f => <option key={f[0]} value={f[1]} className="py-2">{f[0]}</option>)}
-					</select>
-					<p className="max-w-prose mt-6 font-black text-center min-h-[120px] lg:min-h-[70px]">{help}</p>
+					<FAQs faqs={faqs}>
+						{faqs.map((f, i) => <option key={i} value={i} className="py-2">{f[0]}</option>)}
+					</FAQs>
 				</div>
 			</div>
 		</div>
 	)
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps = async () => {
 	await dbConnect()
 	const data = await Promise.all([
 		Library.findById('Tutor Request FAQ', '-_id').lean(),
@@ -152,13 +124,13 @@ export const getStaticProps: GetStaticProps = async () => {
 
 	return {
 		props: {
-			faqs: data[0]?.content.map(f => parseContent(f)),
-			services: data[1]?.content?.filter(c => c !== 'None'),
-			subjects: data[2]?.content.concat(data[6]?.content ?? []),
-			colleges: data[3]?.content?.map(c => c.split(':')[0]),
+			faqs: data[0]?.content.map(f => parseContent(f)) ?? [],
+			services: data[1]?.content?.filter(c => c !== 'None') ?? [],
+			subjects: data[2]?.content.concat(data[6]?.content ?? []) ?? [],
+			colleges: data[3]?.content?.map(c => c.split(':')[0]) ?? [],
 			degreePrograms: data[4],
-			campuses: data[5]?.content,
-			dataPrivacy: data[7]?.content,
+			campuses: data[5]?.content ?? [],
+			dataPrivacy: data[7]?.content ?? [],
 		},
 	}
 }
