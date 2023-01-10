@@ -16,7 +16,7 @@ export default NextAuth({
 	},
 	callbacks: {
 		async signIn({ account, profile }) {
-			if (account.provider === 'google' && (profile.hd == 'dlsu.edu.ph' || profile.email == process.env.NEXT_PUBLIC_ADMIN_EMAIL)) {
+			if (account?.provider === 'google' && (profile?.email?.endsWith('dlsu.edu.ph') || profile?.email == process.env.NEXT_PUBLIC_ADMIN_EMAIL)) {
 				let temp
 
 				try {
