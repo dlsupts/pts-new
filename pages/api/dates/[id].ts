@@ -11,7 +11,7 @@ const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 		switch (req.method) {
 			case 'GET': {
 				if (req.query.id == 'ayterm') {
-					const date = await Dates.getAYTerm()
+					const date = await (req.query.fallback == 'true' ? Dates.getAYTerm(new Date(), true) : Dates.getAYTerm())
 					return res.send(date)
 				}
 
