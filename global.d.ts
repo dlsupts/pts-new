@@ -20,6 +20,7 @@ declare global {
 			MAIL_PASS: string
 			LOG_LEVEL?: LOG_LEVEL
 			NEXT_PUBLIC_VERCEL_URL: string
+			NEXTAUTH_SECRET: string
 		}
 	}
 }

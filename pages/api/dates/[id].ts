@@ -11,8 +11,13 @@ const dateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 		switch (req.method) {
 			case 'GET': {
 				if (req.query.id == 'ayterm') {
-					const date = await (req.query.fallback == 'true' ? Dates.getAYTerm(new Date(), true) : Dates.getAYTerm())
-					return res.send(date)
+					try {
+						const date = await Dates.getAYTerm(new Date())
+						return res.send(date)
+					} catch(err) {
+						if (err instanceof Error && err.message == 'No term definition found!') return
+						throw err
+					}
 				}
 
 				const date = await Dates.findById(req.query.id)

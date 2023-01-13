@@ -15,12 +15,16 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 		switch (req.method) {
 			case 'DELETE': {
 				const committee = await Committee.findByIdAndDelete(req.query.committeeId)
-				await Library.updateOne(
-					{ _id: 'Committees' },
-					{ $pull: { content: committee?.name } }
-				)
-				logger.info(`ADMIN [${session.user._id}] DELETED committee ${committee?.name}`)
-				await res.revalidate('/about')
+
+				if (committee) {
+					await Library.updateOne(
+						{ _id: 'Committees' },
+						{ $pull: { content: committee?.name } }
+					)
+					logger.info(`ADMIN [${session.user._id}] DELETED committee ${committee?.name}`)
+					await res.revalidate('/about')
+				}
+
 				break
 			}
 
