@@ -11,6 +11,7 @@ import tutorialTypes from '@lib/tutorial-types'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { formatToISODate } from '@lib/utils'
+import Link from 'next/link'
 
 type ServiceProps = {
 	subjects: string[]
@@ -53,6 +54,7 @@ const serviceSchema = yup.object({
 	}).when('earliestDate',
 		(earliestDate, schema) => earliestDate ? schema.min(earliestDate, 'Date must be on or after the earliest date') : schema,
 	),
+	policy: yup.boolean().required().oneOf([true], 'This field is required.')
 }).required()
 
 type ServiceFormData = Omit<yup.InferType<typeof serviceSchema>, 'earliestDate' | 'latestDate'> & {
@@ -101,12 +103,33 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 		<>
 			<AddSubjectModal
 				isOpen={isOpen}
-				setIsOpen={setIsOpen}
+				close={() => setIsOpen(false)}
 				options={subjects}
 				selected={selectedSubjects}
 				setSelected={setSelectedSubjects}
 			/>
 			<form className="grid grid-cols-2 gap-4 mt-8" onSubmit={handleSubmit(onSubmit)}>
+				<div className="col-span-full bg-red-100 px-4 py-3 border-red-300 border-2 rounded-md text-sm">
+					<p className="underline font-bold text-base mb-2">Academic Honesty Policies</p>
+					<ol className="list-decimal [&>*]:ml-8 space-y-2 mb-4">
+						<li>A tutee should not ask their tutor for help with graded assessments</li>
+						<li> A tutee should not ask for any assistance in accomplishing machine projects </li>
+						<li>
+							A tutor may point their tutees to helpful resources, such as books or online references while observing intellectual property policies
+						</li>
+					</ol>
+					<p className="italic mb-4">
+						You may proceed to our <Link href="/policies" className="text-blue-700 hover:underline">Academic Honesty Policies</Link> for
+						more details on the above-mentioned restrictions.
+					</p>
+					<label htmlFor="policy" className="select-none space-x-2 flex items-center">
+						<input type="checkbox" id="policy" {...register('policy')} />
+						<span>
+							I have read and agreed to the Academic Honesty Policies set forth by the DLSU Peer Tutors Society.
+						</span>
+						<p className="form-err-msg text-sm">{errors.policy?.message}</p>
+					</label>
+				</div>
 				<div>
 					<label htmlFor="duration" className="required">Tutoring Duration</label>
 					<select {...register('duration')} id="duration">
@@ -165,9 +188,7 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 						<i className="fa-solid fa-plus fa-lg text-white"></i>
 					</button>
 				</div>
-				<div className="col-span-full">
-					<SubjectList subjects={selectedSubjects} setSubjects={setSelectedSubjects} />
-				</div>
+				<SubjectList className="col-span-full" subjects={selectedSubjects} setSubjects={setSelectedSubjects} />
 				<div className="col-span-full flex justify-end">
 					<input className="btn blue rounded-md px-4 py-2" type="submit" value="Next" disabled={!selectedSubjects.length} />
 				</div>
