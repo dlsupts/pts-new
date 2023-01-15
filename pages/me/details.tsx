@@ -82,7 +82,7 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 			</Head>
 			<AddSubjectModal
 				isOpen={isOpen}
-				setIsOpen={setIsOpen}
+				close={() => setIsOpen(false)}
 				options={subjects}
 				selected={selectedSubjects}
 				setSelected={setSelectedSubjects}
@@ -140,9 +140,7 @@ const TutorDetails: NextPage<TutorDetailsProps> = ({ types, services, subjects }
 										<i className="fa-solid fa-plus fa-lg text-white"></i>
 									</button>
 								</div>
-								<div className="col-span-full">
-									<SubjectList subjects={selectedSubjects} setSubjects={setSelectedSubjects} />
-								</div>
+								<SubjectList className="col-span-full" subjects={selectedSubjects} setSubjects={setSelectedSubjects} />
 								<div className="col-span-full mt-12">
 									<p className="text-lg font-bold">Availability</p>
 									<p className="text-gray-500 text-sm">Select the timeslots where you are available</p>

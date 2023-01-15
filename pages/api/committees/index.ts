@@ -16,12 +16,13 @@ const committeeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 		switch (method) {
 			case 'GET': {
-				const committees = await Committee.find().populate({
-					path: 'officers.user',
-					select: 'firstName lastName userType'
-				}).lean()
-
-				const order = await Library.findById('Committees').lean('-_id content').exec()
+				const [committees, order] = await Promise.all([
+					Committee.find().populate({
+						path: 'officers.user',
+						select: 'firstName lastName userType'
+					}).lean(),
+					Library.findById('Committees').lean('-_id content').exec()
+				])
 
 				// arrange committees based on order in library
 				const arranged = order?.content?.map(o => committees.find(c => c.name == o))

@@ -42,7 +42,7 @@ const UserLayout: FC = ({ children }) => {
 	const router = useRouter()
 	const time = (new Date).getTime()
 	const { user, isLoading: isUserLoading, isError } = useUser()
-	const { data: date, isLoading: isDateLoading } = useRetriever<IDate>('/api/dates/ayterm?fallback=true')
+	const { data: date, isLoading: isDateLoading } = useRetriever<IDate>('/api/dates/ayterm')
 
 	const { status, data } = useSession({
 		required: true,

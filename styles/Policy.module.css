@@ -1,0 +1,15 @@
+.policy {
+	@apply list-decimal space-y-4;
+}
+
+.policy > li {
+	@apply ml-5 sm:ml-8 font-medium;
+}
+
+.policy ol {
+	@apply mt-2 list-[lower-alpha] font-normal space-y-2
+}
+
+.policy ol li {
+	@apply ml-5 sm:ml-8
+}
