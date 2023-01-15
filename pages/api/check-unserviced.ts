@@ -42,7 +42,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<boolean>) => {
 				await Promise.all(requests.map((request) =>
 					sendEmail(request.email, 'Unserviced Tutor Request', UnservicedEmail(request))
 				))
-
+				
+				logger.info('Sent emails to unserviced requests')
 				await Request.updateMany({ _id: { $in: requests.map(r => r._id) } }, { emailSent: true })
 				break
 			}
