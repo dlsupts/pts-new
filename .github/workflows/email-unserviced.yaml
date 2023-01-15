@@ -2,12 +2,17 @@ name: email-unserviced
 on:
   schedule:
     - cron: '0 1 * * *'
+  push:
+    branches:
+      - 'dev'
+      - 'main'
+
 jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
       - name: Call API route
-      run: |
-        curl --request POST \
-        --url 'https://dlsupts.vercel.app/api/check-unserviced' \
-        --header 'Authorization: Bearer ${{ secrets.API_PASSWORD }}'
+        run: |
+          curl --request POST \
+          --url 'https://dlsupts.vercel.app/api/check-unserviced' \
+          --header 'Authorization: Bearer ${{ secrets.API_PASSWORD }}'
