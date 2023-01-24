@@ -26,7 +26,7 @@ const Officer: FC<OfficerProp> = ({ officer, onOfficerClick }) => {
 				<p>{officer.position}</p>
 			</div>
 			<div className="hidden sm:block">
-				<Image src={`https://drive.google.com/uc?export=view&id=${officer.image}`}
+				<Image src={`https://lh3.googleusercontent.com/d/${officer.image}`}
 					alt={`Photo of ${officer.name}`}
 					width={90}
 					height={90}
