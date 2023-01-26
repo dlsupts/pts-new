@@ -6,17 +6,14 @@ import cn from 'classnames'
 import { parseContent } from '@lib/utils'
 import { useRetriever } from '@lib/useRetriever'
 import { IDate } from '@models/date'
-import Head from 'next/head'
 import { siteTitle } from '@components/layout'
 import dynamic from 'next/dynamic'
+import { SiteHead } from '@components/site-head'
 
 interface RequestProps {
 	faqs: string[][]
 	courses: string[]
 }
-
-const PAGE_TITLE = `${siteTitle} | Apply`
-const META_DESCRIPTION = 'Feeling the fire to volunteer and teach? Send us your application now!'
 
 const ApplicationForm = dynamic(() => import('@components/application-form'))
 
@@ -40,15 +37,9 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 
 	return (
 		<div className="main-height flex flex-col justify-center px-4 mt-10 md:mt-0">
-			<Head>
-				<title>{PAGE_TITLE}</title>
-				<meta name="description" content={META_DESCRIPTION} />
-				<meta name="og:title" content={PAGE_TITLE} />
-				<meta name="og:description" content={META_DESCRIPTION} />
-				<meta name="og:url" content={`${process.env.NEXT_PUBLIC_VERCEL_URL}/apply`} />
-				<meta name="twitter:title" content={PAGE_TITLE} />
-				<meta name="twitter:description" content={META_DESCRIPTION} />
-			</Head>
+			<SiteHead title={`${siteTitle} | Apply`} url={`${process.env.NEXT_PUBLIC_VERCEL_URL}/apply`}
+				description="Feeling the fire to volunteer and teach? Send us your application now!"
+			/>
 			<div className="grid place-items-center lg:grid-cols-2 grid-cols-auto mx-auto min-h-[20rem] container gap-y-8">
 				{showForm ?
 					<ApplicationForm courses={courses} onSubmit={() => setShowForm(false)} />
