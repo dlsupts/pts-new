@@ -13,7 +13,7 @@ const OfficerTile: FC<Omit<IOfficer, 'userType'>> = ({ position, image, name }) 
 
 	return (
 		<div className="grid place-items-center w-48 mx-8">
-			<Image src={'https://drive.google.com/thumbnail?export=view&id=' + image} alt="picture" width={150} height={150} />
+			<Image src={`https://lh3.googleusercontent.com/d/${image}`} alt="picture" width={150} height={150} />
 			<p className="text-center font-bold mt-1">{name}</p>
 			<p className="text-center text-sm">{fullPosition}</p>
 		</div>

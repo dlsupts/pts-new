@@ -11,7 +11,7 @@ const LoadingButton = forwardRef<HTMLButtonElement, LoadingButtonProps>(
 		return (
 			<button className={cn(className, 'relative', { '!text-transparent': isLoading })} disabled={disabled || isLoading} {...props} ref={ref}>
 				{isLoading &&
-					<div className="absolute h-full w-full left-1/2 top-1/2 grid place-items-center -translate-x-1/2 -translate-y-1/2 loading" />
+					<span className="absolute h-full w-full left-1/2 top-1/2 grid place-items-center -translate-x-1/2 -translate-y-1/2 loading" />
 				}
 				{children}
 			</button>

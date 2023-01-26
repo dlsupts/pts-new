@@ -4,28 +4,19 @@ import dbConnect from '../lib/db'
 import Committee, { ICommittee } from '../models/committee'
 import Library from '../models/library'
 import Image from 'next/image'
-import Head from 'next/head'
 import { siteTitle } from '@components/layout'
+import { SiteHead } from '@components/site-head'
 
 interface AboutPageProps {
 	committees: ICommittee[]
 }
 
-const META_DESCRIPTION = 'About page containing the organization\'s description, vision and mission, projects, activities, and officers.'
-const PAGE_TITLE = `${siteTitle} | About`
-
 const AboutPage: NextPage<AboutPageProps> = ({ committees }) => {
 	return (
 		<div className="container mx-auto px-4 lg:px-20">
-			<Head>
-				<title>{PAGE_TITLE}</title>
-				<meta name="description" content={META_DESCRIPTION} />
-				<meta name="og:title" content={PAGE_TITLE} />
-				<meta name="og:description" content={META_DESCRIPTION} />
-				<meta name="og:url" content={`${process.env.NEXT_PUBLIC_VERCEL_URL}/about`} />
-				<meta name="twitter:title" content={PAGE_TITLE} />
-				<meta name="twitter:description" content={META_DESCRIPTION} />
-			</Head>
+			<SiteHead title={`About | ${siteTitle}`} url={`${process.env.NEXT_PUBLIC_VERCEL_URL}/about`}
+				description="About page containing the organization\'s description, vision and mission, projects, activities, and officers."
+			/>
 			<div className="my-14">
 				<p className="font-light text-5xl text-center">About Us</p>
 				<hr className="mt-2 mb-6" />
@@ -78,7 +69,7 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees }) => {
 				<hr />
 				<div className="grid lg:grid-cols-2 lg:gap-x-6 gap-y-4 place-items-center mt-4 lg:mt-12">
 					<div className="w-full">
-						<Image src="/tutor-sessions.png" alt="Tutor Sessions" width={640} height={401} className="w-full"  />
+						<Image src="/tutor-sessions.png" alt="Tutor Sessions" width={640} height={401} className="w-full" />
 					</div>
 					<div>
 						<p className="text-xl font-medium mb-4">Tutoring Sessions</p>
@@ -90,7 +81,7 @@ const AboutPage: NextPage<AboutPageProps> = ({ committees }) => {
 						</p>
 					</div>
 					<div className="w-full">
-						<Image src="/mds-fgs.png" alt="Group Study" width={1295} height={649} className="w-full"  />
+						<Image src="/mds-fgs.png" alt="Group Study" width={1295} height={649} className="w-full" />
 					</div>
 					<div>
 						<p className="text-xl font-medium mb-4">Midterms and Finals Group Study</p>
