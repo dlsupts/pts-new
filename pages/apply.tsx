@@ -37,7 +37,7 @@ const RequestPage: NextPage<RequestProps> = ({ faqs, courses }) => {
 
 	return (
 		<div className="main-height flex flex-col justify-center px-4 mt-10 md:mt-0">
-			<SiteHead title={`${siteTitle} | Apply`} url={`${process.env.NEXT_PUBLIC_VERCEL_URL}/apply`}
+			<SiteHead title={`Apply | ${siteTitle}`} url={`${process.env.NEXT_PUBLIC_VERCEL_URL}/apply`}
 				description="Feeling the fire to volunteer and teach? Send us your application now!"
 			/>
 			<div className="grid place-items-center lg:grid-cols-2 grid-cols-auto mx-auto min-h-[20rem] container gap-y-8">
