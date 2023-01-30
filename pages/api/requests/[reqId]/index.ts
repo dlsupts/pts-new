@@ -42,7 +42,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 						{ 'sessions.$[element].tutor': body.tutor, 'sessions.$[element].status': 'Matched' },
 						{
 							arrayFilters: [{ 'element.tutor': undefined }], // match sessions without assigned tutors
-							projection: { _id: 0, 'tutee.firstName': 1, duration: 1, tutorialType: 1, 'sessions.tutor': 1, 'sessions.subject': 1, 'sessions.topics': 1 },
+							projection: { _id: 0, tutee: 1, duration: 1, tutorialType: 1, 'sessions.tutor': 1, 'sessions.subject': 1, 'sessions.topics': 1 },
 						}
 					).lean(),
 				])
