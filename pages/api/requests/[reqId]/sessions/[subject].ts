@@ -45,7 +45,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 							// update session tutor that has matching subject
 							arrayFilters: [{ 'element.tutor': undefined, 'element.subject': query.subject }],
 							// get first session that matches the query subject
-							projection: { _id: 0, tutee: 1, duration: 1, tutorialType: 1, 'sessions': { $elemMatch: { subject: query.subject } } },
+							projection: { _id: 0, tutee: 1, duration: 1, tutorialType: 1, 'sessions': { $elemMatch: { subject: query.subject } }, earliestDate: 1, latestDate: 1 },
 						}
 					).lean(),
 				])

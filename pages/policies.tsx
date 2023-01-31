@@ -1,9 +1,14 @@
 import { NextPage } from 'next'
 import styles from '@styles/Policy.module.css'
+import { SiteHead } from '@components/site-head'
+import { siteTitle } from '@components/layout'
 
 const Page: NextPage = () => {
 	return (
 		<div className="max-w-4xl mx-auto px-4 lg:px-20 pt-12">
+			<SiteHead title={`Policies | ${siteTitle}`} url={`${process.env.NEXT_PUBLIC_VERCEL_URL}/policies`}
+				description="Listed here are the academic policies that a tutee must abide when requesting for a tutorial session from us."
+			/>
 			<h1 className="text-xl font-bold mb-4">Academic Honesty Policies</h1>
 			<ol className={styles.policy}>
 				<li>

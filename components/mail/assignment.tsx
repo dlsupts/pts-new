@@ -1,7 +1,7 @@
 import { IRequest } from '@models/request'
 
 type AssignmentEmailProps = {
-	request: Pick<IRequest, 'duration' | 'tutorialType' | 'tutee' | 'sessions'>
+	request: Pick<IRequest, 'duration' | 'tutorialType' | 'tutee' | 'sessions' | 'earliestDate' | 'latestDate'>
 }
 
 export default function AssignmentEmail({ request }: AssignmentEmailProps) {
@@ -12,6 +12,8 @@ export default function AssignmentEmail({ request }: AssignmentEmailProps) {
 				<strong>Request Details</strong><br />
 				Duration: <strong>{request.duration}</strong><br />
 				Tutorial Type: <strong>{request.tutorialType}</strong><br />
+				{request.earliestDate && <>Earliest Date: {request.earliestDate}<br /></>}
+				{request.latestDate && <>Latest Date: {request.latestDate}<br /></>}
 				Subjects:
 				<ol style={{ marginTop: '0' }}>
 					{request.sessions.map(({ subject, topics }) => (

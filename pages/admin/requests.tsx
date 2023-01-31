@@ -19,9 +19,10 @@ import sorter from '@lib/sorter'
 import LoadingButton from '@components/loading-button'
 import { ISession } from '@models/session'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 
 const TutorTable = dynamic(() => import('@components/admin/requests/tutor-table'))
-const TutorModal = dynamic(() => import('@components/table/tutor-modal')) 
+const TutorModal = dynamic(() => import('@components/table/tutor-modal'))
 const TuteeDisclosure = dynamic(() => import('@components/admin/requests/tutee-disclosure'))
 const Modal = dynamic(() => import('@components/modal'))
 
@@ -32,7 +33,7 @@ export interface Request extends Omit<RequestAPI, 'sessions'> {
 }
 
 const RequestPage: NextPage = () => {
-	const { data: requests, isLoading: isRequestLoading, mutate: mutateRequests } = useRetriever('/api/requests', [],
+	const { data: sessions, isLoading: areSessionsLoading, mutate: mutateSessions } = useRetriever('/api/requests', [],
 		// unwind sessions
 		(requests: RequestAPI[]) => {
 			const data: Request[] = []
@@ -56,19 +57,44 @@ const RequestPage: NextPage = () => {
 	)
 	const [modal, setModal] = useState<string>('')
 	const [requestMode, setRequestMode] = useState(false)
-	const [request, setRequest] = useState<Request>()
-	const [sessions, setSessions] = useState<ISession[]>([])
-	const unassignedSessionsCount = useMemo(() => (sessions.filter(s => !s.tutor)).length, [sessions])
+	const [sessIdx, setSessIdx] = useState(0)
+	const session = useMemo(() => sessions[sessIdx], [sessIdx, sessions])
+	const requestSessions = useMemo(() => {
+		const temp: ISession[] = []
+
+		for (let i = sessIdx; i < sessions.length; i++) {
+			// only push in unmatched subjects
+			if (sessions[i]._id != session._id) break
+			temp.push(sessions[i].session)
+		}
+
+		for (let i = sessIdx - 1; i >= 0; i--) {
+			if (sessions[i]._id != session._id) break
+			temp.push(sessions[i].session)
+		}
+
+		return temp
+	}, [sessions, sessIdx, session])
+	const unassignedSessionsCount = useMemo(() => (requestSessions.filter(s => !s.tutor))?.length, [requestSessions])
 	const [rowSelection, setRowSelection] = useState<Record<number, boolean>>({})
 	const [tutor, setTutor] = useState<Tutor>()
 	const cancelButton = useRef<HTMLButtonElement>(null)
-	const tutorArray = useMemo(() => {
-		if (!request) {
+	const sortedTutors = useMemo(() => {
+		if (!session) {
 			return Array.from(tutors.values())
 		}
-		return sorter(Array.from(tutors.values()), request, requestMode ? sessions : [request.session])
-	}, [tutors, request, requestMode, sessions])
+		return sorter(Array.from(tutors.values()), session, requestMode ? requestSessions : [session.session])
+	}, [tutors, session, requestMode, requestSessions])
 	const [isLoading, setIsLoading] = useState(false)
+	const router = useRouter()
+
+	useEffect(() => {
+		if (router.query.id == undefined) return
+		const idx = sessions.findIndex(s => s._id == router.query.id && s.session.subject == router.query.subject)
+		if (idx == -1) return
+		onRequestRowClick(idx)
+		router.replace(router.pathname, undefined, { shallow: true })
+	}, [router, sessions])
 
 	useEffect(() => {
 		// clear tutor selection every time modal closes
@@ -80,22 +106,8 @@ const RequestPage: NextPage = () => {
 		return () => clearTimeout(timeout)
 	}, [modal])
 
-	function onRequestRowClick(data: Request, index: number) {
-		setRequest(data)
-
-		const temp: ISession[] = []
-		for (let i = index; i < requests.length; i++) {
-			// only push in unmatched subjects
-			if (requests[i]._id != data._id) break
-			temp.push(requests[i].session)
-		}
-
-		for (let i = index - 1; i >= 0; i--) {
-			if (requests[i]._id != data._id) break
-			temp.push(requests[i].session)
-		}
-
-		setSessions(temp)
+	function onRequestRowClick(idx: number) {
+		setSessIdx(idx)
 		setModal('request')
 	}
 
@@ -106,7 +118,7 @@ const RequestPage: NextPage = () => {
 
 	async function handleAssign() {
 		setIsLoading(true)
-		const tutor = tutorArray[Number(Object.keys(rowSelection)[0])]._id
+		const tutor = sortedTutors[Number(Object.keys(rowSelection)[0])]._id
 		await updateAssignment(tutor)
 		setIsLoading(false)
 	}
@@ -120,12 +132,12 @@ const RequestPage: NextPage = () => {
 	async function updateAssignment(tutor: ObjectId | null) {
 		try {
 			if (requestMode) {
-				await app.patch(`/api/requests/${request?._id}`, { tutor })
+				await app.patch(`/api/requests/${session?._id}`, { tutor })
 			} else {
-				await app.patch(`/api/requests/${request?._id}/sessions/${request?.session.subject}`, { tutor })
+				await app.patch(`/api/requests/${session?._id}/sessions/${session?.session.subject}`, { tutor })
 			}
 			await mutateTutors()
-			await mutateRequests()
+			await mutateSessions()
 			setModal('')
 		} catch (err) {
 			toastAxiosError(err)
@@ -136,12 +148,12 @@ const RequestPage: NextPage = () => {
 		setIsLoading(true)
 		try {
 			if (requestMode) {
-				await app.delete(`/api/requests/${request?._id}`)
+				await app.delete(`/api/requests/${session?._id}`)
 			} else {
-				await app.delete(`/api/requests/${request?._id}/sessions/${request?.session.subject}`)
+				await app.delete(`/api/requests/${session?._id}/sessions/${session?.session.subject}`)
 			}
 			await mutateTutors()
-			await mutateRequests()
+			await mutateSessions()
 			setModal('')
 		} catch (err) {
 			toastAxiosError(err)
@@ -149,7 +161,7 @@ const RequestPage: NextPage = () => {
 		setIsLoading(false)
 	}
 
-	if (isTutorLoading || isRequestLoading) {
+	if (isTutorLoading || areSessionsLoading) {
 		return (
 			<AdminLayout>
 				<LoadingSpinner />
@@ -173,16 +185,16 @@ const RequestPage: NextPage = () => {
 							</Switch.Group>
 						</div>
 						<div>
-							{request &&
+							{session &&
 								<TuteeDisclosure
-									request={request}
-									sessions={requestMode ? sessions : [request.session]}
+									request={session}
+									sessions={requestMode ? requestSessions : [session.session]}
 									tutors={tutors}
 								/>
 							}
 							{
-								(requestMode && unassignedSessionsCount || !request?.session.tutor) &&
-								<TutorTable data={tutorArray}
+								(requestMode && unassignedSessionsCount || !session?.session.tutor) &&
+								<TutorTable data={sortedTutors}
 									rowSelection={rowSelection}
 									setRowSelection={setRowSelection}
 									onRowClick={onTutorRowClick}
@@ -196,7 +208,7 @@ const RequestPage: NextPage = () => {
 						</button>
 						<div className="space-x-2">
 							<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={() => setModal('')} disabled={isLoading}>Close</button>
-							{(requestMode && unassignedSessionsCount || !request?.session.tutor) ?
+							{(requestMode && unassignedSessionsCount || !session?.session.tutor) ?
 								<LoadingButton
 									className={styles.btn + ' btn blue'}
 									disabled={Object.keys(rowSelection).length == 0}
@@ -224,7 +236,7 @@ const RequestPage: NextPage = () => {
 					<div className={styles['confirmation-body']}>
 						<p className="text-xl">Remove
 							<span className="font-medium">
-								{' '}{request?.tutee.firstName}&apos;s{' '}
+								{' '}{session?.tutee.firstName}&apos;s{' '}
 							</span>{requestMode ? 'request' : 'session'}?</p>
 						<div className={styles['btn-group']}>
 							<button className={styles.btn + ' btn gray'} ref={cancelButton} onClick={() => setModal('request')} disabled={isLoading}>Cancel</button>
@@ -236,8 +248,8 @@ const RequestPage: NextPage = () => {
 				</div>
 			</Modal>
 			{
-				requests.length ?
-					<RequestTable data={requests} onRowClick={onRequestRowClick} tutors={tutors} />
+				sessions.length ?
+					<RequestTable data={sessions} onRowClick={onRequestRowClick} tutors={tutors} />
 					:
 					<div className="grid place-items-center h-[calc(100vh-theme(spacing.64))]">
 						<h1 className="text-2xl font-medium text-gray-400">No Requests Yet</h1>

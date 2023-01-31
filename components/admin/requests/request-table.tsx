@@ -23,7 +23,7 @@ import { Request, Tutor } from '@pages/admin/requests'
 
 type TableProps = {
 	data: Request[]
-	onRowClick: (data: Request, index: number) => void
+	onRowClick: (index: number) => void
 	tutors: Map<string, Tutor>
 }
 
@@ -40,7 +40,11 @@ const RequestTable = ({ data, onRowClick, tutors }: TableProps) => {
 		//@ts-expect-error: Library limitation. Note that this may result in build error, so just copy paste this comment.
 		columnHelper.accessor('_id', {
 			header: 'Tutee',
-			cell: ({ row }) => `${row.original.tutee.firstName} ${row.original.tutee.lastName}`
+			id: '_id',
+			cell: ({ row: { original } }) => `${original.tutee.firstName} ${original.tutee.lastName}`
+		}),
+		columnHelper.accessor(({ tutee }) => `${tutee.firstName} ${tutee.lastName}`, {
+			id: 'tutee'
 		}),
 		columnHelper.accessor('session.subject', { header: 'Subject', enableSorting: false }),
 		columnHelper.accessor(row => {
@@ -71,6 +75,7 @@ const RequestTable = ({ data, onRowClick, tutors }: TableProps) => {
 			globalFilter,
 			grouping,
 			expanded,
+			columnVisibility: { tutee: false }
 		},
 		onGlobalFilterChange: (str: string) => {
 			setGlobalFilter(str)
@@ -145,7 +150,7 @@ const RequestTable = ({ data, onRowClick, tutors }: TableProps) => {
 									'bg-gray-50': ctr % 2,
 									'cursor-pointer hover:text-gray-900': onRowClick,
 									'hidden': row.subRows.length
-								}, 'text-gray-600')} onClick={() => onRowClick(row.original, row.index)}>
+								}, 'text-gray-600')} onClick={() => onRowClick(row.index)}>
 									{row.getVisibleCells().map(cell => (
 										<td key={cell.id} className={cn({ 'bg-white': cell.getIsPlaceholder() })}>
 											{cell.getIsGrouped() ? (

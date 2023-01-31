@@ -63,16 +63,17 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 								localField: '_id',
 								foreignField: 'sessions.tutor',
 								pipeline: [{
-									$project: { _id: 0, 'tutee.firstName': 1, 'tutee.lastName': 1, 'sessions.subject': 1, 'sessions.tutor': 1 }
+									$project: { 'tutee.firstName': 1, 'tutee.lastName': 1, 'sessions.subject': 1, 'sessions.tutor': 1 }
 								}]
 							})
-							// parse requests to be of this shape: [{ tutee, subjects: [string]}]
+							// parse requests to be of this shape: { _id, tutee, subjects: string[]}[]
 							.addFields({
 								requests: { 
 									$map: { // for each request
 										input: '$requests',
 										as: 'request',
 										in: {
+											_id: '$$request._id',
 											tutee: '$$request.tutee',
 											subjects: {
 												$reduce: { // reduce sessions to become an array of subject strings

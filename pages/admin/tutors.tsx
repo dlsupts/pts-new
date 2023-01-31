@@ -30,6 +30,7 @@ interface ITableProps extends IUser {
 type TutorAPI = IUser & {
 	status?: string
 	requests: {
+		_id: string
 		tutee: Pick<ITutee, 'firstName' | 'lastName'>
 		subjects: string[]
 	}[]
@@ -100,8 +101,6 @@ const AdminPage: NextPage = () => {
 		toast.error('An error has occured. Please try again.', toastErrorConfig)
 	}
 
-	const tableInstance = Table<ITableProps>({ columns, data, onRowClick })
-
 	return (
 		<AdminLayout>
 			<Head>
@@ -116,13 +115,13 @@ const AdminPage: NextPage = () => {
 								{!isActive && <span className="font-semibold text-gray-500"> (Inactive User)</span>}
 							</Dialog.Title>
 							<div className="flex">
-								<button aria-labelledby="refresh-label" className="text-gray-600 hover:text-gray-700">
-									<RefreshIcon className="w-6 aspect-sqare"
+								<button aria-labelledby="refresh-label" className="text-gray-600 hover:text-gray-700" title="refresh membership">
+									<RefreshIcon className="w-6 aspect-square"
 										onClick={resetTutorRecord}
 									/>
 									<span id="refresh-label" hidden>Refresh Tutor</span>
 								</button>
-								<button aria-labelledby="trash-label" className="text-red-600 hover:text-red-700">
+								<button aria-labelledby="trash-label" className="text-red-600 hover:text-red-700" title="delete tutor">
 									<TrashIcon role="button" className="w-6 aspect-square"
 										onClick={() => { setIsDelOpen(true); setIsOpen(false) }}
 									/>
@@ -136,9 +135,11 @@ const AdminPage: NextPage = () => {
 									<p className={styles.label}>Assigned Sessions</p>
 									{tutor?.requests.map(r => {
 										return r.subjects.map(subject =>
-											<p key={r.tutee.firstName + subject} className={styles.data}>
-												{subject} ({`${r.tutee.firstName} ${r.tutee.lastName}`})
-											</p>
+											<div key={r.tutee.firstName + subject}>
+												<Link href={`/admin/requests?id=${r._id}&subject=${subject}`} className={cn(styles.data, styles.link)}>
+													{subject} ({`${r.tutee.firstName} ${r.tutee.lastName}`})
+												</Link>
+											</div>
 										)
 									})}
 								</div>
@@ -165,7 +166,7 @@ const AdminPage: NextPage = () => {
 							</div>
 							<div className="col-span-full">
 								<p className={styles.label}>Facebook URL</p>
-								<a href={tutor?.url} className={cn(styles.data, 'underline')}>{tutor?.url}</a>
+								<a href={tutor?.url} className={cn(styles.link, styles.data)}>{tutor?.url}</a>
 							</div>
 							<div>
 								<p className={styles.label}>Last Active Term</p>
@@ -225,7 +226,7 @@ const AdminPage: NextPage = () => {
 					View Applicants
 				</Link>
 			</div>
-			{isLoading ? <LoadingSpinner /> : tableInstance}
+			{isLoading ? <LoadingSpinner /> : <Table columns={columns} data={data} onRowClick={onRowClick} />}
 		</AdminLayout>
 	)
 }

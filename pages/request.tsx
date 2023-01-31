@@ -22,6 +22,12 @@ const Service = dynamic(() => import('@components/request/service'), { loading: 
 const Information = dynamic(() => import('@components/request/information'), { loading: () => <LoadingSpinner /> })
 const Schedule = dynamic(() => import('@components/request/schedule'), { loading: () => <LoadingSpinner /> })
 
+const mySiteHead = <SiteHead
+	title={`Request | ${siteTitle}`}
+	url={`${process.env.NEXT_PUBLIC_VERCEL_URL}/request`}
+	description="Need help? Just send us a tutor request, and we will match you with an available tutor as soon as we can."
+/>
+
 const RequestPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ faqs, services, subjects, colleges, degreePrograms, campuses, dataPrivacy }) => {
 	const [step, setStep] = useState(0)
 	const { tutee, selectedSubjects, request, resetStore } = useStore()
@@ -60,6 +66,7 @@ const RequestPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
 		return (
 			<div className="container mx-auto px-4">
+				{mySiteHead}
 				<h3 className="font-bold text-2xl mt-6">Request Form</h3>
 				<div className="grid grid-cols-3 gap-y-4 md:gap-x-8 my-4 md:px-0">
 					{steps.map((s, index) => (
@@ -76,9 +83,7 @@ const RequestPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
 	return (
 		<div className="main-height flex flex-col justify-center px-4 mt-6 lg:mt-0">
-			<SiteHead title={`${siteTitle} | Request`} url={`${process.env.NEXT_PUBLIC_VERCEL_URL}/request`}
-				description="Need help? Just send us a tutor request, and we will match you with an available tutor as soon as we can."
-			/>
+			{mySiteHead}
 			<div className="grid place-items-center lg:grid-cols-2 mx-auto container min-h-[20rem] gap-y-8">
 				<div className="flex flex-col items-center py-16">
 					<div className="mb-6">

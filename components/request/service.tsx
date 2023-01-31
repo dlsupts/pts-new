@@ -77,7 +77,7 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 	const duration = watch('duration') as keyof typeof tutorialTypes
 	const tutorialType = watch('tutorialType')
 	const earliestDate = watch('earliestDate')
-	const tomorrow = new Date(Date.now() + 86_400_000)
+	const threeDaysLater = new Date(Date.now() + 259_200_000)
 
 	const onSubmit = (values: ServiceFormData) => {
 		setRequest({
@@ -165,7 +165,7 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 							<label htmlFor="earliest" className="required">Earliest Date</label>
 							<input type="date" {...register('earliestDate')}
 								id="earliest"
-								min={formatToISODate(tomorrow)}
+								min={formatToISODate(threeDaysLater)}
 							/>
 							<p className="form-err-msg text-sm">{errors.earliestDate?.message}</p>
 						</div>
