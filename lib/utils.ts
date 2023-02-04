@@ -51,7 +51,7 @@ const dateOptions: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric'
 /**
  * Standard date formatter for the application.
  * @param date - a date object or date string to format
- * @returns a string equivalent of the date in the form 'MMM-DD-YYYY'
+ * @returns a string equivalent of the date in the form 'MMM DD, YYYY'
  */
 export function formatDate(date: Date | string) {
 	if (typeof date == 'string') {
@@ -66,9 +66,9 @@ export function formatDate(date: Date | string) {
  * @param date - a date object to format
  * @returns a string equivalent of the date in the form 'YYYY-MM-DD'
  */
-export function formatToISODate(date?: Date | string) {
+export function formatToISODate(date?: Date | string | number) {
 	if (!date) return ''
-	if (typeof date == 'string') return date
+	if (typeof date == 'string' || typeof date == 'number') return new Date(date).toLocaleDateString('sv')
 	return date.toLocaleDateString('sv')
 }
 

@@ -1,3 +1,4 @@
+import { formatDate } from '@lib/utils'
 import { IRequest } from '@models/request'
 
 type AssignmentEmailProps = {
@@ -12,8 +13,8 @@ export default function AssignmentEmail({ request }: AssignmentEmailProps) {
 				<strong>Request Details</strong><br />
 				Duration: <strong>{request.duration}</strong><br />
 				Tutorial Type: <strong>{request.tutorialType}</strong><br />
-				{request.earliestDate && <>Earliest Date: <strong>{request.earliestDate}</strong><br /></>}
-				{request.latestDate && <>Latest Date: <strong>{request.latestDate}</strong><br /></>}
+				{request.earliestDate && <>Earliest Date: <strong>{formatDate(request.earliestDate)}</strong><br /></>}
+				{request.latestDate && <>Latest Date: <strong>{formatDate(request.latestDate)}</strong><br /></>}
 				Subjects:
 				<ol style={{ marginTop: '0' }}>
 					{request.sessions.map(({ subject, topics }) => (

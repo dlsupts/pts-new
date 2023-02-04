@@ -113,7 +113,7 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 					<p className="underline font-bold text-base mb-2">Academic Honesty Policies</p>
 					<ol className="list-decimal [&>*]:ml-8 space-y-2 mb-4">
 						<li>A tutee should not ask their tutor for help with graded assessments</li>
-						<li> A tutee should not ask for any assistance in accomplishing machine projects </li>
+						<li>A tutee should not ask for any assistance in accomplishing machine projects</li>
 						<li>
 							A tutor may point their tutees to helpful resources, such as books or online references while observing intellectual property policies
 						</li>
@@ -173,7 +173,7 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 							<label htmlFor="latest" className="required">Latest Date</label>
 							<input type="date" {...register('latestDate')}
 								id="latest" disabled={!earliestDate}
-								min={earliestDate?.toString()}
+								min={formatToISODate(new Date(earliestDate).getTime() + 86_400_000)}
 							/>
 							<p className="form-err-msg text-sm">{errors.latestDate?.message}</p>
 						</div>
