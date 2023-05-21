@@ -12,7 +12,7 @@ import {
 import cn from 'classnames'
 import { fuzzyFilter } from './global-filter'
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/outline'
-import { useState } from 'react'
+import { HTMLAttributes, useState } from 'react'
 import DebouncedInput from './debounced-input'
 import styles from '@styles/Table.module.css'
 
@@ -22,9 +22,9 @@ type TableProps<T extends object> = {
 	data: T[]
 	onRowClick?: (id: string) => void
 	id?: string
-}
+} & HTMLAttributes<HTMLDivElement>
 
-const Table = <T extends object>({ columns, data, onRowClick, id }: TableProps<T>) => {
+const Table = <T extends object>({ columns, data, onRowClick, id, ...props }: TableProps<T>) => {
 	const [globalFilter, setGlobalFilter] = useState('')
 
 	const table = useReactTable<T>({
@@ -47,7 +47,7 @@ const Table = <T extends object>({ columns, data, onRowClick, id }: TableProps<T
 	})
 
 	return (
-		<div className="align-middle inline-block w-full sm:px-6 lg:px-8 overflow-x-auto">
+		<div className="align-middle inline-block w-full sm:px-6 lg:px-8 overflow-x-auto pb-2" {...props}>
 			<div className="mb-4">
 				<label htmlFor="tbl-search">Search</label>
 				<DebouncedInput
