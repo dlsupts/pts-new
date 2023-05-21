@@ -52,8 +52,37 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 					Request.aggregate()
 						.unwind('sessions')
-						.replaceRoot('sessions')
-						.project({ tutor: 0 })
+						.replaceRoot({ $mergeObjects: ['$$ROOT', '$sessions', '$tutee'] })
+						.lookup({ // get tutor
+							from: 'users',
+							localField: 'tutor',
+							foreignField: '_id',
+							as: 'tutor',
+						})
+						.project({	// get tutor first name and last name
+							tutor: {
+								$concat: [
+									{ $arrayElemAt: ['$tutor.firstName', 0] },
+									' ',
+									{ $arrayElemAt: ['$tutor.lastName', 0] }
+								]
+							},
+							tutee_name: { $concat: ['$tutee.firstName', ' ', '$tutee.lastName'] },
+							tutee_id: '$tutee.idNumber',
+							tutee_college: '$tutee.college',
+							tutee_course: '$tutee.course',
+							tutee_email: '$tutee.email',
+							tutee_contact: '$tutee.contact',
+							tutee_fb: '$tutee.url',
+							tutee_campus: '$tutee.campus',
+							duration: 1,
+							tutorialType: 1,
+							subject: 1,
+							topics: 1,
+							status: 1,
+							earliestDate: 1,
+							latestDate: 1,
+						})
 				])
 
 				try {
