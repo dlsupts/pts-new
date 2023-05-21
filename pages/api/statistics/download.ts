@@ -12,6 +12,7 @@ const fileNames = [
 	'tutees-id',
 	'tutors-id',
 	'tutors-course',
+	'top-tutors-per-subject'
 ] as const
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -34,6 +35,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 					statistics.groupTuteesByIdNumber(),
 					statistics.groupTutorsByIdNumber(),
 					statistics.groupTutorsByCourse(),
+					statistics.getTopTutorPerSubject(),
 				])
 
 				results.map((data, index) => {

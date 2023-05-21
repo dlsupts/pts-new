@@ -9,6 +9,7 @@ export type Statistics = [
 	Aggregate[],
 	Aggregate[],
 	Aggregate[],
+	Aggregate[]
 ]
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Statistics>) => {
@@ -28,6 +29,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Statistics>) =>
 					statistics.groupTuteesByIdNumber(),
 					statistics.groupTutorsByIdNumber(),
 					statistics.groupTutorsByCourse(),
+					statistics.getTopTutorPerSubject()
 				])
 
 				res.json(result)
