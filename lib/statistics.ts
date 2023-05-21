@@ -80,26 +80,41 @@ export async function getTopTutorPerSubject() {
 			},
 			count: { $sum: 1 }
 		})
-		.sort({ count: -1 }) // sort first so that the $first operator in group will get the max
 		.group({
 			_id: '$_id.subject',
-			count: { $first: '$count' },
-			tutor: { $first: '$_id.tutor' }
-		})
-		.lookup({ // get tutor first and last name
-			from: 'users',
-			localField: 'tutor',
-			foreignField: '_id',
-			as: 'tutor'
+			count: { $max: '$count' },
+			tutors: {
+				$push: {
+					tutor: '$_id.tutor',
+					count: '$count'
+				}
+			}
 		})
 		.addFields({
-			tutor: {
-				$concat: [
-					{ $arrayElemAt: ['$tutor.firstName', 0] },
-					' ',
-					{ $arrayElemAt: ['$tutor.lastName', 0] }
-				]
+			tutors: {
+				$filter: {
+					input: '$tutors',
+					as: 'tutor',
+					cond: { $eq: ['$count', '$$tutor.count'] }
+				}
 			}
+		})
+		.lookup({
+			from: "users",
+			localField: "tutors.tutor",
+			foreignField: "_id",
+			as: "tutors",
+		})
+		.addFields({
+			tutors: {
+				$substr: [{
+					$reduce: {
+						input: '$tutors',
+						initialValue: '',
+						in: { $concat: ['$$value', ', ', "$$this.firstName", " ", "$$this.lastName"] }
+					}
+				}, 2, -1]
+			},
 		})
 }
 
