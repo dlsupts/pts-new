@@ -27,10 +27,42 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				if (csv == null || json == null) throw Error('Error exporting database!')
 
 				const [tutors, tutees, sessions] = await Promise.all([
-					User.find(
-						{ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL } },
-						'-_id idNumber email course terms maxTuteeCount firstName lastName middleName lastActive'
-					).lean(),
+					User.aggregate()
+						.match({ email: { $ne: process.env.NEXT_PUBLIC_ADMIN_EMAIL } })
+						.project({
+							idNumber: 1,
+							email: 1,
+							course: 1,
+							terms: 1,
+							maxTuteeCount: 1,
+							firstName: 1,
+							lastName: 1,
+							middleName: 1,
+							lastActive: 1,
+							topics: {
+								$substr: [ // removes extra comma in front
+									{
+										$reduce: { // comma-separated subject titles with extra comma in front
+											input: '$topics',
+											initialValue: '',
+											in: {
+												$concat: ['$$value', ', ', { $arrayElemAt: ['$$this', 0] }]
+											}
+										}
+									}, 2, -1]
+							}
+						})
+						.lookup({
+							from: 'requests',
+							localField: '_id',
+							foreignField: 'sessions.tutor',
+							as: 'tutee_count',
+						})
+						.addFields({
+							tutee_count: { $size: '$tutee_count' }
+						})
+						.project({ _id: 0 })
+					,
 
 					Request.aggregate()
 						// sets a new `serviced` field that is true when the number of sessions that have a tutor is non-zero
