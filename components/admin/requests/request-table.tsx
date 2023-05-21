@@ -37,7 +37,7 @@ const RequestTable = ({ data, onRowClick, tutors }: TableProps) => {
 	let ctr = 1
 
 	const columns = useMemo(() => ([
-		//@ts-expect-error: Library limitation. Note that this may result in build error, so just copy paste this comment.
+		//@ts-expect-error: Library limitation. Note that this may result in build error, so just cut and re-paste this comment.
 		columnHelper.accessor('_id', {
 			header: 'Tutee',
 			id: '_id',
@@ -58,7 +58,7 @@ const RequestTable = ({ data, onRowClick, tutors }: TableProps) => {
 		columnHelper.accessor(row => {
 			if (row.session.tutor) {
 				const tutor = tutors.get(row.session.tutor.toString())
-				return `${tutor?.tuteeCount}/${tutor?.maxTuteeCount}`
+				return `${tutor?.tuteeCount} / ${tutor?.maxTuteeCount}`
 			}
 
 			return ''

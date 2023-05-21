@@ -69,12 +69,62 @@ export async function groupSessionsbySubjectAndStatus() {
 		.sort({ _id: 1 }) as ComplexAggregate[]
 }
 
+export async function getTopTutorPerSubject() {
+	return await Request.aggregate()
+		.unwind('sessions')
+		.match({ "sessions.tutor": { $ne: null } })
+		.group({
+			_id: {
+				subject: "$sessions.subject",
+				tutor: "$sessions.tutor"
+			},
+			count: { $sum: 1 }
+		})
+		.group({
+			_id: '$_id.subject',
+			count: { $max: '$count' },
+			tutors: {
+				$push: {
+					tutor: '$_id.tutor',
+					count: '$count'
+				}
+			}
+		})
+		.addFields({
+			tutors: {
+				$filter: {
+					input: '$tutors',
+					as: 'tutor',
+					cond: { $eq: ['$count', '$$tutor.count'] }
+				}
+			}
+		})
+		.lookup({
+			from: "users",
+			localField: "tutors.tutor",
+			foreignField: "_id",
+			as: "tutors",
+		})
+		.addFields({
+			tutors: {
+				$substr: [{
+					$reduce: {
+						input: '$tutors',
+						initialValue: '',
+						in: { $concat: ['$$value', ', ', "$$this.firstName", " ", "$$this.lastName"] }
+					}
+				}, 2, -1]
+			},
+		})
+}
+
 const statistics = {
 	groupTutorsByIdNumber,
 	groupTutorsByCourse,
 	groupTuteesByIdNumber,
 	groupTuteesByCollege,
 	groupSessionsbySubjectAndStatus,
+	getTopTutorPerSubject,
 }
 
 export default statistics

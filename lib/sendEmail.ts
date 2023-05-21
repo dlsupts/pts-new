@@ -23,16 +23,15 @@ const transporter = nodemailer.createTransport({
  * @param template - the component to statically render in the email
  * @returns a promise to the result of the email sending
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default async function sendEmail(to: string | Options, subject: string, template: ReactElement) {
+export default async function sendEmail(to: string | Options, subject: string, template: ReactElement | string) {
 	// still attempt to render even outside of production to see if there are errors
-	const html = wrapInLayout(renderToStaticMarkup(template))
+	const html = typeof template === 'string' ? template : wrapInLayout(renderToStaticMarkup(template))
 
 	if (process.env.NODE_ENV !== 'production') {
 		return await logger.info(`Email with subject: ${subject} was sent to ${to}`)
 	}
 
-	if (typeof to == 'string') {
+	if (typeof to === 'string') {
 		return await transporter.sendMail({
 			from: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
 			to,

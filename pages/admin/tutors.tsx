@@ -44,6 +44,10 @@ const columns = [
 	columnHelper.accessor('lastName', { header: 'Last Name' }),
 	columnHelper.accessor('firstName', { header: 'First Name' }),
 	columnHelper.accessor('email', { header: 'Email' }),
+	columnHelper.accessor('tuteeCount', {
+		header: 'Tutee Count',
+		cell: ({ row, getValue }) => `${getValue()} / ${row.original.maxTuteeCount}`
+	}),
 	columnHelper.accessor('status', { header: 'Status' }),
 ]
 

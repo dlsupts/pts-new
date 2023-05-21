@@ -14,6 +14,9 @@ import app from '@lib/axios-config'
 import { interpolateCool } from 'd3-scale-chromatic'
 import interpolateColors from '@lib/color-generator'
 import LoadingButton from '@components/loading-button'
+import Table from '@components/table/table'
+import { createColumnHelper } from '@tanstack/react-table'
+import { Aggregate } from '@lib/statistics'
 
 const scale = interpolateCool
 const legend = <Legend verticalAlign="bottom" height={36} iconType="square" />
@@ -29,6 +32,14 @@ const PIE_CONFIG = {
 	outerRadius: 90,
 	label: true
 }
+
+const helper = createColumnHelper<Aggregate>()
+
+const topTutorColumns = [
+	helper.accessor('_id', { header: 'Subject' }),
+	helper.accessor('tutors', { header: 'Tutors' }),
+	helper.accessor('count', { header: 'Count' })
+]
 
 const AdminPage: NextPage = () => {
 	const { data, isLoading } = useRetriever<Statistics>('/api/statistics')
@@ -79,6 +90,11 @@ const AdminPage: NextPage = () => {
 				<section className={styles.section}>
 					<h1>Tutor Request Statistics ({totalRequests})</h1>
 					<DashboardTable data={data[0]} />
+				</section>
+
+				<section className={styles.section}>
+					<h1>Top Tutors per Subject</h1>
+					<Table columns={topTutorColumns} data={data[5]} style={{ paddingInline: '0.25rem' }} />
 				</section>
 
 				<section className={styles.section}>
