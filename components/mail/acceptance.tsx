@@ -1,17 +1,24 @@
-export default function AcceptanceEmail() {
+import { IUserInfo } from '@models/user'
+
+export default function AcceptanceEmail(applicant: IUserInfo) {
 	return (
 		<>
-			<p>Congratulations on your acceptance to PTS!</p>
-			<div style={{ width: '65ch' }}>
-				<span>To access your account:</span>
-				<ol style={{ marginTop: 0 }}>
-					<li>Visit <a href="https://pts-new.vercel.app/">https://pts-new.vercel.app/</a></li>
-					<li>Once the site loads, click the &ldquo;Tutor Login&rdquo; button on the upper right of the screen</li>
-					<li>Log in with your registered DLSU email account</li>
-				</ol>
-			</div>
+			<p>Good day, {applicant.firstName}</p>
+			<p>We are glad to inform you that you have passed the application interview and are officially a tutor of the Peer Tutors Society!</p>
+			<p>With this, all new members are required to attend two (2) upcoming events, the General Assembly and Tutoring 101.</p>
+			<ul>
+				<li>
+					The <b>General Assembly</b> will be held on <b>June 7, 2023</b>, from <b>4 pm to 6 pm in Zoom</b>. Kindly answer
+					the <a href="https://forms.gle/DJY954ueh5qM3BBa8">New Tutors Form</a> within the day.
+				</li>
+				<li>
+					<b>Tutoring 101</b> will be held virtually on <b>June 10, 2023, from 4 pm to 5 pm in Zoom</b>.
+					More details will be sent in the coming days.
+				</li>
+			</ul>
 			<p>
-				Once you have successfully logged in, please fill out your tutor details.
+				Please reply with your active Facebook account link as soon as you can so that we may add you to our social media groups.
+				Thank you and we are looking forward to having you here with us in PTS!
 			</p>
 		</>
 	)

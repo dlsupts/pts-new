@@ -113,7 +113,8 @@ const userHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 				await User.create(applicant)
 				logger.info(`ADMIN [${session.user._id}] PROMOTED applicant ${applicant.firstName} ${applicant.lastName} to TUTOR`)
 
-				await sendEmail(applicant.email, '[PTS] Welcome to PTS!', AcceptanceEmail())
+				await sendEmail(applicant.email, '[PTS] Tutor Application Results', AcceptanceEmail(applicant))
+				logger.info(`Acceptance email sent to ${applicant.firstName}`)
 				break
 			}
 
