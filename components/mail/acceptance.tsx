@@ -12,8 +12,7 @@ export default function AcceptanceEmail(applicant: IUserInfo) {
 				</li>
 			</ul>
 			<p>
-				Please reply with your active Facebook account link as soon as possible so that we may add you to our social media groups.
-				Thank you and we are looking forward to having you here with us in PTS!
+				Please check your message requests on Facebook Messenger for an invitation to our PTS Tutors group chat.
 			</p>
 			<p><em>Share. Inspire. Grow.</em></p>
 		</>
