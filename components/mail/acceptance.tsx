@@ -13,8 +13,8 @@ export default function AcceptanceEmail(applicant: IUserInfo) {
 			</ul>
 			<p>
 				Please check your message requests on Facebook Messenger for an invitation to our PTS Tutors group chat.
+				Thank you and we are looking forward to having you here with us in PTS!
 			</p>
-			<p><em>Share. Inspire. Grow.</em></p>
 		</>
 	)
 }
