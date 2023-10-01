@@ -11,7 +11,6 @@ const wrapInLayout = (body: string) => `
 </head>
 
 <body>
-	<p>Good day!</p>
 	${body}
 	<p>
 		Regards,<br>
