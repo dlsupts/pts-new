@@ -80,12 +80,14 @@ const Service: FC<ServiceProps> = ({ subjects, services, setStep }) => {
 	const threeDaysLater = new Date(Date.now() + 259_200_000)
 
 	const onSubmit = (values: ServiceFormData) => {
+		const newEarliestDate = new Date(formatToISODate(new Date(values.earliestDate).getTime()))
+		const newLatestDate = new Date(formatToISODate(new Date(values.latestDate).getTime()))
 		setRequest({
 			duration: values.duration as typeof duration,
 			tutorialType: values.tutorialType,
 			preferred: values.preferred ?? '',
-			earliestDate: values.earliestDate as Date,
-			latestDate: values.latestDate as Date,
+			earliestDate: newEarliestDate as Date,
+			latestDate: newLatestDate as Date,
 		})
 
 		if (values.tutorialType === 'Group Study') {
