@@ -40,16 +40,19 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 					}
 				}
 
-				const [, emails] = await Promise.all([
+				const [, emails, core] = await Promise.all([
 					Application.create(req.body),
-					Committee.getEmailAddresses('Activities')
+					Committee.getEmailAddresses('Activities'),
+					Committee.getEmailAddresses('Core')
 				])
 
 				logger.info(`New application received from ${body.firstName} ${body.lastName}`)
 
+				console.log(core)
+				
 				await Promise.all([
 					sendEmail(body.email, '[PTS] Tutor Application', ApplicationEmail({ applicant: body, isApplicant: true })),
-					sendEmail({ to: emails.VP, cc: emails.AVP }, '[PTS] Tutor Application', ApplicationEmail({ applicant: body, isApplicant: false })),
+					sendEmail({ to: [emails.VP], cc: emails.AVP }, '[PTS] Tutor Application', ApplicationEmail({ applicant: body, isApplicant: false })),
 				])
 				break
 			}
