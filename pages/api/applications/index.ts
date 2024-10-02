@@ -49,7 +49,7 @@ const applyHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 				await Promise.all([
 					sendEmail(body.email, '[PTS] Tutor Application', ApplicationEmail({ applicant: body, isApplicant: true })),
-					sendEmail({ to: [emails.VP, "maria_monica_manlises@dlsu.edu.ph", "daphne_janelyn_go@dlsu.edu.ph"], cc: emails.AVP }, '[PTS] Tutor Application', ApplicationEmail({ applicant: body, isApplicant: false })),
+					sendEmail({ to: [emails.VP, "adriel_fancubit@dlsu.edu.ph", "enzo_arkin_panugayan@dlsu.edu.ph"], cc: emails.AVP }, '[PTS] Tutor Application', ApplicationEmail({ applicant: body, isApplicant: false })),
 				])
 				break
 			}
