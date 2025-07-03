@@ -68,24 +68,29 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 export default handler
 
 async function createRequest(body: TuteePostAPIBody) {
-	const timestamp = new Date()
+	try {
 
-	const [{ _id: ayterm }, tutee, date] = await Promise.all([
-		Dates.getAYTerm(),
-		tuteeInfoSchema.validate(body.tutee),
-		Dates.findById('Tutor Request', '-_id end').lean()
-	])
+		const timestamp = new Date()
 
-	if (body.request.duration == 'Whole Term' && !isWholeTermStillAvailable(date?.end)) {
-		throw Error('Whole-term sessions are no longer available! Please resubmit your request.')
+		const [{ _id: ayterm }, tutee, date] = await Promise.all([
+			Dates.getAYTerm(),
+			tuteeInfoSchema.validate(body.tutee),
+			Dates.findById('Tutor Request', '-_id end').lean()
+		])
+
+		if (body.request.duration == 'Whole Term' && !isWholeTermStillAvailable(date?.end)) {
+			throw Error('Whole-term sessions are no longer available! Please resubmit your request.')
+		}
+
+		await Request.create({
+			timestamp,
+			ayterm,
+			...body.request,
+			preferred: Types.ObjectId.isValid(body.request.preferred) ? body.request.preferred : null,
+			tutee,
+			sessions: body.selectedSubjects.map(([subject, topics]) => ({ subject, topics }))
+		})
+	} catch (error) {
+		console.log(error)
 	}
-
-	await Request.create({
-		timestamp,
-		ayterm,
-		...body.request,
-		preferred: Types.ObjectId.isValid(body.request.preferred) ? body.request.preferred : null,
-		tutee,
-		sessions: body.selectedSubjects.map(([subject, topics]) => ({ subject, topics }))
-	})
 }
