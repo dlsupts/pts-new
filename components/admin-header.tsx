@@ -26,7 +26,7 @@ const navItems: NavItemProp[] = [
 	{ path: '/admin/libraries', text: 'Libraries' },
 ]
 
-const MobNavItem: FC<MobNavItemProp> = ({ text, path, isHome, onClick }) => {
+const MobNavItem = ({ text, path, isHome, onClick }:MobNavItemProp) => {
 	const { pathname } = useRouter()
 	const isMatch = matchPath(pathname, path, isHome)
 

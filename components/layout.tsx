@@ -1,7 +1,6 @@
 import { useSession } from 'next-auth/react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { FC } from 'react'
 import dynamic from 'next/dynamic'
 
 const Facebook = dynamic(() => import('@components/facebook'))
@@ -11,7 +10,7 @@ const AdminHeader = dynamic(() => import('./admin-header'))
 export const siteTitle = 'Peer Tutors Society'
 const META_DESCRIPTION = 'A society of volunteer students who are willing to serve as tutors to students who need academic assistance.'
 
-const Layout: FC = ({ children }) => {
+const Layout = ({ children }:{children:React.ReactNode}) => {
 	const { data: session } = useSession()
 	const { pathname } = useRouter()
 

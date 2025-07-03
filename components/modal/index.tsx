@@ -1,9 +1,10 @@
-import { Fragment, useRef, FC, Dispatch, SetStateAction, RefObject } from 'react'
+import { Fragment, useRef, Dispatch, SetStateAction, RefObject } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
 type ModalProps = {
 	isOpen: boolean,
 	close: (() => void) | Dispatch<SetStateAction<boolean>>
+	children:React.ReactNode
 	initialFocus?: RefObject<HTMLButtonElement>
 }
 
@@ -12,7 +13,7 @@ export interface IModalProps {
 	onClose: () => void
 }
 
-const Modal: FC<ModalProps> = ({ isOpen, close, children, initialFocus }) => {
+const Modal = ({ isOpen, close, children, initialFocus }:ModalProps) => {
 	const cancelButtonRef = useRef(null)
 
 	return (

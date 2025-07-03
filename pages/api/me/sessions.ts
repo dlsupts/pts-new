@@ -13,8 +13,7 @@ const mySessionsHandler = async (req: NextApiRequest, res: NextApiResponse<Sessi
 
 	// no session found
 	if (session?.user?._id == null) {
-		res.status(401)
-		return res.end()
+		return res.status(401).end()
 	}
 
 	const { _id } = session.user
@@ -24,35 +23,43 @@ const mySessionsHandler = async (req: NextApiRequest, res: NextApiResponse<Sessi
 
 		switch (req.method) {
 			case "GET": {
-				const requests = await Request.find(
-					{ sessions: { $elemMatch: { tutor: _id } } },
+				const requests = await Request.aggregate([
 					{
-						sessions: {
-							$filter: {
-								input: '$sessions',
-								as: 'session',
-								cond: { $eq: ['$$session.tutor', new Types.ObjectId(_id)] }
+						$match: { sessions: { $elemMatch: { tutor: new Types.ObjectId(_id) } } }
+					},
+					{
+						$addFields: {
+							sessions: {
+								$filter: {
+									input: '$sessions',
+									as: 'session',
+									cond: { $eq: ['$session.tutor', new Types.ObjectId(_id)] }
+								}
 							}
-						},
-						tutee: 1,
-						duration: 1,
-						tutorialType: 1,
+						}
+					},
+					{
+						$project: {
+							sessions: 1,
+							tutee: 1,
+							duration: 1,
+							tutorialType: 1
+						}
+					},
+					{
+						$sort: { _id: 1 }
 					}
-				).sort({ _id: 1 })
+				]).exec()
 
-				res.send(requests)
-				break
+				return res.status(200).json(requests)
 			}
-
 			default:
 				res.setHeader('Allow', ['GET'])
-				res.status(405).end(`Method ${req.method} Not Allowed`)
+				return res.status(405).end(`Method ${req.method} Not Allowed`)
 		}
 	} catch (err) {
 		logger.error(err)
-		res.status(500)
-	} finally {
-		res.end()
+		return res.status(500).end()
 	}
 }
 

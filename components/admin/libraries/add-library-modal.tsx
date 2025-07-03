@@ -1,5 +1,5 @@
 import Modal, { IModalProps } from '@components/modal'
-import { FC, useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
@@ -18,7 +18,7 @@ type AddLibraryModalProps = IModalProps & {
 	onSubmit: (data: AddLibrarySchema) => Promise<void>
 }
 
-const AddLibraryModal: FC<AddLibraryModalProps> = ({ isOpen, onClose, onSubmit }) => {
+const AddLibraryModal = ({ isOpen, onClose, onSubmit }:AddLibraryModalProps) => {
 	const cancelButton = useRef<HTMLButtonElement>(null)
 	const [isKeyed, setIsKeyed] = useState(false)
 	const { register, handleSubmit, formState: { errors }, reset } = useForm<AddLibrarySchema>({

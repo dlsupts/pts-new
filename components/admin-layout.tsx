@@ -1,11 +1,10 @@
-import { FC } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import LoadingSpinner from './loading-spinner'
 import Head from 'next/head'
 
 
-const AdminLayout: FC = ({ children }) => {
+const AdminLayout = ({ children }:{children:React.ReactNode}) => {
 	const router = useRouter()
 	const time = (new Date).getTime()
 	const { status, data } = useSession({

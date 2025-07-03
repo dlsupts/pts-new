@@ -37,7 +37,6 @@ const RequestTable = ({ data, onRowClick, tutors }: TableProps) => {
 	let ctr = 1
 
 	const columns = useMemo(() => ([
-		//@ts-expect-error: Library limitation. Note that this may result in build error, so just cut and re-paste this comment.
 		columnHelper.accessor('_id', {
 			header: 'Tutee',
 			id: '_id',

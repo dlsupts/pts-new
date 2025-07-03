@@ -38,7 +38,7 @@ const NavItem: FC<NavItemProp> = ({ text, path }) => {
 	)
 }
 
-const UserLayout: FC = ({ children }) => {
+const UserLayout = ({ children }:{children:React.ReactNode}) => {
 	const router = useRouter()
 	const time = (new Date).getTime()
 	const { user, isLoading: isUserLoading, isError } = useUser()

@@ -22,7 +22,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		switch (method) {
 			case 'PATCH': {
 				if (!body.tutor) { // unassigning all tutors from all sessions related to a request
-					const tutors: MongoID[] = await Request.findById(query.reqId).distinct('sessions.tutor')
+					const tutors: MongoID[] = await Request.findById<MongoID[]>(query.reqId).distinct('sessions.tutor')
 
 					await Promise.all([
 						// clear tutors in sessions
