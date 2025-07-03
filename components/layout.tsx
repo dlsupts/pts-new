@@ -48,7 +48,7 @@ const Layout = ({ children }:{children:React.ReactNode}) => {
 						<a className="footer-icon" title="PTS Email Address" href="mailto:pts@dlsu.edu.ph">
 							<i className="fa-solid fa-envelope fa-xl"></i>
 						</a>
-						<a className="footer-icon" title="PTS Discord Server" href="https://discord.gg/CQwv7XRBjv">
+						<a className="footer-icon" title="PTS Discord Server" href="https://discord.gg/3hzdKefvx7">
 							<i className="fa-brands fa-discord fa-xl"></i>
 						</a>
 					</div>
